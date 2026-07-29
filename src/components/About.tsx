@@ -2,18 +2,20 @@ import { artists } from '../data/artists';
 import { site } from '../data/site';
 import styles from './About.module.css';
 
-const services = [
-  ['Booking', 'Worldwide, club and festival. One point of contact, contracts and advancing included.'],
-  ['Management', 'Career strategy, release planning and label negotiation for a small number of artists.'],
-  ['Production', 'Live show development, technical riders and rehearsal logistics.'],
-  ['Press', 'Campaign planning with partner agencies in DE, UK, FR and BENELUX.'],
+/* All copy below is LOREM IPSUM. Replace it; nothing here says anything. */
+
+const services: [string, string][] = [
+  ['Lorem', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.'],
+  ['Ipsum', 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.'],
+  ['Dolor', 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.'],
+  ['Consectetur', 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.'],
 ];
 
 const facts: [string, string][] = [
-  ['founded', String(site.founded)],
-  ['based', `${site.city}, Germany`],
+  ['lorem', 'Ipsum'],
+  ['ipsum', 'Dolor sit amet'],
   ['roster', `${artists.length} artists`],
-  ['territories', 'europe / americas / asia'],
+  ['dolor', 'lorem / ipsum / dolor'],
 ];
 
 export function About() {
@@ -23,19 +25,16 @@ export function About() {
         <div>
           <p className={`u-mono ${styles.eyebrow}`}>about</p>
           <h1 className={styles.lead}>
-            We look after the time of{' '}
-            <span className={styles.accentWord}>{artists.length} artists</span> — and treat a
-            booking as the beginning of the work, not the end of it.
+            Lorem ipsum dolor sit amet,{' '}
+            <span className={styles.accentWord}>consectetur adipiscing</span> elit, sed do
+            eiusmod tempor incididunt.
           </h1>
         </div>
 
         {/* The roster, set small, so the page never feels like a page of prose. */}
         <ul className={`u-mono ${styles.rosterIndex}`} aria-hidden="true">
-          {artists.map((artist, index) => (
-            <li key={artist.id}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              {artist.name}
-            </li>
+          {artists.map((artist) => (
+            <li key={artist.id}>{artist.name}</li>
           ))}
         </ul>
       </section>
@@ -43,44 +42,39 @@ export function About() {
       <section className={styles.body}>
         <div className={styles.col}>
           <p>
-            Founded in {site.city} in {site.founded}, {site.name} is a booking and artist
-            management agency for electronic music. The roster is deliberately small. We would
-            rather place {artists.length} artists correctly than move a hundred through a
-            spreadsheet.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
           </p>
           <p>
-            That means we say no on behalf of our artists more often than we say yes: to slots
-            that do not fit, to routings that do not make sense, and to fees that do not reflect
-            the work. What is left is a calendar an artist can actually live inside.
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+            qui officia deserunt mollit anim id est laborum.
           </p>
         </div>
         <div className={styles.col}>
           <p>
-            We advance every show ourselves — technical riders, backline, travel, settlement —
-            and we stay reachable on the night. Promoters get one contact who answers. Artists
-            get someone who has already read the contract.
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+            doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+            veritatis et quasi architecto beatae vitae dicta sunt explicabo.
           </p>
           <p>
-            For promoters: enquiries are answered within two working days, including the ones we
-            decline. For artists: we are not currently open for submissions, but the inbox is
-            read.
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+            consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
           </p>
         </div>
       </section>
 
       <section className={styles.services} aria-label="Services">
         <h2 className={`u-mono ${styles.sectionTitle}`}>what we do</h2>
-        <ol className={styles.serviceList}>
-          {services.map(([title, copy], index) => (
+        <ul className={styles.serviceList}>
+          {services.map(([title, copy]) => (
             <li key={title} className={styles.service}>
-              <span className={`u-mono ${styles.serviceIndex}`}>
-                {String(index + 1).padStart(2, '0')}
-              </span>
               <h3 className={styles.serviceTitle}>{title}</h3>
               <p className={styles.serviceCopy}>{copy}</p>
             </li>
           ))}
-        </ol>
+        </ul>
       </section>
 
       <section className={styles.contact} aria-label="Details and contact">

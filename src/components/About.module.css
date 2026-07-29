@@ -25,14 +25,8 @@
 }
 
 .rosterIndex li {
-  display: grid;
-  grid-template-columns: 2.25rem 1fr;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid var(--rule);
-}
-
-.rosterIndex li span {
-  color: var(--ink-22);
 }
 
 .eyebrow {
@@ -110,29 +104,19 @@
 
 .service {
   display: grid;
-  grid-template-columns: 3.25rem 1fr;
+  grid-template-columns: 1fr;
   gap: 0.35rem clamp(0.75rem, 1.5vw, 1.25rem);
   padding: clamp(0.9rem, 1.8vw, 1.35rem) 0;
   border-bottom: 1px solid var(--rule);
-  transition: background-color var(--dur) var(--ease);
-}
-
-.service:hover {
-  background: color-mix(in srgb, var(--paper-hi) 70%, transparent);
-}
-
-.serviceIndex {
-  color: var(--ink-22);
-  grid-row: 1 / span 2;
-  padding-top: 0.35rem;
   transition: color var(--dur) var(--ease);
 }
 
-.service:hover .serviceIndex {
+.service:hover .serviceTitle {
   color: var(--accent);
 }
 
 .serviceTitle {
+  transition: color var(--dur) var(--ease);
   font-size: clamp(1.125rem, 0.9rem + 0.9vw, 1.625rem);
   font-weight: 500;
   line-height: 1.1;
@@ -228,15 +212,12 @@
   }
 
   .service {
-    grid-template-columns: 3.5rem minmax(0, 14rem) minmax(0, 1fr);
-  }
-
-  .serviceTitle {
-    grid-row: 1;
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
   }
 
   .serviceCopy {
     grid-row: 1;
+    grid-column: 2;
     padding-top: 0.3rem;
   }
 

@@ -111,6 +111,22 @@ are visible and the accent passes contrast on the paper background.
 
 ## Deploying
 
-Static output — `npm run build` then serve `dist/` from anywhere (Netlify, Vercel, Pages,
-plain nginx). One thing to configure: the SPA fallback, so `/about` returns `index.html`
-rather than a 404.
+Static output. `.github/workflows/deploy.yml` builds on every push to `main` and publishes
+to GitHub Pages — no branch to maintain, no `dist/` in git.
+
+Two things make the subpath work, and both are already wired up:
+
+- **`base`** — Pages serves the site at `/<repo>/`, so `vite.config.ts` sets
+  `base: '/absolut-agency/'` for production builds only; dev stays at `/`. The router reads
+  `import.meta.env.BASE_URL`, so links and the back button follow automatically.
+- **`404.html`** — Pages has no SPA rewrite, so a hard load of `/about` would 404. A build
+  plugin copies `index.html` to `404.html`; Pages serves that for unmatched paths and the
+  router resolves the route on boot.
+
+Moving to a custom domain later means one change:
+
+```bash
+BASE_PATH=/ npm run build
+```
+
+Renaming the repo means updating `BASE_PATH` in `vite.config.ts` to match.

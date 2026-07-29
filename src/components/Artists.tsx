@@ -23,7 +23,7 @@ export function Artists() {
       <section className={styles.roster} aria-labelledby="roster-heading">
         <div className={`u-mono ${styles.rosterHead}`}>
           <h1 id="roster-heading">roster</h1>
-          <span>{String(artists.length).padStart(2, '0')} artists</span>
+          <span>{artists.length} artists</span>
         </div>
 
         <ul className={styles.list}>
@@ -49,9 +49,6 @@ export function Artists() {
                   aria-expanded={isSplit ? undefined : isOpen}
                   aria-controls={isSplit ? undefined : `detail-${artist.id}`}
                 >
-                  <span className={`u-mono ${styles.index}`}>
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
                   <span className={styles.name}>{artist.name}</span>
                   {/* Always rendered, even when empty, so the cue keeps its column. */}
                   <span className={`u-mono ${styles.meta}`}>
