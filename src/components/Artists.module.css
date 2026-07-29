@@ -1,0 +1,254 @@
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 0 var(--gutter);
+}
+
+.roster {
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.rosterHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.25rem, 2.6vw, 2rem) 0 0.85rem;
+  color: var(--ink-38);
+}
+
+.rosterHead h1 {
+  font: inherit;
+  letter-spacing: var(--track-wide);
+  color: var(--ink-55);
+}
+
+.list {
+  border-top: 1px solid var(--rule);
+}
+
+.row {
+  border-bottom: 1px solid var(--rule);
+  animation: row-in var(--dur-slow) var(--ease) both;
+  animation-delay: calc(120ms + var(--i) * 45ms);
+  transition: opacity var(--dur) var(--ease);
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row {
+    animation: none;
+  }
+}
+
+/* The list dims itself around whatever you are pointing at. Cheap to implement,
+   and it is the single thing that makes a plain list of names feel curated. */
+@media (hover: hover) and (min-width: 900px) {
+  .list:hover .row {
+    opacity: 0.32;
+  }
+
+  .list .row:hover,
+  .list .row:focus-within {
+    opacity: 1;
+  }
+}
+
+.trigger {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr auto 1.5rem;
+  align-items: center;
+  gap: clamp(0.5rem, 1.4vw, 1.25rem);
+  width: 100%;
+  padding: clamp(0.75rem, 1.5vw, 1.15rem) 0;
+  text-align: left;
+}
+
+.index {
+  color: var(--ink-22);
+  transition: color var(--dur) var(--ease);
+}
+
+.name {
+  font-size: var(--t-row);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    transform var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.meta {
+  display: flex;
+  gap: 0.9rem;
+  color: var(--ink-38);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease);
+}
+
+.format {
+  min-width: 4.5rem;
+  color: var(--ink-22);
+  transition: color var(--dur) var(--ease);
+}
+
+/* Hover cue: an arrow drawn in CSS so there is no icon dependency. */
+.cue {
+  position: relative;
+  justify-self: end;
+  width: 1.1rem;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  transition:
+    transform var(--dur) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.cue::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
+  transform: translateY(-50%) rotate(45deg);
+  transform-origin: center;
+}
+
+.trigger:hover .name,
+.trigger:focus-visible .name {
+  transform: translateX(clamp(6px, 1vw, 16px));
+  color: var(--accent);
+}
+
+.trigger:hover .index,
+.trigger:focus-visible .index {
+  color: var(--accent);
+}
+
+.trigger:hover .meta,
+.trigger:focus-visible .meta,
+.trigger:hover .format,
+.trigger:focus-visible .format {
+  color: var(--ink-55);
+}
+
+.trigger:hover .cue,
+.trigger:focus-visible .cue {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* ---------- mobile accordion ---------- */
+
+.detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur) var(--ease);
+}
+
+/* The clip element carries no padding of its own — padding on a 0fr grid item
+   survives the collapse and leaks a sliver of the panel, so it lives one level
+   further in. min-height:0 keeps the auto min track from flooring at min-content. */
+.detailClip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.row[data-open] .detail {
+  grid-template-rows: 1fr;
+}
+
+.detailInner {
+  display: grid;
+  grid-template-columns: minmax(96px, 132px) 1fr;
+  gap: 1.1rem;
+  padding: 0.35rem 0 1.4rem;
+}
+
+.detailArt {
+  align-self: start;
+}
+
+.detailBio {
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--ink-80);
+  text-wrap: pretty;
+}
+
+.detailTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
+.detailTags li {
+  padding: 0.25rem 0.45rem 0.2rem;
+  border: 1px solid var(--rule);
+  color: var(--ink-55);
+}
+
+.stageColumn {
+  display: none;
+}
+
+/* ---------- split layout ---------- */
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .roster {
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .detail {
+    display: none;
+  }
+
+  .stageColumn {
+    display: block;
+    border-left: 1px solid var(--rule);
+  }
+}
+
+@media (min-width: 1440px) {
+  .trigger {
+    grid-template-columns: 4rem 1fr auto 2rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .trigger {
+    grid-template-columns: 2.25rem 1fr auto;
+  }
+
+  .cue {
+    display: none;
+  }
+
+  .city {
+    display: none;
+  }
+}

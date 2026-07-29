@@ -1,0 +1,122 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gutter);
+  min-height: var(--header-h);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+/* Three stacked bars — a wordmark device rather than a logo we don't have. */
+.mark {
+  display: grid;
+  gap: 2.5px;
+  width: 17px;
+  align-self: center;
+  transform: translateY(-1px);
+}
+
+.mark span {
+  display: block;
+  height: 3px;
+  background: var(--ink);
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+  transform-origin: left;
+}
+
+.mark span:nth-child(2) {
+  background: var(--accent);
+}
+
+.brand:hover .mark span:nth-child(1) {
+  transform: scaleX(0.62);
+}
+
+.brand:hover .mark span:nth-child(2) {
+  transform: scaleX(1);
+}
+
+.brand:hover .mark span:nth-child(3) {
+  transform: scaleX(0.8);
+}
+
+.wordmark {
+  font-size: clamp(1rem, 0.82rem + 0.75vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.descriptor {
+  color: var(--ink-55);
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .descriptor {
+    display: none;
+  }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.4vw, 2.25rem);
+}
+
+.tab {
+  position: relative;
+  padding: 0.35rem 0 0.5rem;
+  font-size: clamp(0.9375rem, 0.86rem + 0.35vw, 1.0625rem);
+  letter-spacing: -0.01em;
+  color: var(--ink-55);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur) var(--ease);
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+  background: var(--ink-38);
+}
+
+.tab[data-active] {
+  color: var(--ink);
+}
+
+.tab[data-active]::after {
+  transform: scaleX(1);
+  transform-origin: left;
+  background: var(--ink);
+}

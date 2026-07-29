@@ -1,0 +1,64 @@
+/* --------------------------------------------------------------------------
+   Design tokens.
+   Everything visual is dialled in from here — swap these six colours and the
+   whole site changes mood without touching a component.
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Surface — a warm limestone/bone paper rather than pure white. */
+  --paper: #e8e5de;
+  --paper-hi: #f0eee9;
+  --paper-lo: #ddd9d0;
+
+  /* Ink — near-black with a cold cast so it sits under the accent. */
+  --ink: #111216;
+  --ink-80: rgb(17 18 22 / 0.8);
+  --ink-55: rgb(17 18 22 / 0.55);
+  --ink-38: rgb(17 18 22 / 0.38);
+  --ink-22: rgb(17 18 22 / 0.22);
+
+  /* Hairlines. The whole layout is held together by these. */
+  --rule: rgb(17 18 22 / 0.15);
+  --rule-strong: rgb(17 18 22 / 0.3);
+
+  /* One accent. Used sparingly: active states, indices, links. */
+  --accent: #2333e0;
+  --accent-soft: rgb(35 51 224 / 0.1);
+
+  /* Type */
+  --font-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono',
+    Menlo, Consolas, monospace;
+
+  /* Fluid scale — 360px → 1600px viewport */
+  --t-micro: 0.6875rem; /* 11px, mono labels */
+  --t-small: 0.8125rem;
+  --t-body: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
+  --t-lead: clamp(1.25rem, 1rem + 1.1vw, 1.875rem);
+  --t-row: clamp(1.5rem, 0.9rem + 2.4vw, 2.75rem);
+  --t-display: clamp(2.5rem, 1rem + 6.4vw, 7rem);
+
+  --track-tight: -0.03em;
+  --track-mono: 0.08em;
+  --track-wide: 0.16em;
+
+  /* Rhythm */
+  --gutter: clamp(1.125rem, 0.6rem + 2.2vw, 3rem);
+  --header-h: clamp(56px, 4.4vw + 40px, 76px);
+  --footer-h: 44px;
+
+  /* Motion — one shared easing so nothing feels borrowed from elsewhere. */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 240ms;
+  --dur: 460ms;
+  --dur-slow: 760ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+}
