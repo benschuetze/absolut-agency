@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Artwork } from './Artwork';
+import { BIO_PENDING } from './copy';
 import { artists, type Artist } from '../data/artists';
 import { site } from '../data/site';
 import styles from './Stage.module.css';
@@ -75,17 +76,28 @@ function ArtistPanel({ artist }: { artist: Artist }) {
 
       <div className={styles.copy}>
         <h2 className={styles.name}>{artist.name}</h2>
-        <p className={`u-mono ${styles.meta}`}>
-          {artist.city} <span className={styles.sep}>/</span> {artist.format}
+
+        {artist.city || artist.format ? (
+          <p className={`u-mono ${styles.meta}`}>
+            {artist.city}
+            {artist.city && artist.format ? <span className={styles.sep}>/</span> : null}
+            {artist.format}
+          </p>
+        ) : null}
+
+        <p className={styles.bio} data-pending={!artist.bio || undefined}>
+          {artist.bio ?? BIO_PENDING}
         </p>
-        <p className={styles.bio}>{artist.bio}</p>
-        <ul className={styles.tags}>
-          {artist.tags.map((tag) => (
-            <li key={tag} className="u-mono">
-              {tag}
-            </li>
-          ))}
-        </ul>
+
+        {artist.tags?.length ? (
+          <ul className={styles.tags}>
+            {artist.tags.map((tag) => (
+              <li key={tag} className="u-mono">
+                {tag}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     </article>
   );

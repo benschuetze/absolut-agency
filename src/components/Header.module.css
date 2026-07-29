@@ -54,11 +54,12 @@
   transform: scaleX(0.8);
 }
 
+/* Set lowercase, as the agency writes it — and it reads against the all-caps
+   roster underneath rather than blending into it. */
 .wordmark {
-  font-size: clamp(1rem, 0.82rem + 0.75vw, 1.4rem);
+  font-size: clamp(1.0625rem, 0.85rem + 0.9vw, 1.5rem);
   font-weight: 700;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+  letter-spacing: -0.025em;
   white-space: nowrap;
 }
 

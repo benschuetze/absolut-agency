@@ -43,9 +43,10 @@ export function About() {
       <section className={styles.body}>
         <div className={styles.col}>
           <p>
-            {site.name} is a booking and artist management agency for electronic music, working
-            out of {site.city} since {site.founded}. The roster is deliberately small. We would
-            rather place ten artists correctly than move a hundred through a spreadsheet.
+            Founded in {site.city} in {site.founded}, {site.name} is a booking and artist
+            management agency for electronic music. The roster is deliberately small. We would
+            rather place {artists.length} artists correctly than move a hundred through a
+            spreadsheet.
           </p>
           <p>
             That means we say no on behalf of our artists more often than we say yes: to slots

@@ -194,6 +194,11 @@
   text-wrap: pretty;
 }
 
+.detailBio[data-pending] {
+  color: var(--ink-38);
+  font-style: italic;
+}
+
 .detailTags {
   display: flex;
   flex-wrap: wrap;

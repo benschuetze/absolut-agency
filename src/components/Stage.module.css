@@ -149,6 +149,11 @@
   text-wrap: pretty;
 }
 
+.bio[data-pending] {
+  color: var(--ink-38);
+  font-style: italic;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;

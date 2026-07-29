@@ -81,12 +81,11 @@ export function Artwork({ id, name, photo }: { id: string; name: string; photo?:
       }
     }
 
-    const letters = name
-      .split(/[\s-]+/)
-      .map((word) => word[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
+    // Roster names are not all "First Last" — SDB, P.VonSchwind, Flo.Von. Reading
+    // the capitals out of the name handles those; anything else falls back to the
+    // first two characters.
+    const capitals = name.replace(/[^A-ZÀ-Þ]/g, '');
+    const letters = (capitals.length >= 2 ? capitals : name).slice(0, 2).toUpperCase();
 
     return { dots: out, initials: letters };
   }, [id, name]);

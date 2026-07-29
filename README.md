@@ -1,4 +1,4 @@
-# SUBSTRAT — agency landing page
+# absolut — agency landing page
 
 A two-page landing page for an electronic music booking agency. No backend, no CMS:
 everything is a typed constant in `src/data/`, and the whole thing builds to static files.
@@ -35,16 +35,17 @@ Everything a non-developer would want to change lives in two files.
 used in the wordmark, `<title>`, footer and about copy, so renaming the agency is a one-line
 change.
 
-**`src/data/artists.ts`** — the roster. Each entry:
+**`src/data/artists.ts`** — the roster. Only `id` and `name` are required; everything else
+is optional and degrades cleanly, so entries can be filled in as the information arrives.
 
 ```ts
 {
-  id: 'arc-lumen',       // stable slug, also the artwork seed
-  name: 'Arc Lumen',
-  city: 'Berlin',
-  format: 'live',        // 'live' | 'dj' | 'live / dj'
-  bio: 'Two or three sentences, no more.',
-  tags: ['hypnotic', 'modular'],
+  id: 'lea-lindner',     // stable slug, also the artwork seed
+  name: 'Lea Lindner',
+  city: 'Berlin',        // optional — omitted leaves the meta column empty
+  format: 'live',        // optional — 'live' | 'dj' | 'live / dj'
+  bio: 'Two or three sentences, no more.',   // optional — falls back to "Bio to follow."
+  tags: ['hypnotic', 'modular'],             // optional — three works best
   photo: undefined,      // see below
 }
 ```
@@ -52,7 +53,12 @@ change.
 The layout adapts to any number of artists — add or remove entries freely. Row numbering,
 the roster count and the about-page index all derive from the array.
 
-> The current roster is **placeholder copy**: invented names, cities and bios. Replace it.
+> **Current state:** the eight names are final. `city`, `format`, `bio` and `tags` are
+> deliberately left undefined rather than guessed — these are real people, and invented
+> credits would go live looking like facts.
+
+Everything in `site.ts` except the agency name is still placeholder: descriptor, tagline,
+city, founding year, email and the social links.
 
 ---
 
@@ -69,9 +75,9 @@ To drop real photos in:
 2. Import and assign in `src/data/artists.ts`:
 
 ```ts
-import arcLumen from '../assets/artists/arc-lumen.jpg';
+import leaLindner from '../assets/artists/lea-lindner.jpg';
 
-{ id: 'arc-lumen', /* … */ photo: arcLumen }
+{ id: 'lea-lindner', /* … */ photo: leaLindner }
 ```
 
 `Artwork` renders the photo instead and the generative fallback disappears. Nothing else
