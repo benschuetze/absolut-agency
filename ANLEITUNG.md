@@ -1,23 +1,45 @@
 # Deine Website ändern
 
-Du brauchst dafür kein Programm, keinen Laptop und nichts zu lernen. Handy reicht.
+Du brauchst kein Programm, keinen Laptop und musst nichts lernen. Handy reicht.
+
+Aber: **einmal am Anfang muss ein bisschen was eingerichtet werden.** Das macht ihr am
+besten zusammen, wenn ihr euch seht — dauert eine Viertelstunde. Danach nie wieder.
 
 ---
 
-## Einmalig einrichten
+## Teil 1 — Einmalig einrichten (zusammen mit Ben)
 
-1. **Claude-App** installieren (oder im Browser **claude.ai** öffnen)
-2. Auf **claude.ai/code** gehen
-3. Das Projekt **`absolut-agency`** auswählen
+### 1. GitHub-Account
 
-Das war's. Ab jetzt immer nur noch Schritt 3.
+Auf **github.com** einen Account anlegen. Braucht nur Mailadresse und Passwort.
+
+GitHub ist der Ort, wo die Website gespeichert ist. Du musst dort nichts machen und dich
+nie wieder einloggen — der Account ist nur der Schlüssel.
+
+### 2. Zugriff auf das Projekt
+
+Ben lädt dich ein. Du bekommst eine Mail von GitHub, in der du auf **„Accept invitation"**
+klickst.
+
+### 3. Claude mit GitHub verbinden
+
+In der Claude-App auf **claude.ai/code** gehen und dem Verbinden mit GitHub zustimmen. Dabei
+muss das Projekt **`absolut-agency`** freigegeben werden.
+
+> Falls es hier klemmt: das ist der einzige Schritt, der zickt. Ben soll draufschauen.
+
+**Ab jetzt ist Schluss mit Technik.**
 
 ---
 
-## Etwas ändern
+## Teil 2 — Etwas ändern (das machst du ab jetzt allein)
 
-Sag einfach, was du willst. Ganz normal, wie du es einer Person sagen würdest.
-Sprachnachricht geht auch — tipp aufs Mikrofon.
+1. Claude-App öffnen
+2. Auf **claude.ai/code** das Projekt **`absolut-agency`** antippen
+3. Sagen, was du willst
+
+Ganz normal, wie du es einer Person sagen würdest. Sprachnachricht geht auch — tipp aufs
+Mikrofon.
 
 **Zum Beispiel:**
 
@@ -52,10 +74,10 @@ Dauert meistens ein bis zwei Minuten.
 **Du kannst nichts kaputt machen.** Alles ist gespeichert. Wenn dir eine Änderung nicht
 gefällt, sag einfach „mach das wieder rückgängig".
 
-**Fotos** werden automatisch passend zugeschnitten. Einfach schicken, egal in welchem Format.
+**Fotos** werden automatisch passend zugeschnitten. Einfach schicken, egal welches Format.
 
-**Frag ruhig nach**, wenn du unsicher bist: „was passiert, wenn ich das ändere?" oder „zeig
-mir mal, wie das aussehen würde".
+**Frag ruhig nach**, wenn du unsicher bist: „was passiert, wenn ich das ändere?" oder
+„zeig mir mal, wie das aussehen würde".
 
 **Alle Texte auf der Seite sind aktuell Platzhalter** — dieses „Lorem ipsum"-Kauderwelsch.
 Das ist Absicht, damit nichts nach einer echten Aussage aussieht, solange die richtigen
