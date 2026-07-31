@@ -4,11 +4,18 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
 /**
- * GitHub Pages serves the project at /<repo>/, so the production build needs a
- * base path. Override with BASE_PATH when the site moves to its own domain:
- *   BASE_PATH=/ npm run build
+ * Set this to the custom domain once DNS is pointed at GitHub — e.g.
+ * 'absolut.agency'. A custom domain serves the site from the root, so the base
+ * path has to become '/' at the same moment; deriving one from the other means
+ * the switch cannot be done by halves.
+ *
+ * Note: with an Actions-based deploy, GitHub ignores a CNAME file in the repo.
+ * The domain lives in the repository's Pages settings, nowhere else.
  */
-const BASE_PATH = process.env.BASE_PATH ?? '/absolut-agency/';
+const CUSTOM_DOMAIN = '';
+
+/** github.io serves the project under /<repo>/; a custom domain serves it at /. */
+const BASE_PATH = process.env.BASE_PATH ?? (CUSTOM_DOMAIN ? '/' : '/absolut-agency/');
 
 /**
  * GitHub Pages has no SPA rewrite, so a hard load of /about would 404. Pages

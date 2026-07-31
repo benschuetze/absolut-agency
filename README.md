@@ -123,10 +123,22 @@ Two things make the subpath work, and both are already wired up:
   plugin copies `index.html` to `404.html`; Pages serves that for unmatched paths and the
   router resolves the route on boot.
 
-Moving to a custom domain later means one change:
+Renaming the repo means updating the base path in `vite.config.ts` to match.
 
-```bash
-BASE_PATH=/ npm run build
-```
+### Custom domain
 
-Renaming the repo means updating `BASE_PATH` in `vite.config.ts` to match.
+Three things, in this order:
+
+1. **DNS**, at the registrar. Apex (`absolut.agency`) needs four A records —
+   `185.199.108.153`, `.109.153`, `.110.153`, `.111.153` — and optionally the matching
+   AAAA records `2606:50c0:800{0,1,2,3}::153`. A subdomain (`www.absolut.agency`) needs a
+   single CNAME to `benschuetze.github.io`. Propagation can take up to 24h.
+2. **Tell GitHub**: `gh api -X PUT repos/benschuetze/absolut-agency/pages -f cname=absolut.agency`,
+   then enable *Enforce HTTPS* once the certificate is issued (up to 24h).
+3. **Set `CUSTOM_DOMAIN`** in `vite.config.ts` and push. A custom domain serves the site
+   from `/`, so the base path must change in the same commit — the config derives one from
+   the other so it cannot be half-done.
+
+Do **not** add a `CNAME` file to `public/`. GitHub creates and reads that file only for
+branch-based publishing; with an Actions workflow it is ignored, and having one around
+just misleads whoever looks next.
