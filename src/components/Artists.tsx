@@ -1,96 +1,162 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Artwork } from './Artwork';
-import { Stage } from './Stage';
-import { artists } from '../data/artists';
-import { SPLIT_QUERY, useMediaQuery } from '../lib/useMediaQuery';
+import { artists, type Artist } from '../data/artists';
+import { site } from '../data/site';
 import { BIO_PENDING } from './copy';
 import styles from './Artists.module.css';
 
+/**
+ * The roster, image first.
+ *
+ * Every artist's image is on screen the moment the page settles — no hover, no
+ * tap. Hover used to be the only way to see a face, which meant touch and
+ * keyboard visitors saw a list of words. The card carries the image and the
+ * name; everything else lives one click deeper, in a panel that opens for
+ * pointer, touch and keyboard alike.
+ */
 export function Artists() {
-  const isSplit = useMediaQuery(SPLIT_QUERY);
-
-  /** Desktop: what the sticky stage is previewing. Sticks to the last hovered name. */
+  /** Which card is under the pointer or holds focus — drives the dim-the-rest state. */
   const [activeId, setActiveId] = useState<string | null>(null);
-  /** Mobile: which row is expanded, since there is no hover to speak of. */
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const preview = (id: string) => {
-    if (isSplit) setActiveId(id);
-  };
+  const open = artists.find((a) => a.id === openId) ?? null;
+
+  /* Focus came from a card, so it has to go back to that card when the panel
+     closes — otherwise the tab order restarts at the top of the document. */
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+  const close = useCallback(() => {
+    setOpenId(null);
+    openerRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, close]);
 
   return (
     <div className={styles.layout}>
-      <section className={styles.roster} aria-labelledby="roster-heading">
-        <div className={`u-mono ${styles.rosterHead}`}>
-          <h1 id="roster-heading">roster</h1>
-          <span>{artists.length} artists</span>
+      <section aria-labelledby="roster-heading">
+        <div className={styles.head}>
+          <div className={`u-mono ${styles.headMeta}`}>
+            <h1 id="roster-heading">roster</h1>
+            <span>{artists.length} artists</span>
+          </div>
+          <p className={styles.statement}>{site.tagline}</p>
         </div>
 
-        <ul className={styles.list}>
-          {artists.map((artist, index) => {
-            const isOpen = openId === artist.id;
-
-            return (
-              <li
-                key={artist.id}
-                className={styles.row}
-                style={{ '--i': index } as React.CSSProperties}
-                data-open={isOpen || undefined}
+        <ul className={styles.grid}>
+          {artists.map((artist, index) => (
+            <li
+              key={artist.id}
+              className={styles.card}
+              style={{ '--i': index } as React.CSSProperties}
+              data-artist-card=""
+              data-active={activeId === artist.id ? 'true' : undefined}
+            >
+              <button
+                type="button"
+                className={styles.trigger}
+                data-artist-open=""
+                onMouseEnter={() => setActiveId(artist.id)}
+                onMouseLeave={() => setActiveId((current) => (current === artist.id ? null : current))}
+                onFocus={() => setActiveId(artist.id)}
+                onBlur={() => setActiveId((current) => (current === artist.id ? null : current))}
+                onClick={(event) => {
+                  openerRef.current = event.currentTarget;
+                  setOpenId(artist.id);
+                }}
+                aria-haspopup="dialog"
               >
-                <button
-                  type="button"
-                  className={styles.trigger}
-                  onMouseEnter={() => preview(artist.id)}
-                  onFocus={() => preview(artist.id)}
-                  onClick={() => {
-                    if (isSplit) setActiveId(artist.id);
-                    else setOpenId(isOpen ? null : artist.id);
-                  }}
-                  aria-expanded={isSplit ? undefined : isOpen}
-                  aria-controls={isSplit ? undefined : `detail-${artist.id}`}
-                >
-                  <span className={styles.name}>{artist.name}</span>
-                  {/* Always rendered, even when empty, so the cue keeps its column. */}
+                <span className={styles.media}>
+                  <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
+                </span>
+
+                <span className={styles.caption}>
+                  <span className={styles.name} data-artist-name="">
+                    {artist.name}
+                  </span>
                   <span className={`u-mono ${styles.meta}`}>
-                    {artist.city ? <span className={styles.city}>{artist.city}</span> : null}
+                    {artist.city ? <span>{artist.city}</span> : null}
                     {artist.format ? <span className={styles.format}>{artist.format}</span> : null}
                   </span>
-                  <span className={styles.cue} aria-hidden="true" />
-                </button>
-
-                {/* Mobile only: the stage has nowhere to live, so the row opens. */}
-                <div id={`detail-${artist.id}`} className={styles.detail}>
-                  <div className={styles.detailClip}>
-                    <div className={styles.detailInner}>
-                      <div className={styles.detailArt}>
-                        <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
-                      </div>
-                      <div>
-                        <p className={styles.detailBio} data-pending={!artist.bio || undefined}>
-                          {artist.bio ?? BIO_PENDING}
-                        </p>
-                        {artist.tags?.length ? (
-                          <ul className={styles.detailTags}>
-                            {artist.tags.map((tag) => (
-                              <li key={tag} className="u-mono">
-                                {tag}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
+                </span>
+              </button>
+            </li>
+          ))}
         </ul>
       </section>
 
-      <aside className={styles.stageColumn}>
-        <Stage activeId={activeId} />
-      </aside>
+      {open ? <Detail artist={open} onClose={close} /> : null}
+    </div>
+  );
+}
+
+function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  /* Move focus into the panel on open, so the next Tab continues inside it and
+     the close button is one key away. */
+  useEffect(() => {
+    panelRef.current?.focus();
+  }, [artist.id]);
+
+  return (
+    <div className={styles.overlay} data-artist-detail="">
+      <button
+        type="button"
+        className={styles.scrim}
+        onClick={onClose}
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+
+      <div
+        ref={panelRef}
+        className={styles.panel}
+        role="dialog"
+        aria-modal="true"
+        aria-label={artist.name}
+        tabIndex={-1}
+      >
+        <button type="button" className={`u-mono ${styles.closeBtn}`} onClick={onClose}>
+          close
+        </button>
+
+        <div className={styles.panelArt}>
+          <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
+        </div>
+
+        <div className={styles.panelCopy}>
+          <h2 className={styles.panelName}>{artist.name}</h2>
+
+          {artist.city || artist.format ? (
+            <p className={`u-mono ${styles.panelMeta}`}>
+              {artist.city}
+              {artist.city && artist.format ? <span className={styles.sep}>/</span> : null}
+              {artist.format}
+            </p>
+          ) : null}
+
+          <p className={styles.panelBio} data-pending={!artist.bio || undefined}>
+            {artist.bio ?? BIO_PENDING}
+          </p>
+
+          {artist.tags?.length ? (
+            <ul className={styles.panelTags}>
+              {artist.tags.map((tag) => (
+                <li key={tag} className="u-mono">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }

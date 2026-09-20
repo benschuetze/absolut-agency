@@ -8,3 +8,10 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# UI test output
+test-results
+playwright-report
+tests/__screenshots__
+tests/__before__
+tests/__tiles__

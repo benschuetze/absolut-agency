@@ -1,249 +1,307 @@
 .layout {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr;
-  padding: 0 var(--gutter);
+  padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem);
 }
 
-.roster {
-  padding-bottom: clamp(2rem, 5vw, 4rem);
-}
-
-.rosterHead {
+.head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem clamp(1rem, 4vw, 3rem);
   padding: clamp(1.25rem, 2.6vw, 2rem) 0 0.85rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.headMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
   color: var(--ink-38);
 }
 
-.rosterHead h1 {
+.headMeta h1 {
   font: inherit;
   letter-spacing: var(--track-wide);
   color: var(--ink-55);
 }
 
-.list {
-  border-top: 1px solid var(--rule);
+/* The statement the stage used to carry. It stays on the page, just smaller —
+   the images are the loud element now. */
+.statement {
+  font-size: var(--t-body);
+  letter-spacing: var(--track-tight);
+  color: var(--ink-55);
+  text-wrap: balance;
 }
 
-.row {
-  border-bottom: 1px solid var(--rule);
-  animation: row-in var(--dur-slow) var(--ease) both;
-  animation-delay: calc(120ms + var(--i) * 45ms);
+/* --------------------------------------------------------------------------
+   The grid.
+
+   Column count is set per breakpoint rather than by auto-fill: nine artists
+   divide into three rows of three, and an auto-fitted track leaves a ragged
+   last row at most widths.
+   -------------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.4vw, 2.25rem) clamp(0.75rem, 1.8vw, 1.75rem);
+  padding-top: clamp(1.25rem, 2.6vw, 2rem);
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.card {
+  animation: card-in var(--dur-slow) var(--ease) both;
+  animation-delay: calc(80ms + var(--i) * 55ms);
   transition: opacity var(--dur) var(--ease);
 }
 
-@keyframes row-in {
+@keyframes card-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row {
+  .card {
     animation: none;
   }
 }
 
-/* The list dims itself around whatever you are pointing at. Cheap to implement,
-   and it is the single thing that makes a plain list of names feel curated. */
-@media (hover: hover) and (min-width: 900px) {
-  .list:hover .row {
-    opacity: 0.32;
-  }
-
-  .list .row:hover,
-  .list .row:focus-within {
-    opacity: 1;
+/* The grid dims itself around whatever you are pointing at — the same curation
+   the list had, moved onto the images. Pointer only: on touch there is nothing
+   to point with, and dimming eight of nine cards on tap would just look broken. */
+@media (hover: hover) and (min-width: 720px) {
+  .grid:hover .card:not([data-active]) {
+    opacity: 0.45;
   }
 }
 
 .trigger {
-  display: grid;
-  grid-template-columns: 1fr auto 1.5rem;
-  align-items: center;
-  gap: clamp(0.75rem, 1.4vw, 1.5rem);
+  display: block;
   width: 100%;
-  padding: clamp(0.75rem, 1.5vw, 1.15rem) 0;
   text-align: left;
 }
 
+.media {
+  display: block;
+  position: relative;
+  transition: transform var(--dur) var(--ease);
+}
+
+/* A hairline that draws itself along the image on hover or focus, instead of a
+   shadow or a lift — the rest of the site is held together by hairlines. */
+.media::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease);
+}
+
+.card[data-active] .media::after {
+  transform: scaleX(1);
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding-top: 0.7rem;
+}
+
 .name {
+  font-size: var(--t-card);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  text-wrap: balance;
+  transition: color var(--dur) var(--ease);
+}
+
+.card[data-active] .name {
+  color: var(--accent);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  flex-shrink: 0;
+  color: var(--ink-38);
+  text-align: right;
+}
+
+.format {
+  color: var(--ink-22);
+}
+
+@media (max-width: 480px) {
+  .meta {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Detail panel.
+   -------------------------------------------------------------------------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(17 18 22 / 0.55);
+  animation: fade-in var(--dur-fast) var(--ease) both;
+  cursor: default;
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1.25rem, 2.5vw, 2.25rem);
+  width: min(880px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  animation: panel-in var(--dur) var(--ease) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.panel:focus-visible {
+  outline: none;
+}
+
+.closeBtn {
+  position: absolute;
+  top: clamp(1.25rem, 2.5vw, 2rem);
+  right: clamp(1.25rem, 2.5vw, 2rem);
+  z-index: 1;
+  padding: 0.3rem 0.5rem 0.25rem;
+  border: 1px solid var(--rule);
+  color: var(--ink-55);
+  background: var(--paper);
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.closeBtn:hover,
+.closeBtn:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.panelArt {
+  align-self: start;
+}
+
+.panelCopy {
+  display: flex;
+  flex-direction: column;
+  padding-right: 3.5rem;
+}
+
+.panelName {
   font-size: var(--t-row);
   font-weight: 500;
   line-height: 1;
   letter-spacing: var(--track-tight);
   text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition:
-    transform var(--dur) var(--ease),
-    color var(--dur) var(--ease);
+  text-wrap: balance;
 }
 
-.meta {
+.panelMeta {
   display: flex;
-  gap: 0.9rem;
+  gap: 0.6rem;
+  padding-top: 0.6rem;
   color: var(--ink-38);
-  white-space: nowrap;
-  transition: color var(--dur) var(--ease);
 }
 
-.format {
-  min-width: 4.5rem;
+.sep {
   color: var(--ink-22);
-  transition: color var(--dur) var(--ease);
 }
 
-/* Hover cue: an arrow drawn in CSS so there is no icon dependency. */
-.cue {
-  position: relative;
-  justify-self: end;
-  width: 1.1rem;
-  height: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  opacity: 0;
-  transition:
-    transform var(--dur) var(--ease),
-    opacity var(--dur-fast) var(--ease);
-}
-
-.cue::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-top: 1px solid var(--accent);
-  border-right: 1px solid var(--accent);
-  transform: translateY(-50%) rotate(45deg);
-  transform-origin: center;
-}
-
-.trigger:hover .name,
-.trigger:focus-visible .name {
-  transform: translateX(clamp(6px, 1vw, 16px));
-  color: var(--accent);
-}
-
-.trigger:hover .meta,
-.trigger:focus-visible .meta,
-.trigger:hover .format,
-.trigger:focus-visible .format {
-  color: var(--ink-55);
-}
-
-.trigger:hover .cue,
-.trigger:focus-visible .cue {
-  transform: scaleX(1);
-  opacity: 1;
-}
-
-/* ---------- mobile accordion ---------- */
-
-.detail {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows var(--dur) var(--ease);
-}
-
-/* The clip element carries no padding of its own — padding on a 0fr grid item
-   survives the collapse and leaks a sliver of the panel, so it lives one level
-   further in. min-height:0 keeps the auto min track from flooring at min-content. */
-.detailClip {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.row[data-open] .detail {
-  grid-template-rows: 1fr;
-}
-
-.detailInner {
-  display: grid;
-  grid-template-columns: minmax(96px, 132px) 1fr;
-  gap: 1.1rem;
-  padding: 0.35rem 0 1.4rem;
-}
-
-.detailArt {
-  align-self: start;
-}
-
-.detailBio {
-  font-size: var(--t-small);
+.panelBio {
+  padding-top: clamp(0.9rem, 2vw, 1.4rem);
+  font-size: var(--t-body);
   line-height: 1.55;
   color: var(--ink-80);
   text-wrap: pretty;
 }
 
-.detailBio[data-pending] {
+.panelBio[data-pending] {
   color: var(--ink-38);
   font-style: italic;
 }
 
-.detailTags {
+.panelTags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin-top: 0.9rem;
+  padding-top: clamp(0.9rem, 2vw, 1.4rem);
 }
 
-.detailTags li {
+.panelTags li {
   padding: 0.25rem 0.45rem 0.2rem;
   border: 1px solid var(--rule);
   color: var(--ink-55);
 }
 
-.stageColumn {
-  display: none;
-}
-
-/* ---------- split layout ---------- */
-
-@media (min-width: 900px) {
-  .layout {
-    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
-    gap: clamp(1.5rem, 3vw, 3rem);
+@media (max-width: 640px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
   }
 
-  .roster {
-    padding-bottom: clamp(2rem, 4vw, 3rem);
+  .panelArt {
+    max-width: 55%;
   }
 
-  .detail {
-    display: none;
-  }
-
-  .stageColumn {
-    display: block;
-    border-left: 1px solid var(--rule);
-  }
-}
-
-@media (min-width: 1440px) {
-  .trigger {
-    grid-template-columns: 1fr auto 2rem;
-  }
-}
-
-@media (max-width: 560px) {
-  .trigger {
-    grid-template-columns: 1fr auto;
-  }
-
-  .cue {
-    display: none;
-  }
-
-  .city {
-    display: none;
+  .panelCopy {
+    padding-right: 0;
   }
 }

@@ -1,6 +1,9 @@
 .frame {
   position: relative;
   container-type: inline-size;
+  /* The tint blends with its backdrop, and without a group of its own that
+     backdrop is the whole page behind the frame, not the photograph. */
+  isolation: isolate;
   aspect-ratio: 4 / 5;
   width: 100%;
   overflow: hidden;
@@ -16,46 +19,98 @@
   object-fit: cover;
 }
 
+/* A real portrait is pulled most of the way to the palette but not all of it —
+   past about 0.2 the accent stops reading as a print bias and a face goes
+   visibly blue. */
+.photo {
+  filter: grayscale(1) contrast(1.04);
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  mix-blend-mode: color;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
 .ground {
   fill: var(--paper-lo);
 }
 
-.washTop {
-  stop-color: var(--paper-hi);
-  stop-opacity: 0.9;
-}
+/* --------------------------------------------------------------------------
+   Tile ink.
 
-.washBottom {
-  stop-color: var(--ink);
-  stop-opacity: 0.09;
-}
+   Every colour in a generated tile resolves through one of these classes.
+   Custom properties do not resolve in SVG presentation attributes — writing
+   fill="var(--ink)" falls back to black, which looks correct until a tile is
+   inverted and nothing changes.
+   -------------------------------------------------------------------------- */
 
-.grid line {
-  stroke: var(--ink);
-  stroke-width: 0.5;
-  opacity: 0.1;
-}
-
-.dot {
+.ink {
   fill: var(--ink);
-  opacity: 0.62;
 }
 
-.dotAccent {
+.acc {
   fill: var(--accent);
-  opacity: 0.85;
 }
 
-.initials {
+.sInk {
+  stroke: var(--ink);
   fill: none;
-  stroke: var(--paper-hi);
-  stroke-width: 1.6;
+}
+
+.sAcc {
+  stroke: var(--accent);
+  fill: none;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+}
+
+.disp {
   font-family: var(--font-display);
-  font-size: 200px;
   font-weight: 700;
-  letter-spacing: -0.05em;
-  opacity: 0.85;
-  paint-order: stroke;
+  letter-spacing: var(--track-tight);
+}
+
+/* Outlined type — the name drawn as line rather than mass. */
+.tOut {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   Negative tiles — paper marks on ink ground.
+
+   A third of the roster prints this way. It exists so the grid already has a
+   dark family on the day the first real photograph lands: a dark portrait then
+   joins something, instead of punching a hole in an all-light grid. The accent
+   is untouched — it carries on both grounds.
+   -------------------------------------------------------------------------- */
+
+.neg {
+  background: var(--ink);
+}
+
+.neg .ground {
+  fill: var(--ink);
+}
+
+.neg .ink {
+  fill: var(--paper);
+}
+
+.neg .sInk {
+  stroke: var(--paper);
+}
+
+.neg .tOut {
+  stroke: var(--paper);
 }
 
 .badge {
@@ -69,7 +124,12 @@
   font-size: 9px;
 }
 
-/* On the small in-row thumbnails the label is bigger than the picture. */
+.neg .badge {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* On small thumbnails the label is bigger than the picture. */
 @container (max-width: 200px) {
   .badge {
     display: none;

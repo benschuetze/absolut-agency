@@ -16,7 +16,8 @@ function pathToRoute(path: string): Route {
   return relative === '/about' ? 'about' : 'artists';
 }
 
-const routeToPath = (route: Route): string => (route === 'about' ? `${BASE}/about` : `${BASE}/`);
+export const routeToPath = (route: Route): string =>
+  route === 'about' ? `${BASE}/about` : `${BASE}/`;
 
 /**
  * Two pages do not justify a routing library. This is the whole router:
