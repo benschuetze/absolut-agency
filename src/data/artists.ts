@@ -1,3 +1,11 @@
+import abscure from '../assets/artists/abscure.jpg';
+import alFatmalay from '../assets/artists/al-fatmalay.jpg';
+import bjornDelTogno from '../assets/artists/bjorn-del-togno.jpg';
+import contrast from '../assets/artists/contrast.jpg';
+import floVon from '../assets/artists/flo-von.jpg';
+import leaLindner from '../assets/artists/lea-lindner.jpg';
+import pVonSchwind from '../assets/artists/p-vonschwind.jpg';
+
 export type Artist = {
   /** Stable slug — used as React key, artwork seed, and the future artist route. */
   id: string;
@@ -34,6 +42,7 @@ const roster: Artist[] = [
     format: 'ipsum',
     bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     tags: ['lorem', 'ipsum', 'dolor'],
+    photo: abscure,
   },
   {
     id: 'al-fatmalay',
@@ -42,6 +51,7 @@ const roster: Artist[] = [
     format: 'lorem / ipsum',
     bio: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
     tags: ['consectetur', 'adipiscing'],
+    photo: alFatmalay,
   },
   {
     id: 'bjorn-del-togno',
@@ -50,6 +60,7 @@ const roster: Artist[] = [
     format: 'lorem',
     bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.',
     tags: ['tempor', 'incididunt', 'labore'],
+    photo: bjornDelTogno,
   },
   {
     id: 'contrast',
@@ -58,6 +69,7 @@ const roster: Artist[] = [
     format: 'ipsum',
     bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
     tags: ['magna', 'aliqua'],
+    photo: contrast,
   },
   {
     id: 'flo-von',
@@ -66,6 +78,15 @@ const roster: Artist[] = [
     format: 'lorem',
     bio: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos.',
     tags: ['veniam', 'nostrud', 'ullamco'],
+    photo: floVon,
+  },
+  {
+    id: 'kieran-landwehr',
+    name: 'Kieran Landwehr',
+    city: 'Dolore',
+    format: 'lorem',
+    bio: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.',
+    tags: ['dolore', 'fugiat', 'nulla'],
   },
   {
     id: 'lea-lindner',
@@ -74,6 +95,7 @@ const roster: Artist[] = [
     format: 'lorem / ipsum',
     bio: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam.',
     tags: ['laboris', 'aliquip'],
+    photo: leaLindner,
   },
   {
     id: 'p-vonschwind',
@@ -82,6 +104,7 @@ const roster: Artist[] = [
     format: 'ipsum',
     bio: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti.',
     tags: ['commodo', 'consequat', 'irure'],
+    photo: pVonSchwind,
   },
   {
     id: 'sdb',
