@@ -5,6 +5,8 @@ import contrast from '../assets/artists/contrast.jpg';
 import floVon from '../assets/artists/flo-von.jpg';
 import leaLindner from '../assets/artists/lea-lindner.jpg';
 import pVonSchwind from '../assets/artists/p-vonschwind.jpg';
+import sdb from '../assets/artists/sdb.jpg';
+import tonyMejeh from '../assets/artists/tony-mejeh.jpg';
 
 export type Artist = {
   /** Stable slug — used as React key, artwork seed, and the future artist route. */
@@ -106,6 +108,13 @@ const roster: Artist[] = [
     tags: ['commodo', 'consequat', 'irure'],
     photo: pVonSchwind,
   },
+  /* Name and photograph confirmed; nothing else has been written down yet, and
+     the row degrades on its own until it is. */
+  {
+    id: 'tony-mejeh',
+    name: 'Tony Mejeh',
+    photo: tonyMejeh,
+  },
   {
     id: 'sdb',
     name: 'SDB',
@@ -113,6 +122,7 @@ const roster: Artist[] = [
     format: 'lorem',
     bio: 'Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.',
     tags: ['voluptate', 'cillum'],
+    photo: sdb,
   },
 ];
 
