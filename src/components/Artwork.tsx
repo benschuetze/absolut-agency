@@ -5,10 +5,10 @@ import styles from './Artwork.module.css';
 /**
  * An artist's image.
  *
- * With a real `photo` this is that photograph, pulled toward the palette so a
- * mixed grid of photography and generated tiles still reads as one set. Without
- * one it is a generated tile — see `tiles.tsx` for why each artist gets a
- * different technique rather than a different seed of the same one.
+ * A real `photo` prints in its own colour — the photography is the point, and
+ * grading it toward the palette is not ours to do. Without one it is a
+ * generated tile — see `tiles.tsx` for why each artist gets a different
+ * technique rather than a different seed of the same one.
  */
 export function Artwork({ id, name, photo }: { id: string; name: string; photo?: string }) {
   const tile = useMemo(() => {

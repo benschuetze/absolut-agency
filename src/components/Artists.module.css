@@ -81,12 +81,28 @@
   }
 }
 
-/* The grid dims itself around whatever you are pointing at — the same curation
-   the list had, moved onto the images. Pointer only: on touch there is nothing
-   to point with, and dimming eight of nine cards on tap would just look broken. */
+/* The grid recedes around whatever you are pointing at — the same curation the
+   list had, moved onto the images.
+ *
+ * Both halves of this are load-bearing. It keys off the card under the pointer
+ * rather than the grid box, because the gaps between cards belong to the grid
+ * too — keying off the box drained the colour out of all ten whenever the
+ * cursor merely crossed a gutter. And it reads :hover directly rather than a
+ * React "active card", because a card keeps focus after it is clicked: the grid
+ * then stayed grey with the pointer parked elsewhere, or off the page entirely.
+ *
+ * Focus deliberately does not grey the grid. Closing the detail panel hands
+ * focus back to the card that opened it, which is right for the keyboard and
+ * would otherwise leave the roster grey with nothing under the cursor. Focus
+ * still announces itself on the card — accent hairline, accent name — so
+ * nothing is lost by keeping the rest in colour.
+ *
+ * Pointer only: on touch there is nothing to point with, and greying nine of
+ * ten cards on a tap reads as a fault. */
 @media (hover: hover) and (min-width: 720px) {
-  .grid:hover .card:not([data-active]) {
-    opacity: 0.45;
+  .grid:has(.trigger:hover) .card:not(:hover) .media {
+    filter: grayscale(1);
+    opacity: 0.55;
   }
 }
 
@@ -99,7 +115,9 @@
 .media {
   display: block;
   position: relative;
-  transition: transform var(--dur) var(--ease);
+  transition:
+    filter var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
 }
 
 /* A hairline that draws itself along the image on hover or focus, instead of a
