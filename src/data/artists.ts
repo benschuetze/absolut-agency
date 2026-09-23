@@ -1,13 +1,13 @@
-import abscure from '../assets/artists/abscure.jpg';
-import alFatmalay from '../assets/artists/al-fatmalay.jpg';
-import bjornDelTogno from '../assets/artists/bjorn-del-togno.jpg';
-import contrast from '../assets/artists/contrast.jpg';
-import floVon from '../assets/artists/flo-von.jpg';
-import jona from '../assets/artists/jona.jpg';
-import leaLindner from '../assets/artists/lea-lindner.jpg';
-import vonSchwind from '../assets/artists/vonschwind.jpg';
-import sdb from '../assets/artists/sdb.jpg';
-import tonyMejeh from '../assets/artists/tony-mejeh.jpg';
+import abscure from '../assets/artists/abscure.webp';
+import alFatmalay from '../assets/artists/al-fatmalay.webp';
+import bjornDelTogno from '../assets/artists/bjorn-del-togno.webp';
+import contrast from '../assets/artists/contrast.webp';
+import floVon from '../assets/artists/flo-von.webp';
+import jona from '../assets/artists/jona.webp';
+import leaLindner from '../assets/artists/lea-lindner.webp';
+import vonSchwind from '../assets/artists/vonschwind.webp';
+import sdb from '../assets/artists/sdb.webp';
+import tonyMejeh from '../assets/artists/tony-mejeh.webp';
 
 /**
  * The interview every artist answered, in the order it is asked.

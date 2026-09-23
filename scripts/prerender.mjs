@@ -86,6 +86,7 @@ const pages = [
   {
     location: { route: 'imprint' },
     path: '/impressum',
+    lang: 'de',
     title: 'Impressum — silodom agency',
     description:
       'Angaben gemäß § 5 DDG für silodom agency — Silodom GbR, An der Römerbrücke 3, 66121 Saarbrücken, vertreten durch Björn del Togno.',
@@ -93,6 +94,7 @@ const pages = [
   {
     location: { route: 'privacy' },
     path: '/datenschutz',
+    lang: 'de',
     title: 'Datenschutz — silodom agency',
     description:
       'Diese Website setzt keine Cookies, speichert nichts auf Ihrem Gerät und bindet keine fremden Dienste ein.',
@@ -162,6 +164,18 @@ for (const page of pages) {
   const title = escape(page.title);
   const description = escape(page.description);
   let html = shell;
+
+  /* The legal pages are written in German while the rest of the site is not.
+     Saying so is the difference between a search engine filing them under the
+     right language and a screen reader reading them aloud in the wrong one. */
+  if (page.lang) {
+    html = swap(html, /<html lang="[^"]*">/, `<html lang="${page.lang}">`);
+    html = swap(
+      html,
+      /<meta\s+property="og:locale"\s+content="[^"]*"\s*\/>/,
+      '<meta property="og:locale" content="de_DE" />'
+    );
+  }
 
   html = swap(html, /<title>[^<]*<\/title>/, `<title>${title}</title>`);
   html = swap(
