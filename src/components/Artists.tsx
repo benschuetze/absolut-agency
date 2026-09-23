@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
 import { Choose, type Destination } from './Choose';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
+import { locationToPath } from '../lib/router';
 import { site } from '../data/site';
 import { BIO_PENDING } from './copy';
 import styles from './Artists.module.css';
@@ -33,7 +34,7 @@ export function Artists({
 
   /* Focus came from a card, so it has to go back to that card when the panel
      closes — otherwise the tab order restarts at the top of the document. */
-  const openerRef = useRef<HTMLButtonElement | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const close = useCallback(() => {
     onClose();
     openerRef.current?.focus();
@@ -66,19 +67,26 @@ export function Artists({
               data-artist-card=""
               data-active={activeId === artist.id ? 'true' : undefined}
             >
-              <button
-                type="button"
+              {/* A link, not a button. It goes to an address, so a crawler can
+                  follow it, a middle-click can open it in a tab, and the status
+                  bar says where it leads. The click is intercepted so the page
+                  does not reload around it. */}
+              <a
                 className={styles.trigger}
                 data-artist-open=""
+                href={locationToPath({ route: 'artists', artist: artist.id })}
                 onMouseEnter={() => setActiveId(artist.id)}
                 onMouseLeave={() => setActiveId((current) => (current === artist.id ? null : current))}
                 onFocus={() => setActiveId(artist.id)}
                 onBlur={() => setActiveId((current) => (current === artist.id ? null : current))}
                 onClick={(event) => {
+                  /* Leave the modified clicks to the browser — that is what they
+                     are for. */
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  event.preventDefault();
                   openerRef.current = event.currentTarget;
                   onOpen(artist.id);
                 }}
-                aria-haspopup="dialog"
               >
                 <span className={styles.media}>
                   <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
@@ -94,7 +102,7 @@ export function Artists({
                     {artist.tags?.length ? <span>{artist.tags[0]}</span> : null}
                   </span>
                 </span>
-              </button>
+              </a>
             </li>
           ))}
         </ul>

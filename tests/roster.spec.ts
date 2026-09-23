@@ -177,6 +177,20 @@ test.describe('detail access', () => {
 });
 
 test.describe('an artist has an address', () => {
+  /* Cards are links, not buttons. Without this a crawler finds the artist
+     pages only through the sitemap, and they inherit nothing from the roster
+     that links to them. */
+  test('the roster links to every artist', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    const hrefs = await page.$$eval('[data-artist-open]', (els) =>
+      els.map((a) => a.getAttribute('href'))
+    );
+    expect(hrefs).toHaveLength(10);
+    for (const href of hrefs) expect(href).toMatch(/^\/artists\/[a-z-]+\/$/);
+  });
+
   test('opening one changes the URL, closing puts it back', async ({ page }) => {
     await page.goto('/');
     await settled(page);

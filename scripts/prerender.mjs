@@ -38,6 +38,36 @@ const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/
 const clamp = (s, max = 155) =>
   s.length <= max ? s : `${s.slice(0, s.lastIndexOf(' ', max - 1))}…`;
 
+/**
+ * "How long have you been DJing?" came back as a year from some, a duration
+ * from others, and a joke from Flo.Von. Only the first two make a sentence —
+ * "DJing since not long enough to get tired of it" is not one, and neither is
+ * "DJing since 8 years".
+ */
+function experience(since) {
+  if (!since) return null;
+  const year = since.match(/\b(?:19|20)\d{2}\b/);
+  if (year) return `DJing since ${year[0]}.`;
+  const span = since.match(/^(around\s+)?\d+\s+years?$/i);
+  return span ? `DJing for ${since.toLowerCase()}.` : null;
+}
+
+/** Enough of an artist's own words to fill a search result, and no more. */
+function describe(artist) {
+  const parts = [];
+  const push = (text) => {
+    if (text && parts.join(' ').length < 90) parts.push(text);
+  };
+
+  push(artist.profile?.sound);
+  push(artist.tags?.length ? `${artist.tags.join(', ')}.` : null);
+  push(artist.format ? `${artist.format}.` : null);
+  push(experience(artist.profile?.since));
+  parts.push('Booking via silodom agency, Saarbrücken.');
+
+  return parts.join(' ');
+}
+
 const pages = [
   {
     location: { route: 'artists' },
@@ -51,13 +81,14 @@ const pages = [
     path: '/about',
     title: 'About — silodom agency',
     description:
-      'For over 13 years Silodom has been a home for electronic music in Saarbrücken. The booking agency brings together a selected roster of artists. No hype, no formula.',
+      'For over 13 years Silodom has been a home for electronic music in Saarbrücken. The booking agency brings together a selected roster of artists.',
   },
   {
     location: { route: 'imprint' },
     path: '/impressum',
     title: 'Impressum — silodom agency',
-    description: 'Angaben gemäß § 5 DDG für silodom agency, Silodom GbR, Saarbrücken.',
+    description:
+      'Angaben gemäß § 5 DDG für silodom agency — Silodom GbR, An der Römerbrücke 3, 66121 Saarbrücken, vertreten durch Björn del Togno.',
   },
   {
     location: { route: 'privacy' },
@@ -70,13 +101,11 @@ const pages = [
     location: { route: 'artists', artist: artist.id },
     path: `/artists/${artist.id}`,
     title: `${artist.name} — silodom agency`,
-    /* The artist's own description of their sound, which is both the truest
-       summary of them and the thing a search result should show. */
-    description: clamp(
-      [artist.profile?.sound, artist.tags?.length ? `${artist.tags.join(', ')}.` : null]
-        .filter(Boolean)
-        .join(' ') || `${artist.name} — booking via silodom agency, Saarbrücken.`
-    ),
+    /* The artist's own description of their sound leads, because it is the
+       truest summary of them. "Dirty." is a fine answer and a useless search
+       result, so more of their own answers are added until the line is worth
+       reading — nothing invented, just more of what they said. */
+    description: clamp(describe(artist)),
     artist,
   })),
 ];

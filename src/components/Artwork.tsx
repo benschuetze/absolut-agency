@@ -20,7 +20,17 @@ export function Artwork({ id, name, photo }: { id: string; name: string; photo?:
   if (photo || !tile) {
     return (
       <div className={styles.frame} data-artist-media="">
-        <img className={styles.photo} src={photo} alt={name} loading="lazy" decoding="async" />
+        <img
+          className={styles.photo}
+          src={photo}
+          alt={name}
+          /* The frame is 4:5 and the files are cut to it, so the browser can
+             reserve the space before the image arrives and nothing jumps. */
+          width={1000}
+          height={1250}
+          loading="lazy"
+          decoding="async"
+        />
         <span className={styles.tint} aria-hidden="true" />
       </div>
     );
