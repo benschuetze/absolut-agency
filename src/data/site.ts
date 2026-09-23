@@ -15,7 +15,7 @@ export const site = {
   /* On silodom.com, not silodom-agency.com: those mailboxes already exist and
      receive, so both work today rather than after a mailbox is bought. */
   /** Bookings. The address on the about page and in the footer. */
-  email: 'lena@silodom.com',
+  email: 'agency@silodom.com',
   /** The operator's contact in the imprint and the privacy notice. */
   contact: 'bjoern@silodom.com',
   /* The club's account, not the agency's — the agency does not have one yet.
