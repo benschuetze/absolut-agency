@@ -169,7 +169,9 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
         {artist.note ? (
           <section className={styles.note}>
             <h3 className={`u-mono ${styles.noteTitle}`}>{artist.note.title}</h3>
-            <p className={styles.answer}>{artist.note.body}</p>
+            <p className={styles.answer}>
+              <NoteBody body={artist.note.body} link={artist.links?.other} />
+            </p>
           </section>
         ) : null}
       </div>
@@ -196,23 +198,57 @@ const ICONS: Record<string, JSX.Element> = {
   ),
 };
 
+/**
+ * The first mention of the linked thing's name becomes the link.
+ *
+ * The address is written down once, beside the artist's other links, and the
+ * prose stays prose — no markup smuggled into a string the artist wrote.
+ */
+function NoteBody({ body, link }: { body: string; link?: { label: string; href: string } }) {
+  const at = link ? body.indexOf(link.label) : -1;
+  if (!link || at === -1) return <>{body}</>;
+
+  return (
+    <>
+      {body.slice(0, at)}
+      <a className={styles.inlineLink} href={link.href} target="_blank" rel="noreferrer noopener">
+        {link.label}
+      </a>
+      {body.slice(at + link.label.length)}
+    </>
+  );
+}
+
 function Links({ artist }: { artist: Artist }) {
-  const links = [
+  const marks = [
     ['instagram', artist.links?.instagram],
     ['soundcloud', artist.links?.soundcloud],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
-  if (!links.length) return null;
+  const other = artist.links?.other;
+  if (!marks.length && !other) return null;
 
   return (
     <p className={styles.panelLinks}>
-      {links.map(([label, href]) => (
+      {marks.map(([label, href]) => (
         <a key={label} href={href} target="_blank" rel="noreferrer noopener" aria-label={label}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
             {ICONS[label]}
           </svg>
         </a>
       ))}
+
+      {/* No established glyph, so it wears its own name. */}
+      {other ? (
+        <a
+          className={`u-mono ${styles.namedLink}`}
+          href={other.href}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {other.label}
+        </a>
+      ) : null}
     </p>
   );
 }

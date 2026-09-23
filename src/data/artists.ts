@@ -42,9 +42,18 @@ export type Artist = {
   since?: string;
   /** The genre, as the agency labels it. First one is shown on the card. */
   tags?: string[];
-  links?: { instagram?: string; soundcloud?: string };
+  links?: {
+    instagram?: string;
+    soundcloud?: string;
+    /** Anything without an established glyph — shown under its own name. */
+    other?: { label: string; href: string };
+  };
   profile?: Profile;
-  /** Anything that falls outside the interview — a label, a side project. */
+  /**
+   * Anything that falls outside the interview — a label, a side project.
+   * Where the body names `links.other`, that word becomes the link, so the
+   * address is written down once.
+   */
   note?: { title: string; body: string };
   /**
    * Drop a real photo in `src/assets/artists/` and import it here.
@@ -174,6 +183,7 @@ const roster: Artist[] = [
     links: {
       instagram: 'https://www.instagram.com/flo.von',
       soundcloud: 'https://on.soundcloud.com/VriU9u1xNra8fzmcKC',
+      other: { label: 'zerrro', href: 'https://zerrromusic.com' },
     },
     profile: {
       sound: 'Techy, soulful, dubby house.',

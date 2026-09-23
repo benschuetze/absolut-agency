@@ -292,6 +292,20 @@
   border-color: var(--accent);
 }
 
+/* Same box as the marks, sized to its word instead of to a glyph. */
+.namedLink {
+  width: auto;
+  padding: 0 0.55rem;
+  letter-spacing: var(--track-mono);
+}
+
+.inlineLink {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
 /* --------------------------------------------------------------------------
    The interview.
 
