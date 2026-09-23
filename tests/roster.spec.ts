@@ -261,6 +261,41 @@ test.describe('reduced motion', () => {
   });
 });
 
+test.describe('the legal pages', () => {
+  /* They are an obligation, so the test is that they exist, that the footer
+     reaches them, and that a pasted URL lands on them — which on GitHub Pages
+     goes through the 404 fallback rather than a server route. */
+  for (const [label, path, marker] of [
+    ['impressum', '/impressum', 'Silodom GbR'],
+    ['datenschutz', '/datenschutz', 'Verantwortlicher'],
+  ] as const) {
+    test(`${label} is reachable from the footer and by URL`, async ({ page }) => {
+      await page.goto('/');
+      await settled(page);
+
+      await page.locator('footer').getByRole('link', { name: label }).click();
+      await expect(page).toHaveURL(new RegExp(`${path}$`));
+      await expect(page.locator('main')).toContainText(marker);
+
+      await page.goto(path);
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('main')).toContainText(marker);
+    });
+  }
+
+  test('the imprint carries what § 5 DDG asks for', async ({ page }) => {
+    await page.goto('/impressum');
+    await page.waitForLoadState('networkidle');
+
+    const main = page.locator('main');
+    await expect(main).toContainText('Silodom GbR');
+    await expect(main).toContainText('An der Römerbrücke 3');
+    await expect(main).toContainText('66121 Saarbrücken');
+    // A contact address that can actually be written to, not a placeholder.
+    await expect(main.locator('a[href^="mailto:"]')).toHaveCount(1);
+  });
+});
+
 test.describe('navigation', () => {
   test('about page still renders and links back', async ({ page }) => {
     await page.goto('/');

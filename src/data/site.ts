@@ -3,8 +3,7 @@
  * everywhere — wordmark, <title>, footer, about page.
  *
  * Confirmed: name, descriptor, tagline, city, timeZone, email.
- * STILL PLACEHOLDER: `imprint`. It needs a page that does not exist yet, and
- * `#` is visibly broken on purpose rather than quietly wrong.
+ * Nothing here is a placeholder any more.
  */
 export const site = {
   name: 'silodom agency',
@@ -21,7 +20,6 @@ export const site = {
      other accounts tag it alongside the city. `@siloversum` is a different
      venue in the same town and is not it. */
   instagram: { label: 'instagram', href: 'https://www.instagram.com/silodom.club/' },
-  imprint: { label: 'imprint', href: '#' },
 } as const;
 
 export type Site = typeof site;

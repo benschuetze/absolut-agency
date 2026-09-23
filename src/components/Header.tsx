@@ -1,5 +1,5 @@
 import { site } from '../data/site';
-import { routeToPath, routes, type Route } from '../lib/router';
+import { navRoutes, routeToPath, type Route } from '../lib/router';
 import styles from './Header.module.css';
 
 type Props = {
@@ -24,7 +24,7 @@ export function Header({ route, onNavigate }: Props) {
       <nav className={styles.nav} aria-label="Primary">
         {/* Real links, like the wordmark above: these change the URL, so they
             have to survive a middle-click and read as navigation. */}
-        {routes.map((item) => (
+        {navRoutes.map((item) => (
           <a
             key={item}
             className={styles.tab}

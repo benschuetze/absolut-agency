@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 
-export const routes = ['artists', 'about'] as const;
+export const routes = ['artists', 'about', 'imprint', 'privacy'] as const;
 export type Route = (typeof routes)[number];
+
+/**
+ * The ones the header offers. The legal pages are reachable and indexable, but
+ * they are an obligation rather than a destination — the footer is where people
+ * look for them, and putting them beside the roster would say otherwise.
+ */
+export const navRoutes = ['artists', 'about'] as const satisfies readonly Route[];
 
 /**
  * '' in dev, '/absolut-agency' on GitHub Pages. Every path the router reads or
@@ -11,13 +18,22 @@ export type Route = (typeof routes)[number];
  */
 const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
+const PATHS: Record<Exclude<Route, 'artists'>, string> = {
+  about: '/about',
+  imprint: '/impressum',
+  privacy: '/datenschutz',
+};
+
 function pathToRoute(path: string): Route {
   const relative = (path.startsWith(BASE) ? path.slice(BASE.length) : path).replace(/\/+$/, '');
-  return relative === '/about' ? 'about' : 'artists';
+  const hit = (Object.keys(PATHS) as Exclude<Route, 'artists'>[]).find(
+    (route) => PATHS[route] === relative
+  );
+  return hit ?? 'artists';
 }
 
 export const routeToPath = (route: Route): string =>
-  route === 'about' ? `${BASE}/about` : `${BASE}/`;
+  route === 'artists' ? `${BASE}/` : `${BASE}${PATHS[route]}`;
 
 /**
  * Two pages do not justify a routing library. This is the whole router:
