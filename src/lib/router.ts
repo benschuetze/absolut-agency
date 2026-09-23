@@ -40,8 +40,20 @@ export const routeToPath = (route: Route): string =>
  * History API + popstate, with the View Transitions API used for the swap
  * where the browser supports it.
  */
+/**
+ * The route to start from when there is no browser — set by the prerender,
+ * which renders each page to HTML at build time so crawlers and link previews
+ * see the site rather than an empty <div id="root">.
+ */
+export let initialRoute: Route | null = null;
+export const setInitialRoute = (route: Route) => {
+  initialRoute = route;
+};
+
 export function useRoute(): [Route, (next: Route) => void] {
-  const [route, setRoute] = useState<Route>(() => pathToRoute(window.location.pathname));
+  const [route, setRoute] = useState<Route>(() =>
+    typeof window === 'undefined' ? (initialRoute ?? 'artists') : pathToRoute(window.location.pathname)
+  );
 
   useEffect(() => {
     const onPop = () => setRoute(pathToRoute(window.location.pathname));
