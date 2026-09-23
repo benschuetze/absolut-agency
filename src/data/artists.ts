@@ -59,8 +59,9 @@ export type Artist = {
  * The roster.
  *
  * Every word here comes from the artist. Answers are reproduced as they were
- * given, including the jokes and the one-word ones — an interview that has been
- * smoothed out reads like a press release, which is the opposite of the point.
+ * given, down to the emoji and the asides — an interview that has been smoothed
+ * out reads like a press release, which is the opposite of the point. Tidying
+ * those away was exactly that mistake, made once already.
  * The only editorial act is `tags`, which condense an artist's own description
  * of their sound into chips for the grid.
  *
@@ -160,7 +161,7 @@ const roster: Artist[] = [
       longestSet: '3 hours in clubs, or 6 hours for an afterparty.',
       bestMoment:
         'When I started playing my own productions. It brings up a lot of emotions for me to play them and see the crowd enjoying them just as much as “pro” tracks.',
-      quirk: 'Way too much stress, haha.',
+      quirk: 'Way too much stress haha (good one, I hope ^^)',
       greatNight:
         'A good sound system, an open-minded and curious crowd, and most importantly, genuine human connections between artists and organizers.',
       superpower: 'Originality.',
@@ -214,7 +215,7 @@ const roster: Artist[] = [
       longestSet: '7 hours.',
       bestMoment:
         'Junglefeast 2017 at Silodom, because I played 3 different sets on three different floors that night and could showcase my whole range. That was just so fun! An honorable mention has to be the 2-hour b2b with EgoTrippin I did at MsConnexion in Mannheim in 2023. Goosebumps when I think of this.',
-      quirk: 'My bassface when I’m into it.',
+      quirk: 'My bassface when I’m into it 😆',
       greatNight:
         'When everyone is aligned with their feelings about the music and strangers become friends because they have such a good time. Coming out of a club, the sun is out already and you have that warm feeling. Nothing compares to that.',
       superpower:
@@ -308,15 +309,15 @@ const roster: Artist[] = [
       firstGig: 'At the lovely Silodom in Saarbrücken.',
       inspirations:
         'Green Velvet, PAWSA, Patrick Topping and a lot more when it comes to electronic. Michael Jackson is my biggest inspiration beyond electronic music.',
-      longestSet: '11 hours without a toilet break.',
+      longestSet: '11 hours without a toilet break 😂😂',
       bestMoment:
         'When the gathering of every single person on the dance floor starts to begin by yelling and cheering and celebrating the moment we share together. When this typical lip biting starts to begin just because the music is developing with a lot of tension. And when I start getting goosebumps because the music touches my heart so deeply.',
       quirk:
-        'I always have to beatmatch with only one ear covered by the headphones, using the other ear to listen to the monitors.',
+        'I always have to beatmatch with only one ear covered by the headphones, using the other ear to listen to the monitors 🫠',
       greatNight:
         'When I don’t mind that I forgot to record the set, because I know for sure how good it was — I can always remember it from my mind, just because it was so good I’m able to remember every single track.',
       superpower:
-        'Dancing while mixing like nobody’s watching me, and spreading this energy all over the dance floor so everybody gets affected by it.',
+        'Dancing while mixing like nobody’s watching me, and spreading this energy all over the dance floor so everybody gets affected from that energy 🫶🏿',
     },
     photo: tonyMejeh,
   },
