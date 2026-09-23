@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
@@ -170,7 +170,12 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           <section className={styles.note}>
             <h3 className={`u-mono ${styles.noteTitle}`}>{artist.note.title}</h3>
             <p className={styles.answer}>
-              <NoteBody body={artist.note.body} link={artist.links?.other} />
+              <NoteBody
+                body={artist.note.body}
+                mentions={[artist.links?.other, ...(artist.note.mentions ?? [])].filter(
+                  (m): m is Mention => Boolean(m)
+                )}
+              />
             </p>
           </section>
         ) : null}
@@ -180,12 +185,12 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
   );
 }
 
-/* Brand marks, drawn rather than fetched — an icon font or an SVG sprite for
-   two glyphs is a dependency and a network request for nothing. */
 /* Marks that exist as artwork rather than as a path we can draw. Keyed by the
    link's own label, so a link without one falls back to showing that label. */
 const MASKS: Record<string, string> = { zerrro: styles.markZerrro };
 
+/* Brand marks, drawn rather than fetched — an icon font or an SVG sprite for
+   two glyphs is a dependency and a network request for nothing. */
 const ICONS: Record<string, JSX.Element> = {
   instagram: (
     <>
@@ -202,25 +207,42 @@ const ICONS: Record<string, JSX.Element> = {
   ),
 };
 
-/**
- * The first mention of the linked thing's name becomes the link.
- *
- * The address is written down once, beside the artist's other links, and the
- * prose stays prose — no markup smuggled into a string the artist wrote.
- */
-function NoteBody({ body, link }: { body: string; link?: { label: string; href: string } }) {
-  const at = link ? body.indexOf(link.label) : -1;
-  if (!link || at === -1) return <>{body}</>;
+type Mention = { label: string; href: string };
 
-  return (
-    <>
-      {body.slice(0, at)}
-      <a className={styles.inlineLink} href={link.href} target="_blank" rel="noreferrer noopener">
-        {link.label}
+/**
+ * The first mention of each name becomes a link.
+ *
+ * Addresses are written down once, beside the artist's other links, and the
+ * prose stays prose — no markup smuggled into a sentence an artist wrote. A
+ * name the body never mentions is simply not linked.
+ */
+function NoteBody({ body, mentions }: { body: string; mentions: Mention[] }) {
+  const found = mentions
+    .map((m) => ({ ...m, at: body.indexOf(m.label) }))
+    .filter((m) => m.at !== -1)
+    .sort((a, b) => a.at - b.at);
+
+  const parts: ReactNode[] = [];
+  let cursor = 0;
+  for (const m of found) {
+    if (m.at < cursor) continue; // an earlier link already covers this stretch
+    parts.push(body.slice(cursor, m.at));
+    parts.push(
+      <a
+        key={m.label}
+        className={styles.inlineLink}
+        href={m.href}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        {m.label}
       </a>
-      {body.slice(at + link.label.length)}
-    </>
-  );
+    );
+    cursor = m.at + m.label.length;
+  }
+  parts.push(body.slice(cursor));
+
+  return <>{parts}</>;
 }
 
 function Links({ artist }: { artist: Artist }) {

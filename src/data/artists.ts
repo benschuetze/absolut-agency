@@ -51,10 +51,16 @@ export type Artist = {
   profile?: Profile;
   /**
    * Anything that falls outside the interview — a label, a side project.
-   * Where the body names `links.other`, that word becomes the link, so the
-   * address is written down once.
+   *
+   * Names in the body link out: `links.other` plus anyone in `mentions`. The
+   * first mention of each name becomes the link, so every address is written
+   * down once and the prose stays prose.
    */
-  note?: { title: string; body: string };
+  note?: {
+    title: string;
+    body: string;
+    mentions?: { label: string; href: string }[];
+  };
   /**
    * Drop a real photo in `src/assets/artists/` and import it here.
    * While this is undefined a generative tile is drawn instead, so the layout
@@ -199,6 +205,10 @@ const roster: Artist[] = [
     },
     note: {
       title: 'Good to know',
+      mentions: [
+        { label: 'Tim Klein', href: 'https://www.instagram.com/timklein_/' },
+        { label: 'Max Metzinger', href: 'https://www.instagram.com/maxmetzinger/' },
+      ],
       body: 'Besides my own productions and DJ gigs, I started zerrro in 2023 with my friends Tim Klein & Max Metzinger. It’s our little independent label and music project, combining our own releases with curated playlists, sample packs, plugins, mastering services, and a new AI-powered browser version. What’s important to us is not just promoting ourselves or established artists, but supporting smaller artists and giving something back to the scene we’re part of. We work with partners like MuseHub, SubmitHub, Groover and PlaylistPush, and are basically trying to build something useful for artists and producers along the way.',
     },
     photo: floVon,
