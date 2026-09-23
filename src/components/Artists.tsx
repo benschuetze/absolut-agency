@@ -306,7 +306,16 @@ function Share({ artist }: { artist: Artist }) {
         data-share=""
       >
         {copied ? (
-          <span className={styles.shareDone}>copied</span>
+          <svg
+            className={styles.shareDone}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.9"
+            aria-hidden="true"
+          >
+            <path d="m5 12.6 4.6 4.6L19 7.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         ) : (
           <svg
             viewBox="0 0 24 24"

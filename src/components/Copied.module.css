@@ -12,11 +12,9 @@
   /* Clear of the home indicator on a phone, and of the footer rule elsewhere. */
   bottom: calc(var(--footer-h) + 1rem + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.15rem 0.6rem;
+  /* Two lines, not a wrapping row: a row that ran out of width broke the
+     address itself, and `soundcloud.com/abscur e333` is not an address. */
+  text-align: center;
   max-width: min(calc(100vw - 2 * var(--gutter)), 34rem);
   padding: 0.6rem 0.9rem;
   background: var(--paper-hi);
@@ -51,16 +49,18 @@
 }
 
 .address {
+  display: block;
   color: var(--ink);
   letter-spacing: var(--track-mono);
-  /* The address as it is written, not shouted — and it breaks rather than
-     pushing the strip off a narrow screen. */
+  /* The address as it is written, not shouted. It only breaks if it genuinely
+     cannot fit — an address nobody can read back is worth no receipt. */
   text-transform: none;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .what {
+  display: block;
+  margin-top: 0.2rem;
   color: var(--ink-55);
   letter-spacing: var(--track-wide);
-  white-space: nowrap;
 }

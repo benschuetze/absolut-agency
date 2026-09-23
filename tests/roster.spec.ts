@@ -271,7 +271,7 @@ test.describe('sharing an artist', () => {
     await expect(page).toHaveURL(/\/artists\/jona\/$/);
 
     // A button that appears to do nothing is worse than no button.
-    await expect(page.locator('[data-share]')).toContainText('copied');
+    await expect(page.locator('[data-share] [class*="shareDone"]')).toBeVisible();
 
     /* And it has to say *what* was copied, or the glyph on the row that was
        just pressed keeps promising that Instagram is about to open. */
@@ -291,6 +291,100 @@ test.describe('sharing an artist', () => {
    and it is invisible to every test that only asks whether the menu is there.
    So: measure it. Narrow phones first, because that is where a row of three
    runs out of room. */
+/* Nothing on this page may move because of something someone did to it.
+   The panel's buttons are floated, and a grid container beside a float is
+   narrowed to avoid it — so a button that grew by a word pulled the portrait
+   and the whole interview in with it, and pushed them back out two seconds
+   later. Rather than testing that one button, this walks the panel and asks
+   whether *anything* moved. */
+test.describe('nothing moves under the pointer', () => {
+  /** Every box in the panel, keyed by its place in the tree so a diff names
+      what shifted. Keyed by path rather than by count, because a glyph that
+      swaps for another glyph is not a layout change — the box it sits in is
+      what matters, and that box has the same address either way. */
+  const layout = (page: Page) =>
+    page.evaluate(() => {
+      const panel = document.querySelector('[data-artist-detail]');
+      const out: Record<string, string> = {};
+
+      const walk = (el: Element, path: string) => {
+        const r = el.getBoundingClientRect();
+        out[path] =
+          `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)}x${Math.round(r.height)}`;
+        // Inside an SVG there is no layout to lose, and the drawing changes.
+        if (el.tagName.toLowerCase() === 'svg') return;
+        Array.from(el.children).forEach((child, i) =>
+          walk(child, `${path} > ${i} ${child.tagName.toLowerCase()}`)
+        );
+      };
+
+      if (panel) walk(panel, 'panel');
+      return out;
+    });
+
+  test('copying a link leaves the page exactly where it was', async ({ page }) => {
+    /* Not skipped outside Chromium: the phone is where this was noticed, and
+       WebKit grants no clipboard permission, so the write is stubbed. What is
+       under test is the layout around the confirmation, not the copy. */
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async () => {}, readText: async () => '' },
+      });
+    });
+
+    await page.goto('/artists/abscure/');
+    await settled(page);
+    await expect(page.locator('[data-artist-detail]')).toBeVisible();
+
+    const before = await layout(page);
+
+    await page.locator('[data-share]').click();
+    await page.locator('[role="menuitem"]').first().click();
+    await expect(page.getByRole('status')).toBeVisible();
+
+    // While the confirmation is up.
+    expect(await layout(page)).toEqual(before);
+
+    // And after it has gone again.
+    await expect(page.getByRole('status')).toBeHidden({ timeout: 6000 });
+    expect(await layout(page)).toEqual(before);
+  });
+
+  test('opening the chooser leaves the page where it was', async ({ page }) => {
+    await page.goto('/artists/flo-von/');
+    await settled(page);
+
+    const before = await layout(page);
+    await page
+      .locator('[data-artist-detail] [class*="panelLinks"] button[aria-label="zerrro"]')
+      .click();
+    await expect(page.locator('[role="menu"]')).toBeVisible();
+    expect(await layout(page)).toEqual(before);
+  });
+
+  test('hovering a card leaves the roster where it was', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    /* Measured against the document, not the window: hovering a card scrolls it
+       into view, and that is the pointer moving the page rather than the page
+       moving under the pointer. */
+    const grid = () =>
+      page.$$eval('[data-artist-card]', (cards) =>
+        cards.map((c) => {
+          const r = c.getBoundingClientRect();
+          return `${Math.round(r.x + window.scrollX)},${Math.round(r.y + window.scrollY)},${Math.round(r.width)}x${Math.round(r.height)}`;
+        })
+      );
+
+    const before = await grid();
+    await page.locator('[data-artist-card]').nth(3).hover();
+    await page.waitForTimeout(400); // let the hover transition finish
+    expect(await grid()).toEqual(before);
+  });
+});
+
 test.describe('a chooser stays on screen', () => {
   const WIDTHS = [320, 375, 390, 560];
 

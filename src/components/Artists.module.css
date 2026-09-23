@@ -125,7 +125,6 @@
   text-align: right;
 }
 
-
 /* --------------------------------------------------------------------------
    Detail panel.
    -------------------------------------------------------------------------- */
@@ -177,6 +176,14 @@
 
 /* Panel-level actions, not the artist's. They stay reachable while the
    interview scrolls past underneath. */
+/* Floated so the panel's content sets itself beside it, and sticky so it stays
+   reachable as that content scrolls past.
+ *
+ * Which makes its width load-bearing: a grid container beside a float is
+ * narrowed to avoid it, so every pixel this row gains is a pixel the portrait
+ * and the interview lose — and they would gain it back a moment later. So
+ * nothing in here is allowed to resize. The buttons below are sized, not
+ * fitted, and anything added here has to be too. */
 .panelActions {
   position: sticky;
   top: 0;
@@ -210,7 +217,9 @@
 .shareBtn {
   display: grid;
   place-items: center;
-  min-width: 2rem;
+  /* Sized rather than fitted — see .panelActions. `min-width` used to let the
+     confirmation push it wider, which moved the page it sits beside. */
+  width: 2rem;
 }
 
 .shareBtn > svg {
@@ -224,10 +233,12 @@
   height: 1.15rem;
 }
 
-/* Says what happened, in the same space the icon occupied, so the button does
-   not resize under the pointer. */
+/* Says that it happened, in the box the share mark occupied — what happened is
+   the receipt's job, and the word that used to be here was wider than the
+   glyph it replaced. */
 .shareDone {
-  padding: 0 0.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
   color: var(--accent);
 }
 
@@ -260,7 +271,6 @@
   text-wrap: balance;
 }
 
-
 .panelMeta {
   display: flex;
   flex-wrap: wrap;
@@ -268,7 +278,6 @@
   padding-top: clamp(0.7rem, 1.5vw, 1rem);
   color: var(--ink-38);
 }
-
 
 .panelTags {
   display: flex;
