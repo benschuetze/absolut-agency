@@ -302,7 +302,7 @@ const roster: Artist[] = [
     id: 'sdb',
     name: 'SDB',
     since: '8 years',
-    format: 'Nowadays I only play live',
+    format: 'Live',
     tags: ['techno'],
     links: {
       instagram: 'https://www.instagram.com/sdb.tracks/',
