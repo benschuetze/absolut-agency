@@ -39,8 +39,8 @@ export function Imprint() {
         <h2>Kontakt</h2>
         <p>
           E-Mail:{' '}
-          <a className={styles.link} href={`mailto:${site.email}`}>
-            {site.email}
+          <a className={styles.link} href={`mailto:${site.contact}`}>
+            {site.contact}
           </a>
         </p>
 
@@ -74,8 +74,8 @@ export function Privacy() {
           Silodom GbR, An der Römerbrücke 3, 66121 Saarbrücken.
           <br />
           E-Mail:{' '}
-          <a className={styles.link} href={`mailto:${site.email}`}>
-            {site.email}
+          <a className={styles.link} href={`mailto:${site.contact}`}>
+            {site.contact}
           </a>
         </p>
 

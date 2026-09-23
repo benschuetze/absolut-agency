@@ -12,9 +12,12 @@ export const site = {
   tagline: 'Different styles. One home.',
   city: 'Saarbrücken',
   timeZone: 'Europe/Berlin',
-  /* On silodom.com, not silodom-agency.com: that mailbox already exists and
-     receives, so bookings work today rather than after a mailbox is bought. */
+  /* On silodom.com, not silodom-agency.com: those mailboxes already exist and
+     receive, so both work today rather than after a mailbox is bought. */
+  /** Bookings. The address on the about page and in the footer. */
   email: 'lena@silodom.com',
+  /** The operator's contact in the imprint and the privacy notice. */
+  contact: 'bjoern@silodom.com',
   /* The club's account, not the agency's — the agency does not have one yet.
      Verified as the Saarbrücken venue: the profile is "SILODOM", and posts by
      other accounts tag it alongside the city. `@siloversum` is a different
