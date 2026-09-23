@@ -23,9 +23,14 @@
   --rule: rgb(17 18 22 / 0.15);
   --rule-strong: rgb(17 18 22 / 0.3);
 
-  /* One accent. Used sparingly: active states, indices, links. */
-  --accent: #2333e0;
-  --accent-soft: rgb(35 51 224 / 0.1);
+  /* One accent. Used sparingly: active states, indices, links.
+   *
+   * Currently the ink itself — the agency asked for the blue to go, and the
+   * page to stay black and white for now. It stays a token of its own rather
+   * than being replaced by `--ink` everywhere, so putting a colour back later
+   * is this one line again. */
+  --accent: #111216;
+  --accent-soft: rgb(17 18 22 / 0.08);
 
   /* Type */
   --font-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;

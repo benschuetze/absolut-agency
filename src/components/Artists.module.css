@@ -115,10 +115,6 @@
   transition: color var(--dur) var(--ease);
 }
 
-.card[data-active] .name {
-  color: var(--accent);
-}
-
 .meta {
   display: flex;
   flex-direction: column;
