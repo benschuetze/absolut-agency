@@ -5,7 +5,7 @@ import contrast from '../assets/artists/contrast.jpg';
 import floVon from '../assets/artists/flo-von.jpg';
 import jona from '../assets/artists/jona.jpg';
 import leaLindner from '../assets/artists/lea-lindner.jpg';
-import pVonSchwind from '../assets/artists/p-vonschwind.jpg';
+import vonSchwind from '../assets/artists/vonschwind.jpg';
 import sdb from '../assets/artists/sdb.jpg';
 import tonyMejeh from '../assets/artists/tony-mejeh.jpg';
 
@@ -277,7 +277,7 @@ const roster: Artist[] = [
     photo: leaLindner,
   },
   {
-    id: 'p-vonschwind',
+    id: 'vonschwind',
     name: 'vonSchwind',
     format: 'Digital',
     tags: ['house'],
@@ -296,7 +296,7 @@ const roster: Artist[] = [
       quirk: 'I don’t know if it’s a quirk, but I love to sing or lip-sync a lot of the vocals that I’m playing.',
       greatNight: 'Community. Good music. A lot of dancing. A lot of laughter.',
     },
-    photo: pVonSchwind,
+    photo: vonSchwind,
   },
   {
     id: 'sdb',

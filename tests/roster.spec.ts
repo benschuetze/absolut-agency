@@ -242,7 +242,8 @@ test.describe('a link with two destinations', () => {
   test('the mark offers both, and Escape closes only the chooser', async ({ page }) => {
     await openFloVon(page);
 
-    await page.locator('[data-artist-detail] p button[aria-label="zerrro"]').first().click();
+    // The mark in the row of socials, not the name further down in the note.
+    await page.locator('[data-artist-detail] [class*="panelLinks"] button[aria-label="zerrro"]').click();
     const items = page.locator('[role="menuitem"]');
     await expect(items).toHaveCount(2);
     await expect(items.nth(0)).toHaveAttribute('href', /instagram\.com/);
@@ -253,6 +254,10 @@ test.describe('a link with two destinations', () => {
     await expect(page.locator('[role="menu"]')).toHaveCount(0);
     await expect(page.locator('[data-artist-detail]')).toBeVisible();
 
+    /* Closing the chooser hands focus back to its trigger. Send the next key
+       only once that has happened, or under load the two Escapes race and this
+       test fails for a reason that has nothing to do with the behaviour. */
+    await expect(page.locator('[data-artist-detail] p button[aria-label="zerrro"]').first()).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-artist-detail]')).toBeHidden();
   });

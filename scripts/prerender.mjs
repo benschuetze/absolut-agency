@@ -113,6 +113,7 @@ const musicGroup = (artist) => ({
   name: artist.name,
   url: `${ORIGIN}/artists/${artist.id}`,
   ...(artist.profile?.sound ? { description: artist.profile.sound } : {}),
+  image: `${ORIGIN}/share/${artist.id}.jpg`,
   ...(artist.tags?.length ? { genre: artist.tags } : {}),
   ...(artist.links?.instagram || artist.links?.soundcloud
     ? { sameAs: [artist.links.instagram, artist.links.soundcloud].filter(Boolean) }
@@ -151,6 +152,21 @@ for (const page of pages) {
     `<meta property="og:description" content="${description}" />`
   );
   html = swap(html, /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/, `<meta property="og:url" content="${url}" />`);
+
+  /* An artist's link previews as that artist, not as the roster. */
+  if (page.artist) {
+    const image = `${ORIGIN}/share/${page.artist.id}.jpg`;
+    html = swap(
+      html,
+      /<meta\s+property="og:image"\s+content="[^"]*"\s*\/>/,
+      `<meta property="og:image" content="${image}" />`
+    );
+    html = swap(
+      html,
+      /<meta\s+property="og:image:alt"\s+content="[^"]*"\s*\/>/,
+      `<meta property="og:image:alt" content="${escape(page.artist.name)}" />`
+    );
+  }
 
   const data = page.artist ? musicGroup(page.artist) : organisation;
   html = html.replace(

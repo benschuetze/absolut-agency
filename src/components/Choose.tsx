@@ -62,9 +62,18 @@ export function Choose({
 
     document.addEventListener('keydown', onKey, true);
     document.addEventListener('mousedown', onPointer);
-    window.addEventListener('scroll', onScroll, true);
-    window.addEventListener('resize', onScroll);
+
+    /* Not until the next frame. The click that opened this can itself move the
+       panel — focus alone will scroll an element into view — and a scroll
+       listener attached synchronously catches that and shuts the menu before
+       anyone sees it. */
+    const armed = requestAnimationFrame(() => {
+      window.addEventListener('scroll', onScroll, true);
+      window.addEventListener('resize', onScroll);
+    });
+
     return () => {
+      cancelAnimationFrame(armed);
       document.removeEventListener('keydown', onKey, true);
       document.removeEventListener('mousedown', onPointer);
       window.removeEventListener('scroll', onScroll, true);
