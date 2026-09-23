@@ -265,7 +265,8 @@
   padding-top: 0.9rem;
 }
 
-.panelLinks a {
+.panelLinks a,
+.panelLinks button {
   display: grid;
   place-items: center;
   width: 2rem;
@@ -283,7 +284,9 @@
 }
 
 .panelLinks a:hover,
-.panelLinks a:focus-visible {
+.panelLinks a:focus-visible,
+.panelLinks button:hover,
+.panelLinks button:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
 }
@@ -292,6 +295,16 @@
    colour from the link like the drawn glyphs do — including the accent on
    hover. Set larger than they are: below about 22px the lettering that the
    sphere is made of collapses into a dot. */
+/* The same mask at the size the chooser's rows want it. */
+.markZerrroSmall {
+  display: block;
+  width: 1.15rem;
+  height: 1.15rem;
+  background: currentColor;
+  mask: url('../assets/zerrro-mark.png') center / contain no-repeat;
+  -webkit-mask: url('../assets/zerrro-mark.png') center / contain no-repeat;
+}
+
 .markZerrro {
   width: 1.4rem;
   height: 1.4rem;
@@ -308,6 +321,7 @@
 }
 
 .inlineLink {
+  font: inherit;
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 0.18em;

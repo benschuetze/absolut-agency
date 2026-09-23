@@ -176,6 +176,46 @@ test.describe('detail access', () => {
   });
 });
 
+test.describe('a link with two destinations', () => {
+  const openFloVon = async (page: Page) => {
+    await page.goto('/');
+    await settled(page);
+    await page
+      .locator('[data-artist-card]')
+      .filter({ hasText: 'Flo.Von' })
+      .locator('[data-artist-open]')
+      .click();
+  };
+
+  test('the mark offers both, and Escape closes only the chooser', async ({ page }) => {
+    await openFloVon(page);
+
+    await page.locator('[data-artist-detail] p button[aria-label="zerrro"]').first().click();
+    const items = page.locator('[role="menuitem"]');
+    await expect(items).toHaveCount(2);
+    await expect(items.nth(0)).toHaveAttribute('href', /instagram\.com/);
+    await expect(items.nth(1)).toHaveAttribute('href', /zerrromusic\.com/);
+
+    // Escape belongs to the innermost thing that is open.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="menu"]')).toHaveCount(0);
+    await expect(page.locator('[data-artist-detail]')).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-artist-detail]')).toBeHidden();
+  });
+
+  test('the name in the note offers the same two', async ({ page }) => {
+    await openFloVon(page);
+
+    await page
+      .locator('[data-artist-detail] section button[aria-label="zerrro"]')
+      .scrollIntoViewIfNeeded();
+    await page.locator('[data-artist-detail] section button[aria-label="zerrro"]').click();
+    await expect(page.locator('[role="menuitem"]')).toHaveCount(2);
+  });
+});
+
 test.describe('keyboard', () => {
   test('cards are reachable and operable by keyboard', async ({ page }) => {
     await page.goto('/');

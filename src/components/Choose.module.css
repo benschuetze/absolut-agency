@@ -1,0 +1,61 @@
+/* --------------------------------------------------------------------------
+   The chooser.
+
+   Held together by hairlines like everything else, and set on paper so it
+   reads as part of the page rather than as a system dialog. Positioned from
+   the trigger: `left`/`top` come from the anchor, the translate centres it.
+   -------------------------------------------------------------------------- */
+
+.menu {
+  position: fixed;
+  z-index: 30;
+  display: flex;
+  transform: translate(-50%, 0);
+  background: var(--paper-hi);
+  border: 1px solid var(--rule-strong);
+  /* Short, and eased out rather than in: it should feel like it is already
+     there by the time the pointer arrives. */
+  animation: menu-in 120ms var(--ease) both;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    animation: none;
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--ink-55);
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.option + .option {
+  border-left: 1px solid var(--rule);
+}
+
+.option:hover,
+.option:focus-visible {
+  color: var(--ink);
+  background: var(--paper-lo);
+}
+
+.optionMark {
+  display: grid;
+  place-items: center;
+}
+
+.optionLabel {
+  letter-spacing: var(--track-mono);
+  white-space: nowrap;
+}

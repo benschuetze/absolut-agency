@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
+import { Choose, type Destination } from './Choose';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
 import { site } from '../data/site';
 import { BIO_PENDING } from './copy';
@@ -172,9 +173,10 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
             <p className={styles.answer}>
               <NoteBody
                 body={artist.note.body}
-                mentions={[artist.links?.other, ...(artist.note.mentions ?? [])].filter(
-                  (m): m is Mention => Boolean(m)
-                )}
+                mentions={[
+                  ...(artist.links?.other ? [artist.links.other] : []),
+                  ...(artist.note.mentions ?? []),
+                ]}
               />
             </p>
           </section>
@@ -207,7 +209,7 @@ const ICONS: Record<string, JSX.Element> = {
   ),
 };
 
-type Mention = { label: string; href: string };
+type Mention = { label: string; href?: string; to?: Destination[] };
 
 /**
  * The first mention of each name becomes a link.
@@ -228,15 +230,27 @@ function NoteBody({ body, mentions }: { body: string; mentions: Mention[] }) {
     if (m.at < cursor) continue; // an earlier link already covers this stretch
     parts.push(body.slice(cursor, m.at));
     parts.push(
-      <a
-        key={m.label}
-        className={styles.inlineLink}
-        href={m.href}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        {m.label}
-      </a>
+      m.to ? (
+        <Choose
+          key={m.label}
+          to={m.to}
+          mark={<span className={styles.markZerrroSmall} />}
+          className={styles.inlineLink}
+          ariaLabel={m.label}
+        >
+          {m.label}
+        </Choose>
+      ) : (
+        <a
+          key={m.label}
+          className={styles.inlineLink}
+          href={m.href}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {m.label}
+        </a>
+      )
     );
     cursor = m.at + m.label.length;
   }
@@ -264,25 +278,35 @@ function Links({ artist }: { artist: Artist }) {
         </a>
       ))}
 
-      {/* A brand mark where we have one, its own name where we do not. */}
+      {/* A brand mark where we have one, its own name where we do not. With
+          more than one destination behind it, it opens a chooser instead. */}
       {other ? (
-        MASKS[other.label] ? (
+        other.to.length > 1 ? (
+          <Choose
+            to={other.to}
+            mark={<span className={styles.markZerrroSmall} />}
+            className={MASKS[other.label] ? undefined : `u-mono ${styles.namedLink}`}
+            ariaLabel={other.label}
+          >
+            {MASKS[other.label] ? (
+              <span className={MASKS[other.label]} aria-hidden="true" />
+            ) : (
+              other.label
+            )}
+          </Choose>
+        ) : (
           <a
-            href={other.href}
+            className={MASKS[other.label] ? undefined : `u-mono ${styles.namedLink}`}
+            href={other.to[0].href}
             target="_blank"
             rel="noreferrer noopener"
             aria-label={other.label}
           >
-            <span className={MASKS[other.label]} aria-hidden="true" />
-          </a>
-        ) : (
-          <a
-            className={`u-mono ${styles.namedLink}`}
-            href={other.href}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            {other.label}
+            {MASKS[other.label] ? (
+              <span className={MASKS[other.label]} aria-hidden="true" />
+            ) : (
+              other.label
+            )}
           </a>
         )
       ) : null}

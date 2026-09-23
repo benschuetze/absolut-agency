@@ -45,8 +45,11 @@ export type Artist = {
   links?: {
     instagram?: string;
     soundcloud?: string;
-    /** Anything without an established glyph — shown under its own name. */
-    other?: { label: string; href: string };
+    /**
+     * Anything without an established glyph. One destination links straight
+     * out; several turn the mark into a chooser.
+     */
+    other?: { label: string; to: { label: string; href: string }[] };
   };
   profile?: Profile;
   /**
@@ -189,7 +192,13 @@ const roster: Artist[] = [
     links: {
       instagram: 'https://www.instagram.com/flo.von',
       soundcloud: 'https://on.soundcloud.com/VriU9u1xNra8fzmcKC',
-      other: { label: 'zerrro', href: 'https://zerrromusic.com' },
+      other: {
+        label: 'zerrro',
+        to: [
+          { label: 'instagram', href: 'https://www.instagram.com/zerrro_music' },
+          { label: 'website', href: 'https://zerrromusic.com' },
+        ],
+      },
     },
     profile: {
       sound: 'Techy, soulful, dubby house.',
