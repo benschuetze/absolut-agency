@@ -3,27 +3,54 @@ import alFatmalay from '../assets/artists/al-fatmalay.jpg';
 import bjornDelTogno from '../assets/artists/bjorn-del-togno.jpg';
 import contrast from '../assets/artists/contrast.jpg';
 import floVon from '../assets/artists/flo-von.jpg';
+import jona from '../assets/artists/jona.jpg';
 import leaLindner from '../assets/artists/lea-lindner.jpg';
 import pVonSchwind from '../assets/artists/p-vonschwind.jpg';
 import sdb from '../assets/artists/sdb.jpg';
 import tonyMejeh from '../assets/artists/tony-mejeh.jpg';
 
+/**
+ * The interview every artist answered, in the order it is asked.
+ *
+ * Questions live here rather than beside each answer so that the wording stays
+ * identical across the roster — eleven copies of a question is eleven chances
+ * for one of them to drift. Key order is render order, and an artist who did
+ * not answer one simply has no entry: the question then goes unasked rather
+ * than appearing empty.
+ */
+export const PROFILE_QUESTIONS = {
+  firstGig: 'Where was your first gig?',
+  inspirations: 'Which artists inspire you?',
+  longestSet: 'What’s the longest set you’ve played?',
+  bestMoment: 'What’s your best moment behind the decks?',
+  quirk: 'What’s your biggest DJ quirk?',
+  greatNight: 'What makes a great night for you?',
+  superpower: 'What’s your superpower?',
+} as const;
+
+export type ProfileKey = keyof typeof PROFILE_QUESTIONS;
+export type Profile = Partial<Record<ProfileKey, string>>;
+
 export type Artist = {
   /** Stable slug — used as React key, artwork seed, and the future artist route. */
   id: string;
   name: string;
-  /** Home base, shown in the row meta. */
-  city?: string;
-  /** The booking format — "live", "dj", "live / dj". */
+  /** How they describe their own sound. Their words, not ours. */
+  sound?: string;
+  /** What they play on — vinyl, digital, live — as they answered it. */
   format?: string;
-  /** Shown on hover / expand. Two or three sentences, no more. */
-  bio?: string;
-  /** Genre-ish keywords, rendered as small mono chips. */
+  /** When they started, as they put it. Not always a year. */
+  since?: string;
+  /** Genre-ish keywords, rendered as small mono chips. Taken from `sound`. */
   tags?: string[];
+  links?: { instagram?: string; soundcloud?: string };
+  profile?: Profile;
+  /** Anything that falls outside the interview — a label, a side project. */
+  note?: { title: string; body: string };
   /**
    * Drop a real photo in `src/assets/artists/` and import it here.
-   * While this is undefined a generative duotone placeholder is drawn instead,
-   * so the layout is already correct at final proportions (4:5).
+   * While this is undefined a generative tile is drawn instead, so the layout
+   * is already correct at final proportions (4:5).
    */
   photo?: string;
 };
@@ -31,100 +58,280 @@ export type Artist = {
 /**
  * The roster.
  *
- * Names are final. City, format, bio and tags are LOREM IPSUM — placeholder text
- * that is obviously placeholder, so nothing on the page can be mistaken for a
- * real credit before the real copy exists. Replace per artist; every field is
- * optional and degrades on its own if you clear one out.
+ * Every word here comes from the artist. Answers are reproduced as they were
+ * given, including the jokes and the one-word ones — an interview that has been
+ * smoothed out reads like a press release, which is the opposite of the point.
+ * The only editorial act is `tags`, which condense an artist's own description
+ * of their sound into chips for the grid.
+ *
+ * Nothing is invented. Where an answer is missing the field is left out, and
+ * the page drops the question rather than filling the gap.
  */
 const roster: Artist[] = [
   {
     id: 'abscure',
     name: 'Abscure',
-    city: 'Lorem',
-    format: 'ipsum',
-    bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    tags: ['lorem', 'ipsum', 'dolor'],
+    since: 'Around 6 years',
+    sound: 'For me it’s important to keep things minimalistic — nothing too flashy. On the darker side, but with a guiding light. Without light, there can be no shadow.',
+    format: 'Digital in the club, vinyl at home',
+    tags: ['minimal', 'dark'],
+    links: {
+      instagram: 'https://www.instagram.com/abscur.e',
+      soundcloud: 'https://on.soundcloud.com/a1ZeuG7jtlg0UjE4n1',
+    },
+    profile: {
+      firstGig: 'Silodom, Saarbrücken.',
+      inspirations:
+        'Way too many to mention, and it changes a lot over time — right now I’m into the raw style of Talismann. There are also so many great artists on labels like SK11, Somov, Mutual Rytm — you name it. One artist who’s excited me for years, under any of his aliases — Prince of Denmark, Traumprinz, DJ Metatron — is a constant. I also keep coming back to Markus Suckut’s and Donato Dozzy’s releases. But the most influential of all time, without question, is Linkin Park.',
+      longestSet: '5 hours.',
+      bestMoment: 'Playing my own tracks at the legendary Tresor club — definitely the most fulfilling moment so far.',
+      quirk: 'I turn into a total mouthbreather the second someone takes a picture.',
+      greatNight: 'Connecting with the crowd, so that everything becomes one.',
+      superpower: 'Staying calm when everything’s on fire.',
+    },
     photo: abscure,
   },
   {
     id: 'al-fatmalay',
     name: 'Al-Fatmalay',
-    city: 'Ipsum',
-    format: 'lorem / ipsum',
-    bio: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    tags: ['consectetur', 'adipiscing'],
+    since: '2024',
+    sound: 'An emotional world trip on a flying Arabic carpet — moving between cultures, memories, languages and moods.',
+    format: 'Digital',
+    tags: ['cross-cultural', 'multilingual'],
+    links: {
+      instagram: 'https://www.instagram.com/fatimahamido',
+      soundcloud: 'https://on.soundcloud.com/hjSUsqpwY4PvOPNE5y',
+    },
+    profile: {
+      firstGig: 'My first gig was at an Arabic drag show in Saarbrücken, Germany.',
+      inspirations:
+        'I’m inspired by many artists, including some big names, but my biggest inspiration is a mixed-culture audience.',
+      longestSet: 'Seven hours.',
+      bestMoment:
+        'When you turn around and ask yourself and the people around you: “Is this my language that I’m hearing?” That moment when music becomes unexpectedly familiar.',
+      quirk: 'Abstract remixes and multilingual vocals — playing with languages as sounds, memories and emotions, rather than just words.',
+      greatNight: 'When you leave my set surprised, touched, and maybe with a new perspective.',
+      superpower: 'Making music a mutual language that everyone can understand.',
+    },
     photo: alFatmalay,
   },
   {
     id: 'bjorn-del-togno',
     name: 'Björn Del Togno',
-    city: 'Dolor',
-    format: 'lorem',
-    bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.',
-    tags: ['tempor', 'incididunt', 'labore'],
+    since: '2002',
+    sound: 'Raw techno, plus minus, with surprises.',
+    format: 'Vinyl, digital, hybrid',
+    tags: ['raw techno'],
+    links: {
+      soundcloud: 'https://on.soundcloud.com/PFTt6uhEzif6KvkcBo',
+    },
+    profile: {
+      firstGig: 'Kufa Saarbrücken.',
+      inspirations:
+        'Electronic: Bjarki, Westbam, Marc Houle, Chemikalien Brothers, Modeselektor, Lea Lindner. Non-electronic: Freddie Mercury, Mick Jagger, Helge Schneider.',
+      longestSet: '13 hours.',
+      bestMoment:
+        'During the pandemic, my girlfriend and I opened the studio windows while jamming. People out for their permitted daily walks started stopping to listen and dance. The crowd kept growing and growing. Seeing music bring so much joy after months of lockdown was unforgettable.',
+      quirk: 'Sometimes I get so into the music, I forget there are people watching. That’s usually when the weird dance moves happen.',
+      greatNight:
+        'When music, artists, people, space and sound all merge into one: a shared energy you can feel in every cell of your body.',
+      superpower:
+        'Reading the room. A broad musical repertoire, no fixed formula — just adapting, growing with the crowd, and letting the night unfold.',
+    },
     photo: bjornDelTogno,
   },
   {
     id: 'contrast',
     name: 'Contrast',
-    city: 'Amet',
-    format: 'ipsum',
-    bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    tags: ['magna', 'aliqua'],
+    since: 'Professionally since 2021',
+    sound: 'A subtle blend of techno, groove and breaks. I like to fuse my different inspirations during my sets and when I’m producing.',
+    format: 'Digital for now, and hopefully live soon',
+    tags: ['techno', 'groove', 'breaks'],
+    links: {
+      instagram: 'https://www.instagram.com/_contrast_music',
+      soundcloud: 'https://on.soundcloud.com/buSfJgO9n96eyTqNCs',
+    },
+    profile: {
+      firstGig:
+        'At a small rave party. I played the warm-up, and I was the only female DJ at the party. That was back in 2015.',
+      inspirations:
+        'David Bowie has always held an important place in my life, just like Pink Floyd, ever since I was very young. When it comes to techno, I think of Marcel Dettmann, Richie Hawtin, among others, who are legends of the genre and have managed to reinvent themselves over the decades. Finally, the new generation inspires me a lot, with artists such as Hadone, Askkin, Trudge, Mara Menace, and ANNÉ.',
+      longestSet: '3 hours in clubs, or 6 hours for an afterparty.',
+      bestMoment:
+        'When I started playing my own productions. It brings up a lot of emotions for me to play them and see the crowd enjoying them just as much as “pro” tracks.',
+      quirk: 'Way too much stress, haha.',
+      greatNight:
+        'A good sound system, an open-minded and curious crowd, and most importantly, genuine human connections between artists and organizers.',
+      superpower: 'Originality.',
+    },
     photo: contrast,
   },
   {
     id: 'flo-von',
     name: 'Flo.Von',
-    city: 'Elit',
-    format: 'lorem',
-    bio: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos.',
-    tags: ['veniam', 'nostrud', 'ullamco'],
+    since: 'Not long enough to get tired of it',
+    sound: 'Techy, soulful, dubby house.',
+    format: 'Digital',
+    tags: ['techy', 'soulful', 'dubby house'],
+    links: {
+      instagram: 'https://www.instagram.com/flo.von',
+      soundcloud: 'https://on.soundcloud.com/VriU9u1xNra8fzmcKC',
+    },
+    profile: {
+      firstGig: 'I don’t really care about the first one. I’m more interested in the next one.',
+      inspirations:
+        'I’m not really inspired by specific artists. I’m inspired by music itself, and especially by the emotions and feelings it can create. Even more than the music, I’m inspired by what you experience around it.',
+      longestSet: '8 hours. Somehow, it didn’t feel that long.',
+      bestMoment:
+        'Playing my own music and seeing people react to it in a way that feels exactly like what I felt when I made it.',
+      quirk: 'Knowing the exact pitch percentage on the CDJs. No idea why, but I need to know.',
+      greatNight: 'Good vibes, playing my own productions, and forgetting about everything else for a few hours.',
+      superpower: 'Finding my own sound, and continuing to develop it without losing what makes it mine.',
+    },
+    note: {
+      title: 'Good to know',
+      body: 'Besides my own productions and DJ gigs, I started zerrro in 2023 with my friends Tim Klein & Max Metzinger. It’s our little independent label and music project, combining our own releases with curated playlists, sample packs, plugins, mastering services, and a new AI-powered browser version. What’s important to us is not just promoting ourselves or established artists, but supporting smaller artists and giving something back to the scene we’re part of. We work with partners like MuseHub, SubmitHub, Groover and PlaylistPush, and are basically trying to build something useful for artists and producers along the way.',
+    },
     photo: floVon,
+  },
+  {
+    id: 'jona',
+    name: 'Jona',
+    since: '2016',
+    sound: 'Very energetic and bassheavy for the most part, but I love a good liquid or jungle set as well.',
+    format: 'Digital',
+    tags: ['dnb', 'jungle', 'liquid'],
+    links: {
+      instagram: 'https://www.instagram.com/jona.junglekidz',
+      soundcloud: 'https://on.soundcloud.com/HgGBNWWM0QT8tS4O4s',
+    },
+    profile: {
+      firstGig:
+        'Osthafenfest 2016 at Silodom with the whole Junglekidz gang. My first big one on my own was at Cassiopeia Berlin a year later.',
+      inspirations:
+        'Voltage, EgoTrippin and Document One when it comes to DnB, but I also grew up on hip hop, pop punk and alternative rock and take a lot of influences from there. Too many names to choose from, tbh. When it comes to newer artists I’m a big Doechii stan at the moment — I think she can do everything and isn’t bound to any genre, and I love that about her.',
+      longestSet: '7 hours.',
+      bestMoment:
+        'Junglefeast 2017 at Silodom, because I played 3 different sets on three different floors that night and could showcase my whole range. That was just so fun! An honorable mention has to be the 2-hour b2b with EgoTrippin I did at MsConnexion in Mannheim in 2023. Goosebumps when I think of this.',
+      quirk: 'My bassface when I’m into it.',
+      greatNight:
+        'When everyone is aligned with their feelings about the music and strangers become friends because they have such a good time. Coming out of a club, the sun is out already and you have that warm feeling. Nothing compares to that.',
+      superpower:
+        'I can adapt to a crowd very easily. I love checking people’s faces and energies and making them feel special when I play a tune that matches their mood.',
+    },
+    photo: jona,
   },
   {
     id: 'kieran-landwehr',
     name: 'Kieran Landwehr',
-    city: 'Dolore',
-    format: 'lorem',
-    bio: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.',
-    tags: ['dolore', 'fugiat', 'nulla'],
   },
   {
     id: 'lea-lindner',
     name: 'Lea Lindner',
-    city: 'Tempor',
-    format: 'lorem / ipsum',
-    bio: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam.',
-    tags: ['laboris', 'aliquip'],
+    since: '2018',
+    sound: 'Techno, with a soft spot for oldschool sounds and the occasional touch of electro. I like to experiment and combine different influences, as long as it sounds good.',
+    format: 'Both, vinyl and digital',
+    tags: ['techno', 'oldschool', 'electro'],
+    links: {
+      instagram: 'https://www.instagram.com/lealindnerdj',
+      soundcloud: 'https://on.soundcloud.com/qG4F9BFO8gDu3WMRqR',
+    },
+    profile: {
+      firstGig: 'Electro Magnetic Festival in Völklingen.',
+      inspirations:
+        'Miss Kittin, Colin Benders, Lady Starlight, Andy Martin, Efdemin, Steffi and Kerrie. Outside electronic music: Madonna, Slipknot and The Cure.',
+      longestSet: '10 hours.',
+      bestMoment:
+        'When I can build a connection with the people in the room and feel that they’re able to forget about time and completely switch off — especially when people tell me afterwards that they experienced exactly that. Or when I discover a new track and see people getting just as excited about it as I am.',
+      quirk:
+        'I sometimes make notes for my vinyl sets beforehand, which I then don’t even look at. I tend to overthink things beforehand and afterwards focus too much on what could have been better.',
+      greatNight:
+        'When everything just falls into place and you feel like everything makes sense. And when I leave the night feeling energized rather than drained.',
+      superpower:
+        'Finding the right balance between taking people somewhere new and giving them what they need in the moment.',
+    },
     photo: leaLindner,
   },
   {
     id: 'p-vonschwind',
     name: 'P.VonSchwind',
-    city: 'Labore',
-    format: 'ipsum',
-    bio: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti.',
-    tags: ['commodo', 'consequat', 'irure'],
+    since: '4 years',
+    sound: 'A vibrant blend of progressive house, 90s underground dance bangers and influences drawn from every era of queer club culture.',
+    format: 'Digital',
+    tags: ['progressive house', '90s', 'queer club'],
+    links: {
+      instagram: 'https://www.instagram.com/p.von.schwind',
+      soundcloud: 'https://on.soundcloud.com/wiJKzJRvNxmxR6p0t8',
+    },
+    profile: {
+      firstGig: 'Hunter Thompson.',
+      inspirations: 'Björk, Madonna, Deee-Lite, Todd Terry.',
+      longestSet: '8 hours.',
+      bestMoment:
+        'I live for that moment when the crowd completely lets go. When everyone around you is dancing wildly, feeling completely safe, free, and unapologetically themselves. That feeling of connection, of belonging, of a strong, beautiful community.',
+      quirk: 'I don’t know if it’s a quirk, but I love to sing or lip-sync a lot of the vocals that I’m playing.',
+      greatNight: 'Community. Good music. A lot of dancing. A lot of laughter.',
+    },
     photo: pVonSchwind,
-  },
-  /* Name and photograph confirmed; nothing else has been written down yet, and
-     the row degrades on its own until it is. */
-  {
-    id: 'tony-mejeh',
-    name: 'Tony Mejeh',
-    photo: tonyMejeh,
   },
   {
     id: 'sdb',
     name: 'SDB',
-    city: 'Aliqua',
-    format: 'lorem',
-    bio: 'Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.',
-    tags: ['voluptate', 'cillum'],
+    since: '8 years',
+    sound: 'Dirty.',
+    format: 'Nowadays I only play live',
+    tags: ['live', 'dirty'],
+    profile: {
+      firstGig: 'At Mauerpfeiffer Saarbrücken.',
+      inspirations: 'Regis, Mhonolink, Dave Clarke, Sedvs, Lorn, Meshuggah, Architects.',
+      longestSet: '6 hours.',
+      bestMoment: 'When I see the people enjoy my music.',
+      quirk: 'I always had a nice closing track prepared back when I was still playing DJ sets.',
+      greatNight: 'The people, the music and the lights.',
+      superpower: 'Love.',
+    },
     photo: sdb,
   },
+  {
+    id: 'tony-mejeh',
+    name: 'Tony Mejeh',
+    since: '2018',
+    sound: 'Very versatile. Some sets are faster, some a bit slower, but in general you can expect something groovy, catchy and sexy — uplifting tech house, raw tech house, a lot of vocals and repetitive vocal chops.',
+    format: 'Digital, but I can play vinyl as well',
+    tags: ['tech house', 'vocals', 'groove'],
+    links: {
+      instagram: 'https://www.instagram.com/tonymejeh',
+      soundcloud: 'https://on.soundcloud.com/MNTjUTVD9NfX2tS3Jt',
+    },
+    profile: {
+      firstGig: 'At the lovely Silodom in Saarbrücken.',
+      inspirations:
+        'Green Velvet, PAWSA, Patrick Topping and a lot more when it comes to electronic. Michael Jackson is my biggest inspiration beyond electronic music.',
+      longestSet: '11 hours without a toilet break.',
+      bestMoment:
+        'When the gathering of every single person on the dance floor starts to begin by yelling and cheering and celebrating the moment we share together. When this typical lip biting starts to begin just because the music is developing with a lot of tension. And when I start getting goosebumps because the music touches my heart so deeply.',
+      quirk:
+        'I always have to beatmatch with only one ear covered by the headphones, using the other ear to listen to the monitors.',
+      greatNight:
+        'When I don’t mind that I forgot to record the set, because I know for sure how good it was — I can always remember it from my mind, just because it was so good I’m able to remember every single track.',
+      superpower:
+        'Dancing while mixing like nobody’s watching me, and spreading this energy all over the dance floor so everybody gets affected by it.',
+    },
+    photo: tonyMejeh,
+  },
 ];
+
+/**
+ * The year out of `since`, when there is one.
+ *
+ * Half the roster answered "how long have you been DJing" with a year and half
+ * with a phrase — "Around 6 years", "Not long enough to get tired of it". A
+ * caption under a photograph has room for a year, not for a sentence, so the
+ * card shows one only where one was given.
+ */
+export function startYear(artist: Artist): string | undefined {
+  return artist.since?.match(/\b(?:19|20)\d{2}\b/)?.[0];
+}
 
 /**
  * Sorted here rather than by hand, so new entries can be appended in any order

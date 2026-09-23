@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Artwork } from './Artwork';
-import { artists, type Artist } from '../data/artists';
+import {
+  PROFILE_QUESTIONS,
+  artists,
+  startYear,
+  type Artist,
+  type ProfileKey,
+} from '../data/artists';
 import { site } from '../data/site';
 import { BIO_PENDING } from './copy';
 import styles from './Artists.module.css';
@@ -80,9 +86,13 @@ export function Artists() {
                   <span className={styles.name} data-artist-name="">
                     {artist.name}
                   </span>
+                  {/* Two short facts at most. Anything longer belongs in the
+                      panel, where there is a measure to set it on. */}
                   <span className={`u-mono ${styles.meta}`}>
-                    {artist.city ? <span>{artist.city}</span> : null}
-                    {artist.format ? <span className={styles.format}>{artist.format}</span> : null}
+                    {artist.tags?.length ? <span>{artist.tags[0]}</span> : null}
+                    {startYear(artist) ? (
+                      <span className={styles.since}>{startYear(artist)}</span>
+                    ) : null}
                   </span>
                 </span>
               </button>
@@ -127,36 +137,97 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           close
         </button>
 
-        <div className={styles.panelArt}>
-          <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
+        <div className={styles.panelHead}>
+          <div className={styles.panelArt}>
+            <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
+            <Links artist={artist} />
+          </div>
+
+          <div className={styles.panelIntro}>
+            <h2 className={styles.panelName}>{artist.name}</h2>
+
+            {artist.sound ? <p className={styles.panelSound}>{artist.sound}</p> : null}
+
+            {artist.since || artist.format ? (
+              <p className={`u-mono ${styles.panelMeta}`}>
+                {artist.since ? <span>{artist.since}</span> : null}
+                {artist.since && artist.format ? <span className={styles.sep}>/</span> : null}
+                {artist.format ? <span>{artist.format}</span> : null}
+              </p>
+            ) : null}
+
+            {artist.tags?.length ? (
+              <ul className={styles.panelTags}>
+                {artist.tags.map((tag) => (
+                  <li key={tag} className="u-mono">
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
         </div>
 
-        <div className={styles.panelCopy}>
-          <h2 className={styles.panelName}>{artist.name}</h2>
+        <ProfileList artist={artist} />
 
-          {artist.city || artist.format ? (
-            <p className={`u-mono ${styles.panelMeta}`}>
-              {artist.city}
-              {artist.city && artist.format ? <span className={styles.sep}>/</span> : null}
-              {artist.format}
-            </p>
-          ) : null}
-
-          <p className={styles.panelBio} data-pending={!artist.bio || undefined}>
-            {artist.bio ?? BIO_PENDING}
-          </p>
-
-          {artist.tags?.length ? (
-            <ul className={styles.panelTags}>
-              {artist.tags.map((tag) => (
-                <li key={tag} className="u-mono">
-                  {tag}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
+        {artist.note ? (
+          <section className={styles.note}>
+            <h3 className={`u-mono ${styles.noteTitle}`}>{artist.note.title}</h3>
+            <p className={styles.answer}>{artist.note.body}</p>
+          </section>
+        ) : null}
       </div>
     </div>
+  );
+}
+
+function Links({ artist }: { artist: Artist }) {
+  const links = [
+    ['instagram', artist.links?.instagram],
+    ['soundcloud', artist.links?.soundcloud],
+  ].filter((entry): entry is [string, string] => Boolean(entry[1]));
+
+  if (!links.length) return null;
+
+  return (
+    <p className={`u-mono ${styles.panelLinks}`}>
+      {links.map(([label, href]) => (
+        <a key={label} href={href} target="_blank" rel="noreferrer noopener">
+          {label}
+        </a>
+      ))}
+    </p>
+  );
+}
+
+/**
+ * The interview.
+ *
+ * Driven by `PROFILE_QUESTIONS` rather than by the artist's own keys, so every
+ * profile asks the same questions in the same order, and one an artist skipped
+ * is simply not asked.
+ */
+function ProfileList({ artist }: { artist: Artist }) {
+  const answered = Object.entries(PROFILE_QUESTIONS).filter(
+    ([key]) => artist.profile?.[key as ProfileKey]
+  );
+
+  if (!answered.length) {
+    return (
+      <p className={styles.pending} data-pending="">
+        {BIO_PENDING}
+      </p>
+    );
+  }
+
+  return (
+    <dl className={styles.profile}>
+      {answered.map(([key, question]) => (
+        <div key={key} className={styles.qa}>
+          <dt className={`u-mono ${styles.question}`}>{question}</dt>
+          <dd className={styles.answer}>{artist.profile?.[key as ProfileKey]}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

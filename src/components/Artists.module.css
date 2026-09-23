@@ -204,13 +204,10 @@
 
 .panel {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(1.25rem, 2.5vw, 2.25rem);
-  width: min(880px, 100%);
+  width: min(760px, 100%);
   max-height: 100%;
   overflow: auto;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: clamp(1.25rem, 2.5vw, 2.25rem);
   background: var(--paper);
   border: 1px solid var(--rule-strong);
   animation: panel-in var(--dur) var(--ease) both;
@@ -234,10 +231,11 @@
 }
 
 .closeBtn {
-  position: absolute;
-  top: clamp(1.25rem, 2.5vw, 2rem);
-  right: clamp(1.25rem, 2.5vw, 2rem);
+  position: sticky;
+  top: 0;
+  float: right;
   z-index: 1;
+  margin-left: 1rem;
   padding: 0.3rem 0.5rem 0.25rem;
   border: 1px solid var(--rule);
   color: var(--ink-55);
@@ -253,13 +251,23 @@
   border-color: var(--accent);
 }
 
+/* Portrait beside the name and the one-line sound description; the interview
+   runs full width underneath, where long answers get the measure they need. */
+.panelHead {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
 .panelArt {
   align-self: start;
 }
 
-.panelCopy {
+.panelIntro {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   padding-right: 3.5rem;
 }
 
@@ -272,10 +280,19 @@
   text-wrap: balance;
 }
 
+.panelSound {
+  padding-top: clamp(0.7rem, 1.5vw, 1rem);
+  font-size: var(--t-body);
+  line-height: 1.45;
+  color: var(--ink-80);
+  text-wrap: pretty;
+}
+
 .panelMeta {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
-  padding-top: 0.6rem;
+  padding-top: clamp(0.7rem, 1.5vw, 1rem);
   color: var(--ink-38);
 }
 
@@ -283,24 +300,11 @@
   color: var(--ink-22);
 }
 
-.panelBio {
-  padding-top: clamp(0.9rem, 2vw, 1.4rem);
-  font-size: var(--t-body);
-  line-height: 1.55;
-  color: var(--ink-80);
-  text-wrap: pretty;
-}
-
-.panelBio[data-pending] {
-  color: var(--ink-38);
-  font-style: italic;
-}
-
 .panelTags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  padding-top: clamp(0.9rem, 2vw, 1.4rem);
+  padding-top: 0.75rem;
 }
 
 .panelTags li {
@@ -309,17 +313,119 @@
   color: var(--ink-55);
 }
 
+/* Under the portrait rather than beside the name: they are the one thing on
+   the panel a visitor is meant to click through to. */
+.panelLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 0.8rem;
+}
+
+.panelLinks a {
+  position: relative;
+  color: var(--accent);
+}
+
+.panelLinks a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.panelLinks a:hover::after,
+.panelLinks a:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* --------------------------------------------------------------------------
+   The interview.
+
+   A hairline per question, no boxes — the same structure the rest of the site
+   is built from. The question sits in the mono face so it reads as a label
+   rather than as something the artist said.
+   -------------------------------------------------------------------------- */
+
+.profile {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--rule);
+}
+
+.qa {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding: clamp(0.9rem, 1.8vw, 1.25rem) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* The question is set larger than the answer and in the display face, so it
+   reads as the heading of its own little section — asked for that way by the
+   people whose interview it is. */
+.question {
+  font-family: var(--font-display);
+  font-size: var(--t-question);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: var(--track-tight);
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.answer {
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-80);
+  text-wrap: pretty;
+}
+
+.note {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.noteTitle {
+  font: inherit;
+  letter-spacing: var(--track-mono);
+  color: var(--accent);
+}
+
+.pending {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: clamp(0.9rem, 1.8vw, 1.25rem);
+  border-top: 1px solid var(--rule);
+  font-size: var(--t-body);
+  color: var(--ink-38);
+  font-style: italic;
+}
+
 @media (max-width: 640px) {
-  .panel {
+  .panelHead,
+  .qa,
+  .note {
     grid-template-columns: minmax(0, 1fr);
-    align-content: start;
+    gap: 0.5rem;
+  }
+
+  .panelHead {
+    gap: 1rem;
   }
 
   .panelArt {
-    max-width: 55%;
+    max-width: 60%;
   }
 
-  .panelCopy {
+  .panelIntro {
     padding-right: 0;
   }
 }

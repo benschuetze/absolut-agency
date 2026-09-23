@@ -2,18 +2,19 @@
  * Single source of truth for the brand. Rename the agency here and it changes
  * everywhere — wordmark, <title>, footer, about page.
  *
- * Confirmed: name, descriptor.
- * Lorem ipsum until the real copy lands: tagline, status.
- * Still placeholder: city, timeZone, email, social links.
+ * Confirmed: name, descriptor, tagline, status, city, timeZone.
+ * STILL PLACEHOLDER: email and the three links. Nobody has given us the
+ * agency's own address or accounts yet, and `#` is visibly broken on purpose
+ * rather than quietly wrong.
  */
 export const site = {
-  name: 'absolut',
+  name: 'silodom artists',
   descriptor: 'booking & artist management',
-  /** The large statement on the artists page, before anything is hovered. */
-  tagline: 'Lorem ipsum dolor sit amet.',
+  /** The statement beside the roster heading. The closing line of the about page. */
+  tagline: 'Different styles. One home.',
   /** The line in the footer, left of the clock. */
-  status: 'lorem ipsum dolor — sit amet',
-  city: 'Berlin',
+  status: 'no hype — no formula',
+  city: 'Saarbrücken',
   timeZone: 'Europe/Berlin',
   email: 'booking@absolut.agency',
   instagram: { label: 'instagram', href: '#' },

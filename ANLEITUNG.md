@@ -62,7 +62,7 @@ Dauert meistens ein bis zwei Minuten.
 
 ## Anschauen
 
-**https://benschuetze.github.io/absolut-agency/**
+**https://silodom-agency.com**
 
 > **Wichtig:** Wenn du noch die alte Version siehst — einmal die Seite neu laden.
 > Handys merken sich Seiten und zeigen dir sonst den alten Stand.

@@ -82,7 +82,7 @@ Short. What changed, where to look:
 > "Fertig ✅ Der Hintergrund ist jetzt wärmer und die Schrift ein gutes Stück dunkler —
 > liest sich deutlich ruhiger.
 >
-> Anschauen: https://benschuetze.github.io/absolut-agency/
+> Anschauen: https://silodom-agency.com
 >
 > Falls du noch die alte Version siehst, einmal die Seite neu laden."
 

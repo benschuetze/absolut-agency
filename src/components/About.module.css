@@ -231,3 +231,12 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.4fr);
   }
 }
+
+/* The agency's sign-off. Set like a statement, not like body copy. */
+.closing {
+  padding-top: 0.4rem;
+  font-size: var(--t-body);
+  line-height: 1.45;
+  letter-spacing: var(--track-tight);
+  color: var(--ink);
+}

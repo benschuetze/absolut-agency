@@ -1,4 +1,4 @@
-# absolut — agency landing page
+# silodom artists — agency landing page
 
 A two-page landing page for an electronic music booking agency. No backend, no CMS:
 everything is a typed constant in `src/data/`, and the whole thing builds to static files.
@@ -129,11 +129,11 @@ Renaming the repo means updating the base path in `vite.config.ts` to match.
 
 Three things, in this order:
 
-1. **DNS**, at the registrar. Apex (`absolut.agency`) needs four A records —
+1. **DNS**, at the registrar. Apex (`silodom-agency.com`) needs four A records —
    `185.199.108.153`, `.109.153`, `.110.153`, `.111.153` — and optionally the matching
-   AAAA records `2606:50c0:800{0,1,2,3}::153`. A subdomain (`www.absolut.agency`) needs a
+   AAAA records `2606:50c0:800{0,1,2,3}::153`. A subdomain (`www.silodom-agency.com`) needs a
    single CNAME to `benschuetze.github.io`. Propagation can take up to 24h.
-2. **Tell GitHub**: `gh api -X PUT repos/benschuetze/absolut-agency/pages -f cname=absolut.agency`,
+2. **Tell GitHub**: `gh api -X PUT repos/benschuetze/absolut-agency/pages -f cname=silodom-agency.com`,
    then enable *Enforce HTTPS* once the certificate is issued (up to 24h).
 3. **Set `CUSTOM_DOMAIN`** in `vite.config.ts` and push. A custom domain serves the site
    from `/`, so the base path must change in the same commit — the config derives one from

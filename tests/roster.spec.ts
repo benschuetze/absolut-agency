@@ -12,6 +12,7 @@ const ROSTER = [
   'Björn Del Togno',
   'Contrast',
   'Flo.Von',
+  'Jona',
   'Kieran Landwehr',
   'Lea Lindner',
   'P.VonSchwind',

@@ -2,20 +2,16 @@ import { artists } from '../data/artists';
 import { site } from '../data/site';
 import styles from './About.module.css';
 
-/* All copy below is LOREM IPSUM. Replace it; nothing here says anything. */
-
-const services: [string, string][] = [
-  ['Lorem', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.'],
-  ['Ipsum', 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.'],
-  ['Dolor', 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.'],
-  ['Consectetur', 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.'],
-];
+/**
+ * All copy on this page is the agency's own. Nothing here is written by us, and
+ * nothing is filled in where they have not said anything — the "what we do"
+ * list this page used to carry was lorem ipsum, and a services list nobody has
+ * written is worse than no services list.
+ */
 
 const facts: [string, string][] = [
-  ['lorem', 'Ipsum'],
-  ['ipsum', 'Dolor sit amet'],
+  ['home', 'Silodom, Saarbrücken'],
   ['roster', `${artists.length} artists`],
-  ['dolor', 'lorem / ipsum / dolor'],
 ];
 
 export function About() {
@@ -25,9 +21,10 @@ export function About() {
         <div>
           <p className={`u-mono ${styles.eyebrow}`}>about</p>
           <h1 className={styles.lead}>
-            Lorem ipsum dolor sit amet,{' '}
-            <span className={styles.accentWord}>consectetur adipiscing</span> elit, sed do
-            eiusmod tempor incididunt.
+            For over 13 years, Silodom has been a home for electronic music and nightlife in{' '}
+            <span className={styles.accentWord}>Saarbrücken</span> — perhaps not the most famous
+            city on the map, but one with a long-standing and deeply rooted electronic music
+            scene.
           </h1>
         </div>
 
@@ -42,39 +39,34 @@ export function About() {
       <section className={styles.body}>
         <div className={styles.col}>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            From the second Hard Wax location to the many artists, DJs and collectives that have
+            shaped the scene over the years, Saarbrücken has always had a strong connection to
+            electronic music. Silodom has been part of that story from the beginning, with its
+            residents playing a central role in shaping the sound of the city.
           </p>
           <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-            qui officia deserunt mollit anim id est laborum.
+            We’ve always been more interested in the music than the spotlight. No big claims, no
+            unnecessary noise, just DJs who know what they’re doing, people who care about the
+            music, and good vibes on the dancefloor.
           </p>
+          <p>But after 13 years, we thought it might be time to turn the volume up a little.</p>
         </div>
         <div className={styles.col}>
           <p>
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-            doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-            veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+            Our booking agency brings together a carefully selected roster of artists, each with
+            their own sound, character and vision. Different styles, different approaches, but
+            one thing in common: the ability to make a dancefloor move.
           </p>
           <p>
-            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
-            consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+            At a time when quantity sometimes seems to be winning over quality, we’d rather keep
+            things simple: great music, real skills and good vibes.
+          </p>
+          <p className={styles.closing}>
+            No hype. No formula.
+            <br />
+            Just artists we genuinely believe in.
           </p>
         </div>
-      </section>
-
-      <section className={styles.services} aria-label="Services">
-        <h2 className={`u-mono ${styles.sectionTitle}`}>what we do</h2>
-        <ul className={styles.serviceList}>
-          {services.map(([title, copy]) => (
-            <li key={title} className={styles.service}>
-              <h3 className={styles.serviceTitle}>{title}</h3>
-              <p className={styles.serviceCopy}>{copy}</p>
-            </li>
-          ))}
-        </ul>
       </section>
 
       <section className={styles.contact} aria-label="Details and contact">

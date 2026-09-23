@@ -64,7 +64,7 @@ has actually finished.
 > "Björns Foto ist drin ✅ Ich hab's auf Hochformat zugeschnitten, damit es in den Rahmen
 > passt.
 >
-> Anschauen: https://benschuetze.github.io/absolut-agency/ — einmal neu laden, falls du noch
+> Anschauen: https://silodom-agency.com — einmal neu laden, falls du noch
 > das alte Muster siehst."
 
 ---
