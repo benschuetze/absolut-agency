@@ -7,7 +7,7 @@
  * accounts yet, and `#` is visibly broken on purpose rather than quietly wrong.
  */
 export const site = {
-  name: 'silodom artists',
+  name: 'silodom agency',
   descriptor: 'booking & artist management',
   /** The statement beside the roster heading. The closing line of the about page. */
   tagline: 'Different styles. One home.',

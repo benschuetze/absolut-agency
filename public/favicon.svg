@@ -1,6 +1,16 @@
+<!-- The wordmark's "s", set in the same face the site uses, on ink.
+     A single letter survives being drawn at 16px; three stacked bars were a
+     stand-in for a logo the agency does not have, and read as a menu button. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" fill="#111216" />
-  <rect x="5" y="7" width="22" height="4" fill="#e8e5de" />
-  <rect x="5" y="14" width="22" height="4" fill="#4b57ff" />
-  <rect x="5" y="21" width="22" height="4" fill="#e8e5de" />
+  <text
+    x="16"
+    y="16"
+    fill="#f4e9e7"
+    font-family="Archivo, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="31"
+    font-weight="700"
+    text-anchor="middle"
+    dominant-baseline="central"
+  >s</text>
 </svg>

@@ -1,4 +1,4 @@
-# silodom artists — agency landing page
+# silodom agency — agency landing page
 
 A two-page landing page for an electronic music booking agency. No backend, no CMS:
 everything is a typed constant in `src/data/`, and the whole thing builds to static files.
