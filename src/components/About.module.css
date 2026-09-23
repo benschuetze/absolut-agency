@@ -89,19 +89,7 @@
   background-size: 100% 2px;
 }
 
-.social {
-  display: flex;
-  gap: 1.25rem;
-  margin-top: 1.5rem;
-  color: var(--ink-38);
-}
 
-.social a {
-  transition: color var(--dur-fast) var(--ease);
-}
 
-.social a:hover {
-  color: var(--accent);
-}
 
 

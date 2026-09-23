@@ -13,7 +13,9 @@ export const site = {
   tagline: 'Different styles. One home.',
   city: 'Saarbrücken',
   timeZone: 'Europe/Berlin',
-  email: 'lena@silodom-agency.com',
+  /* On silodom.com, not silodom-agency.com: that mailbox already exists and
+     receives, so bookings work today rather than after a mailbox is bought. */
+  email: 'lena@silodom.com',
   instagram: { label: 'instagram', href: '#' },
   soundcloud: { label: 'soundcloud', href: '#' },
   imprint: { label: 'imprint', href: '#' },

@@ -55,10 +55,6 @@ export function About() {
           <a className={styles.email} href={`mailto:${site.email}`}>
             {site.email}
           </a>
-          <p className={`u-mono ${styles.social}`}>
-            <a href={site.instagram.href}>{site.instagram.label}</a>
-            <a href={site.soundcloud.href}>{site.soundcloud.label}</a>
-          </p>
         </div>
       </section>
     </div>
