@@ -61,28 +61,9 @@
   padding: clamp(2rem, 4vw, 3.25rem) 0 0;
 }
 
-.facts {
-  border-top: 1px solid var(--rule);
-}
 
-.fact {
-  display: grid;
-  grid-template-columns: 8.5rem 1fr;
-  gap: 1rem;
-  align-items: baseline;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--rule);
-}
 
-.fact dt {
-  color: var(--ink-38);
-}
 
-.fact dd {
-  margin: 0;
-  font-size: var(--t-small);
-  color: var(--ink-80);
-}
 
 .cta {
   align-self: start;
@@ -123,9 +104,4 @@
   color: var(--accent);
 }
 
-@media (min-width: 760px) {
-  .contact {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
 

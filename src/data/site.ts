@@ -2,10 +2,9 @@
  * Single source of truth for the brand. Rename the agency here and it changes
  * everywhere — wordmark, <title>, footer, about page.
  *
- * Confirmed: name, descriptor, tagline, status, city, timeZone.
- * STILL PLACEHOLDER: email and the three links. Nobody has given us the
- * agency's own address or accounts yet, and `#` is visibly broken on purpose
- * rather than quietly wrong.
+ * Confirmed: name, descriptor, tagline, status, city, timeZone, email.
+ * STILL PLACEHOLDER: the three links. Nobody has given us the agency's own
+ * accounts yet, and `#` is visibly broken on purpose rather than quietly wrong.
  */
 export const site = {
   name: 'silodom artists',
@@ -16,7 +15,7 @@ export const site = {
   status: 'no hype — no formula',
   city: 'Saarbrücken',
   timeZone: 'Europe/Berlin',
-  email: 'booking@absolut.agency',
+  email: 'bjoern@silodom-agency.com',
   instagram: { label: 'instagram', href: '#' },
   soundcloud: { label: 'soundcloud', href: '#' },
   imprint: { label: 'imprint', href: '#' },

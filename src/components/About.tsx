@@ -1,4 +1,3 @@
-import { artists } from '../data/artists';
 import { site } from '../data/site';
 import styles from './About.module.css';
 
@@ -9,11 +8,6 @@ import styles from './About.module.css';
  * first sentence an advertisement and the rest the small print. It is one
  * statement; it reads as one.
  */
-
-const facts: [string, string][] = [
-  ['home', 'Silodom, Saarbrücken'],
-  ['roster', `${artists.length} artists`],
-];
 
 export function About() {
   return (
@@ -56,15 +50,6 @@ export function About() {
       </section>
 
       <section className={styles.contact} aria-label="Details and contact">
-        <dl className={styles.facts}>
-          {facts.map(([term, value]) => (
-            <div key={term} className={styles.fact}>
-              <dt className="u-mono">{term}</dt>
-              <dd>{value}</dd>
-            </div>
-          ))}
-        </dl>
-
         <div className={styles.cta}>
           <p className={`u-mono ${styles.sectionTitle}`}>bookings</p>
           <a className={styles.email} href={`mailto:${site.email}`}>
