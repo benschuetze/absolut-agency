@@ -3,8 +3,8 @@
  * everywhere — wordmark, <title>, footer, about page.
  *
  * Confirmed: name, descriptor, tagline, city, timeZone, email.
- * STILL PLACEHOLDER: the three links. Nobody has given us the agency's own
- * accounts yet, and `#` is visibly broken on purpose rather than quietly wrong.
+ * STILL PLACEHOLDER: `imprint`. It needs a page that does not exist yet, and
+ * `#` is visibly broken on purpose rather than quietly wrong.
  */
 export const site = {
   name: 'silodom agency',
@@ -16,8 +16,11 @@ export const site = {
   /* On silodom.com, not silodom-agency.com: that mailbox already exists and
      receives, so bookings work today rather than after a mailbox is bought. */
   email: 'lena@silodom.com',
-  instagram: { label: 'instagram', href: '#' },
-  soundcloud: { label: 'soundcloud', href: '#' },
+  /* The club's account, not the agency's — the agency does not have one yet.
+     Verified as the Saarbrücken venue: the profile is "SILODOM", and posts by
+     other accounts tag it alongside the city. `@siloversum` is a different
+     venue in the same town and is not it. */
+  instagram: { label: 'instagram', href: 'https://www.instagram.com/silodom.club/' },
   imprint: { label: 'imprint', href: '#' },
 } as const;
 

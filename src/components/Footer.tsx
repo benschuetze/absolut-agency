@@ -35,7 +35,9 @@ export function Footer() {
 
       <span className={styles.links}>
         <a href={`mailto:${site.email}`}>{site.email}</a>
-        <a href={site.instagram.href}>{site.instagram.label}</a>
+        <a href={site.instagram.href} target="_blank" rel="noreferrer noopener">
+          {site.instagram.label}
+        </a>
         <a href={site.imprint.href}>{site.imprint.label}</a>
       </span>
     </footer>

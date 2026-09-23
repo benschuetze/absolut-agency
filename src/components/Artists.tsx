@@ -142,8 +142,6 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           <div className={styles.panelIntro}>
             <h2 className={styles.panelName}>{artist.name}</h2>
 
-            {artist.sound ? <p className={styles.panelSound}>{artist.sound}</p> : null}
-
             {artist.since || artist.format ? (
               <p className={`u-mono ${styles.panelMeta}`}>
                 {artist.since ? <span>{artist.since}</span> : null}
