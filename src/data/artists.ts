@@ -95,7 +95,6 @@ const roster: Artist[] = [
     name: 'Al-Fatmalay',
     since: '2024',
     format: 'Digital',
-    tags: ['cross-cultural', 'multilingual'],
     links: {
       instagram: 'https://www.instagram.com/fatimahamido',
       soundcloud: 'https://on.soundcloud.com/hjSUsqpwY4PvOPNE5y',
@@ -276,6 +275,10 @@ const roster: Artist[] = [
     since: '8 years',
     format: 'Nowadays I only play live',
     tags: ['techno'],
+    links: {
+      instagram: 'https://www.instagram.com/sdb.tracks/',
+      soundcloud: 'https://soundcloud.com/sdbsb',
+    },
     profile: {
       sound: 'Dirty.',
       firstGig: 'At Mauerpfeiffer Saarbrücken.',
