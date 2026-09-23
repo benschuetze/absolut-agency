@@ -3,51 +3,21 @@
   padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem);
 }
 
-.head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem clamp(1rem, 4vw, 3rem);
-  padding: clamp(1.25rem, 2.6vw, 2rem) 0 0.85rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.headMeta {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  color: var(--ink-38);
-}
-
-.headMeta h1 {
-  font: inherit;
-  letter-spacing: var(--track-wide);
-  color: var(--ink-55);
-}
-
-/* The statement the stage used to carry. It stays on the page, just smaller —
-   the images are the loud element now. */
-.statement {
-  font-size: var(--t-body);
-  letter-spacing: var(--track-tight);
-  color: var(--ink-55);
-  text-wrap: balance;
-}
-
 /* --------------------------------------------------------------------------
    The grid.
 
-   Column count is set per breakpoint rather than by auto-fill: nine artists
-   divide into three rows of three, and an auto-fitted track leaves a ragged
-   last row at most widths.
+   Column count is set per breakpoint rather than by auto-fill: an auto-fitted
+   track leaves a ragged last row at most widths.
+
+   With the heading gone the grid is the first thing on the page, so it keeps a
+   little air above it rather than butting against the header rule.
    -------------------------------------------------------------------------- */
 
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1rem, 2.4vw, 2.25rem) clamp(0.75rem, 1.8vw, 1.75rem);
-  padding-top: clamp(1.25rem, 2.6vw, 2rem);
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 @media (min-width: 720px) {

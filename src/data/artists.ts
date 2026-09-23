@@ -41,7 +41,7 @@ export type Artist = {
   format?: string;
   /** When they started, as they put it. Not always a year. */
   since?: string;
-  /** Genre-ish keywords, rendered as small mono chips. Taken from `sound`. */
+  /** The genre, as the agency labels it. First one is shown on the card. */
   tags?: string[];
   links?: { instagram?: string; soundcloud?: string };
   profile?: Profile;
@@ -74,7 +74,7 @@ const roster: Artist[] = [
     since: 'Around 6 years',
     sound: 'For me it’s important to keep things minimalistic — nothing too flashy. On the darker side, but with a guiding light. Without light, there can be no shadow.',
     format: 'Digital in the club, vinyl at home',
-    tags: ['minimal', 'dark'],
+    tags: ['techno'],
     links: {
       instagram: 'https://www.instagram.com/abscur.e',
       soundcloud: 'https://on.soundcloud.com/a1ZeuG7jtlg0UjE4n1',
@@ -121,7 +121,7 @@ const roster: Artist[] = [
     since: '2002',
     sound: 'Raw techno, plus minus, with surprises.',
     format: 'Vinyl, digital, hybrid',
-    tags: ['raw techno'],
+    tags: ['techno'],
     links: {
       soundcloud: 'https://on.soundcloud.com/PFTt6uhEzif6KvkcBo',
     },
@@ -172,7 +172,7 @@ const roster: Artist[] = [
     since: 'Not long enough to get tired of it',
     sound: 'Techy, soulful, dubby house.',
     format: 'Digital',
-    tags: ['techy', 'soulful', 'dubby house'],
+    tags: ['tech house'],
     links: {
       instagram: 'https://www.instagram.com/flo.von',
       soundcloud: 'https://on.soundcloud.com/VriU9u1xNra8fzmcKC',
@@ -254,11 +254,11 @@ const roster: Artist[] = [
   },
   {
     id: 'p-vonschwind',
-    name: 'P.VonSchwind',
+    name: 'vonSchwind',
     since: '4 years',
     sound: 'A vibrant blend of progressive house, 90s underground dance bangers and influences drawn from every era of queer club culture.',
     format: 'Digital',
-    tags: ['progressive house', '90s', 'queer club'],
+    tags: ['house'],
     links: {
       instagram: 'https://www.instagram.com/p.von.schwind',
       soundcloud: 'https://on.soundcloud.com/wiJKzJRvNxmxR6p0t8',
@@ -280,7 +280,7 @@ const roster: Artist[] = [
     since: '8 years',
     sound: 'Dirty.',
     format: 'Nowadays I only play live',
-    tags: ['live', 'dirty'],
+    tags: ['techno'],
     profile: {
       firstGig: 'At Mauerpfeiffer Saarbrücken.',
       inspirations: 'Regis, Mhonolink, Dave Clarke, Sedvs, Lorn, Meshuggah, Architects.',
@@ -320,18 +320,6 @@ const roster: Artist[] = [
     photo: tonyMejeh,
   },
 ];
-
-/**
- * The year out of `since`, when there is one.
- *
- * Half the roster answered "how long have you been DJing" with a year and half
- * with a phrase — "Around 6 years", "Not long enough to get tired of it". A
- * caption under a photograph has room for a year, not for a sentence, so the
- * card shows one only where one was given.
- */
-export function startYear(artist: Artist): string | undefined {
-  return artist.since?.match(/\b(?:19|20)\d{2}\b/)?.[0];
-}
 
 /**
  * Sorted here rather than by hand, so new entries can be appended in any order

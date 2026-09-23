@@ -15,9 +15,9 @@ const ROSTER = [
   'Jona',
   'Kieran Landwehr',
   'Lea Lindner',
-  'P.VonSchwind',
   'SDB',
   'Tony Mejeh',
+  'vonSchwind',
 ];
 
 /** Cards animate in on a stagger; settle before asserting on painted pixels. */

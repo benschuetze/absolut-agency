@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Artwork } from './Artwork';
-import {
-  PROFILE_QUESTIONS,
-  artists,
-  startYear,
-  type Artist,
-  type ProfileKey,
-} from '../data/artists';
+import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
 import { site } from '../data/site';
 import { BIO_PENDING } from './copy';
 import styles from './Artists.module.css';
@@ -47,13 +41,11 @@ export function Artists() {
   return (
     <div className={styles.layout}>
       <section aria-labelledby="roster-heading">
-        <div className={styles.head}>
-          <div className={`u-mono ${styles.headMeta}`}>
-            <h1 id="roster-heading">roster</h1>
-            <span>{artists.length} artists</span>
-          </div>
-          <p className={styles.statement}>{site.tagline}</p>
-        </div>
+        {/* The images are the page. The heading stays for screen readers and
+            for the document outline, and is not drawn. */}
+        <h1 id="roster-heading" className="u-visually-hidden">
+          {site.name} — roster
+        </h1>
 
         <ul className={styles.grid}>
           {artists.map((artist, index) => (
@@ -86,13 +78,10 @@ export function Artists() {
                   <span className={styles.name} data-artist-name="">
                     {artist.name}
                   </span>
-                  {/* Two short facts at most. Anything longer belongs in the
-                      panel, where there is a measure to set it on. */}
+                  {/* The genre, and nothing else. Anything longer belongs in
+                      the panel, where there is a measure to set it on. */}
                   <span className={`u-mono ${styles.meta}`}>
                     {artist.tags?.length ? <span>{artist.tags[0]}</span> : null}
-                    {startYear(artist) ? (
-                      <span className={styles.since}>{startYear(artist)}</span>
-                    ) : null}
                   </span>
                 </span>
               </button>
