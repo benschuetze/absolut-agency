@@ -30,15 +30,8 @@
   white-space: nowrap;
 }
 
-.descriptor {
-  color: var(--ink-55);
-  white-space: nowrap;
-}
 
 @media (max-width: 700px) {
-  .descriptor {
-    display: none;
-  }
 }
 
 .nav {

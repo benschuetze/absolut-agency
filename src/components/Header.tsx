@@ -19,7 +19,6 @@ export function Header({ route, onNavigate }: Props) {
         }}
       >
         <span className={styles.wordmark}>{site.name}</span>
-        <span className={`u-mono ${styles.descriptor}`}>{site.descriptor}</span>
       </a>
 
       <nav className={styles.nav} aria-label="Primary">

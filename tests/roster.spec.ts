@@ -129,6 +129,42 @@ test.describe('detail access', () => {
     await expect(detail).toContainText('Kieran Landwehr');
   });
 
+  /* This is the test that was missing. The old ones asked whether the panel was
+     visible and whether it held the right name — both true while the sticky
+     header covered its top edge and cut the artist's name in half. Being on
+     screen and being unobstructed are different questions, and only the second
+     one is the promise. Short viewports are where it broke, so it runs at one. */
+  test('nothing covers the detail panel, even on a short window', async ({ page }) => {
+    await page.setViewportSize({ width: 940, height: 600 });
+    await page.goto('/');
+    await settled(page);
+
+    for (const name of ['Björn Del Togno', 'Abscure']) {
+      await page
+        .locator('[data-artist-card]')
+        .filter({ hasText: name })
+        .locator('[data-artist-open]')
+        .click();
+
+      const covered = await page.evaluate(() => {
+        const dialog = document.querySelector('[data-artist-detail] [role=dialog]');
+        if (!dialog) return 'no dialog';
+        const box = dialog.getBoundingClientRect();
+        if (box.top < 0) return `panel starts above the viewport at ${Math.round(box.top)}px`;
+
+        // Sample along the top edge: whatever is painted there has to be the panel.
+        for (const fraction of [0.15, 0.5, 0.85]) {
+          const hit = document.elementFromPoint(box.x + box.width * fraction, box.top + 6);
+          if (!dialog.contains(hit)) return `${hit?.tagName} covers the top of the panel`;
+        }
+        return null;
+      });
+
+      expect(covered, `panel for ${name}`).toBeNull();
+      await page.keyboard.press('Escape');
+    }
+  });
+
   test('detail closes again', async ({ page }) => {
     await page.goto('/');
     await settled(page);

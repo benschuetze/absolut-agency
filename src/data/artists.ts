@@ -123,6 +123,7 @@ const roster: Artist[] = [
     format: 'Vinyl, digital, hybrid',
     tags: ['techno'],
     links: {
+      instagram: 'https://www.instagram.com/bjoerndeltogno/',
       soundcloud: 'https://on.soundcloud.com/PFTt6uhEzif6KvkcBo',
     },
     profile: {

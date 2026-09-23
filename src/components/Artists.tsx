@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
 import { site } from '../data/site';
@@ -104,7 +105,14 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
     panelRef.current?.focus();
   }, [artist.id]);
 
-  return (
+  /* Rendered on the body rather than inside <main>.
+   *
+   * <main> carries a view-transition-name, which makes it a stacking context,
+   * so the overlay's z-index only ever competed with its siblings inside it —
+   * never with the sticky header at z-index 50. On a tall window the panel
+   * happened to sit below the header and looked fine; on a short one the header
+   * cut the artist's name in half. */
+  return createPortal(
     <div className={styles.overlay} data-artist-detail="">
       <button
         type="button"
@@ -129,7 +137,6 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
         <div className={styles.panelHead}>
           <div className={styles.panelArt}>
             <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
-            <Links artist={artist} />
           </div>
 
           <div className={styles.panelIntro}>
@@ -154,6 +161,8 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
                 ))}
               </ul>
             ) : null}
+
+            <Links artist={artist} />
           </div>
         </div>
 
@@ -166,9 +175,28 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           </section>
         ) : null}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
+
+/* Brand marks, drawn rather than fetched — an icon font or an SVG sprite for
+   two glyphs is a dependency and a network request for nothing. */
+const ICONS: Record<string, JSX.Element> = {
+  instagram: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" stroke="none" />
+    </>
+  ),
+  soundcloud: (
+    <>
+      <path d="M1.8 13.4v4.2M4.6 11.4v6.2M7.4 9.9v7.7M10.2 11.1v6.5" strokeLinecap="round" />
+      <path d="M13 17.6V8.2a5 5 0 0 1 8.2 2.6 3.4 3.4 0 0 1-.8 6.8H13Z" strokeLinejoin="round" />
+    </>
+  ),
+};
 
 function Links({ artist }: { artist: Artist }) {
   const links = [
@@ -179,10 +207,12 @@ function Links({ artist }: { artist: Artist }) {
   if (!links.length) return null;
 
   return (
-    <p className={`u-mono ${styles.panelLinks}`}>
+    <p className={styles.panelLinks}>
       {links.map(([label, href]) => (
-        <a key={label} href={href} target="_blank" rel="noreferrer noopener">
-          {label}
+        <a key={label} href={href} target="_blank" rel="noreferrer noopener" aria-label={label}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+            {ICONS[label]}
+          </svg>
         </a>
       ))}
     </p>
