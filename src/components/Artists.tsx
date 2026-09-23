@@ -139,9 +139,12 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
         aria-label={artist.name}
         tabIndex={-1}
       >
-        <button type="button" className={`u-mono ${styles.closeBtn}`} onClick={onClose}>
-          close
-        </button>
+        <div className={styles.panelActions}>
+          <Share name={artist.name} />
+          <button type="button" className={`u-mono ${styles.closeBtn}`} onClick={onClose}>
+            close
+          </button>
+        </div>
 
         <div className={styles.panelHead}>
           <div className={styles.panelArt}>
@@ -192,6 +195,65 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
   /* No document at build time, so the prerender renders the panel where it
      stands. The browser puts it back on the body on first render. */
   return typeof document === 'undefined' ? panel : createPortal(panel, document.body);
+}
+
+/**
+ * Hands out the address of the artist who is open.
+ *
+ * On a phone that is the system share sheet, which is what "share" means there.
+ * Everywhere else there is no such thing, so it copies the link and says so —
+ * a button that appears to do nothing is worse than no button.
+ *
+ * It shares `location.href` rather than rebuilding the URL: the panel being
+ * open *is* that address, so the browser already holds the right answer.
+ */
+function Share({ name }: { name: string }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+
+  const share = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${name} — ${site.name}`, url });
+        return;
+      } catch {
+        /* Dismissed, or refused. Fall through and copy instead. */
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+    } catch {
+      /* No clipboard permission. Nothing useful left to try. */
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className={`u-mono ${styles.shareBtn}`}
+      onClick={share}
+      aria-label={`Share ${name}`}
+      data-share=""
+    >
+      {copied ? (
+        <span className={styles.shareDone}>copied</span>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <circle cx="6" cy="12" r="2.6" />
+          <circle cx="17.5" cy="5.8" r="2.6" />
+          <circle cx="17.5" cy="18.2" r="2.6" />
+          <path d="M8.3 10.8 15.2 7.1M8.3 13.2 15.2 16.9" strokeLinecap="round" />
+        </svg>
+      )}
+    </button>
+  );
 }
 
 /* Marks that exist as artwork rather than as a path we can draw. Keyed by the

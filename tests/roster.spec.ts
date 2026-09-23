@@ -228,6 +228,33 @@ test.describe('an artist has an address', () => {
   });
 });
 
+test.describe('sharing an artist', () => {
+  test('the button hands out that artist’s own address', async ({ page, context, browserName }) => {
+    /* On a phone the button opens the system share sheet, which is what
+       "share" means there and cannot be driven headlessly. What is testable is
+       the fallback every desktop takes — and the clipboard permission only
+       exists in Chromium. */
+    test.skip(browserName !== 'chromium', 'no clipboard permission outside Chromium');
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+    await page.goto('/');
+    await settled(page);
+
+    await page
+      .locator('[data-artist-card]')
+      .filter({ hasText: 'Jona' })
+      .locator('[data-artist-open]')
+      .click();
+    await page.locator('[data-share]').click();
+
+    const copied = await page.evaluate(() => navigator.clipboard.readText());
+    expect(copied).toMatch(/\/artists\/jona\/$/);
+
+    // A button that appears to do nothing is worse than no button.
+    await expect(page.locator('[data-share]')).toContainText('copied');
+  });
+});
+
 test.describe('a link with two destinations', () => {
   const openFloVon = async (page: Page) => {
     await page.goto('/');

@@ -178,12 +178,21 @@
   outline: none;
 }
 
-.closeBtn {
+/* Panel-level actions, not the artist's. They stay reachable while the
+   interview scrolls past underneath. */
+.panelActions {
   position: sticky;
   top: 0;
   float: right;
   z-index: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
   margin-left: 1rem;
+}
+
+.closeBtn,
+.shareBtn {
   padding: 0.3rem 0.5rem 0.25rem;
   border: 1px solid var(--rule);
   color: var(--ink-55);
@@ -194,9 +203,29 @@
 }
 
 .closeBtn:hover,
-.closeBtn:focus-visible {
+.closeBtn:focus-visible,
+.shareBtn:hover,
+.shareBtn:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+.shareBtn {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+}
+
+.shareBtn svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* Says what happened, in the same space the icon occupied, so the button does
+   not resize under the pointer. */
+.shareDone {
+  padding: 0 0.15rem;
+  color: var(--accent);
 }
 
 /* Portrait beside the name and the one-line sound description; the interview
