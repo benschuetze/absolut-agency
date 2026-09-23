@@ -46,9 +46,10 @@
 
   /* Rhythm */
   --gutter: clamp(1.125rem, 0.6rem + 2.2vw, 3rem);
-  /* The measure everything lines up on. Past this the grid stops stretching:
-     four portraits across a 27" screen is a billboard, not a roster. */
-  --content-max: 1080px;
+  /* The measure everything lines up on. Past this the grid stops stretching —
+     and it is set so that three portraits across land between the thumbnail a
+     fourth column produced and the full size a narrow window gave them. */
+  --content-max: 960px;
   /* Gutter on a narrow screen, centring margin on a wide one — so the header
      rule and the footer rule still run edge to edge while their contents line
      up with the grid. */

@@ -28,15 +28,11 @@
   }
 }
 
+/* Three across is the widest it goes. A fourth column inside the same measure
+   shrinks each portrait to a thumbnail, and the faces are the page. */
 @media (min-width: 900px) {
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1280px) {
-  .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
