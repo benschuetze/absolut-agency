@@ -2,7 +2,15 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import { createPortal } from 'react-dom';
 import styles from './Choose.module.css';
 
-export type Destination = { label: string; href: string };
+export type Destination = {
+  label: string;
+  /** A place to go. */
+  href?: string;
+  /** Or something to do here instead — copying the address, for instance. */
+  onSelect?: () => void;
+  /** Its own glyph, where the destinations are not all the same kind of thing. */
+  mark?: ReactNode;
+};
 
 /**
  * One trigger, several destinations.
@@ -21,13 +29,16 @@ export function Choose({
   className,
   children,
   ariaLabel,
+  ...rest
 }: {
   to: Destination[];
-  /** Drawn beside each destination's name. */
-  mark: ReactNode;
+  /** Drawn beside any destination that does not bring its own. */
+  mark?: ReactNode;
   className?: string;
   children: ReactNode;
   ariaLabel: string;
+  /** Anything else lands on the trigger — a data attribute for a test, say. */
+  [key: `data-${string}`]: string;
 }) {
   const [at, setAt] = useState<{ x: number; y: number } | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -97,6 +108,7 @@ export function Choose({
   return (
     <>
       <button
+        {...rest}
         ref={triggerRef}
         type="button"
         className={className}
@@ -117,22 +129,43 @@ export function Choose({
               aria-label={ariaLabel}
               style={{ left: at.x, top: at.y }}
             >
-              {to.map((d) => (
-                <a
-                  key={d.label}
-                  className={styles.option}
-                  role="menuitem"
-                  href={d.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  onClick={() => close(false)}
-                >
-                  <span className={styles.optionMark} aria-hidden="true">
-                    {mark}
-                  </span>
-                  <span className={`u-mono ${styles.optionLabel}`}>{d.label}</span>
-                </a>
-              ))}
+              {to.map((d) => {
+                const body = (
+                  <>
+                    <span className={styles.optionMark} aria-hidden="true">
+                      {d.mark ?? mark}
+                    </span>
+                    <span className={`u-mono ${styles.optionLabel}`}>{d.label}</span>
+                  </>
+                );
+
+                return d.href ? (
+                  <a
+                    key={d.label}
+                    className={styles.option}
+                    role="menuitem"
+                    href={d.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    onClick={() => close(false)}
+                  >
+                    {body}
+                  </a>
+                ) : (
+                  <button
+                    key={d.label}
+                    type="button"
+                    className={styles.option}
+                    role="menuitem"
+                    onClick={() => {
+                      d.onSelect?.();
+                      close();
+                    }}
+                  >
+                    {body}
+                  </button>
+                );
+              })}
             </div>,
             document.body
           )

@@ -213,9 +213,15 @@
   min-width: 2rem;
 }
 
-.shareBtn svg {
+.shareBtn > svg {
   width: 1.05rem;
   height: 1.05rem;
+}
+
+/* The glyphs inside the chooser's rows, matched to the zerrro mark beside them. */
+.optionGlyph {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 /* Says what happened, in the same space the icon occupied, so the button does

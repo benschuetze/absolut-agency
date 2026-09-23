@@ -33,6 +33,8 @@
 
 .option {
   display: flex;
+  font: inherit;
+  text-align: left;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 0.85rem;

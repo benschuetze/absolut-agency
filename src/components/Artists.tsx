@@ -148,7 +148,7 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
         tabIndex={-1}
       >
         <div className={styles.panelActions}>
-          <Share name={artist.name} />
+          <Share artist={artist} />
           <button type="button" className={`u-mono ${styles.closeBtn}`} onClick={onClose}>
             close
           </button>
@@ -205,17 +205,32 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
   return typeof document === 'undefined' ? panel : createPortal(panel, document.body);
 }
 
+/** The drawn glyphs, at the size the chooser's rows want them. */
+function glyph(name: keyof typeof ICONS) {
+  return (
+    <svg
+      className={styles.optionGlyph}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      aria-hidden="true"
+    >
+      {ICONS[name]}
+    </svg>
+  );
+}
+
 /**
- * Copies the address of the artist who is open, and says so.
+ * Hands out a link to this artist: their Instagram, their SoundCloud, or the
+ * page itself. Each row copies the address rather than opening it, because
+ * that is what the button is for — going somewhere is what the marks under the
+ * genre already do.
  *
- * Deliberately not the system share sheet, even on a phone where one exists:
- * the sheet is a second decision to make when the useful thing — the link —
- * is already in hand. Copying is one tap and the same everywhere.
- *
- * It copies `location.href` rather than rebuilding the URL: the panel being
- * open *is* that address, so the browser already holds the right answer.
+ * Not the system share sheet, even on a phone: the sheet is a second decision
+ * to make when the useful thing is already in hand.
  */
-function Share({ name }: { name: string }) {
+function Share({ artist }: { artist: Artist }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -224,21 +239,44 @@ function Share({ name }: { name: string }) {
     return () => window.clearTimeout(timer);
   }, [copied]);
 
-  const share = async () => {
+  const copy = async (url: string) => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
     } catch {
       /* No clipboard permission. Nothing useful left to try. */
     }
   };
 
+  /* Every row copies. This is the share button — the icons under the genre are
+     already the way to go somewhere, and a menu where two rows open a tab and
+     the third quietly copies is three buttons wearing one coat. */
+  const to: Destination[] = [];
+  if (artist.links?.instagram)
+    to.push({
+      label: 'instagram',
+      mark: glyph('instagram'),
+      onSelect: () => copy(artist.links!.instagram!),
+    });
+  if (artist.links?.soundcloud)
+    to.push({
+      label: 'soundcloud',
+      mark: glyph('soundcloud'),
+      onSelect: () => copy(artist.links!.soundcloud!),
+    });
+  to.push({
+    label: 'this page',
+    mark: glyph('link'),
+    /* `location.href` rather than a rebuilt URL: the panel being open *is*
+       that address, so the browser already holds the right answer. */
+    onSelect: () => copy(window.location.href),
+  });
+
   return (
-    <button
-      type="button"
+    <Choose
+      to={to}
       className={`u-mono ${styles.shareBtn}`}
-      onClick={share}
-      aria-label={`Share ${name}`}
+      ariaLabel={`Share ${artist.name}`}
       data-share=""
     >
       {copied ? (
@@ -251,7 +289,7 @@ function Share({ name }: { name: string }) {
           <path d="M8.3 10.8 15.2 7.1M8.3 13.2 15.2 16.9" strokeLinecap="round" />
         </svg>
       )}
-    </button>
+    </Choose>
   );
 }
 
@@ -273,6 +311,12 @@ const ICONS: Record<string, JSX.Element> = {
     <>
       <path d="M1.8 13.4v4.2M4.6 11.4v6.2M7.4 9.9v7.7M10.2 11.1v6.5" strokeLinecap="round" />
       <path d="M13 17.6V8.2a5 5 0 0 1 8.2 2.6 3.4 3.4 0 0 1-.8 6.8H13Z" strokeLinejoin="round" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M10.2 13.8a3.4 3.4 0 0 0 5 .3l2.6-2.6a3.4 3.4 0 1 0-4.8-4.8l-1.5 1.5" strokeLinecap="round" />
+      <path d="M13.8 10.2a3.4 3.4 0 0 0-5-.3l-2.6 2.6a3.4 3.4 0 1 0 4.8 4.8l1.5-1.5" strokeLinecap="round" />
     </>
   ),
 };

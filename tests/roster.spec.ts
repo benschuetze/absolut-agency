@@ -258,13 +258,24 @@ test.describe('sharing an artist', () => {
       .filter({ hasText: 'Jona' })
       .locator('[data-artist-open]')
       .click();
-    await page.locator('[data-share]').click();
 
-    const copied = await page.evaluate(() => navigator.clipboard.readText());
-    expect(copied).toMatch(/\/artists\/jona\/$/);
+    await page.locator('[data-share]').click();
+    const rows = page.locator('[role="menuitem"]');
+    await expect(rows).toHaveText(['instagram', 'soundcloud', 'this page']);
+
+    // Every row hands out a link; none of them navigates.
+    await rows.filter({ hasText: 'this page' }).click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
+      /\/artists\/jona\/$/
+    );
+    await expect(page).toHaveURL(/\/artists\/jona\/$/);
 
     // A button that appears to do nothing is worse than no button.
     await expect(page.locator('[data-share]')).toContainText('copied');
+
+    await page.locator('[data-share]').click();
+    await rows.filter({ hasText: 'instagram' }).click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('instagram.com');
   });
 });
 
