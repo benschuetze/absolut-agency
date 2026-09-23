@@ -292,6 +292,18 @@
   border-color: var(--accent);
 }
 
+/* The sphere is a raster, not a path, so it is worn as a mask and takes its
+   colour from the link like the drawn glyphs do — including the accent on
+   hover. Set larger than they are: below about 22px the lettering that the
+   sphere is made of collapses into a dot. */
+.markZerrro {
+  width: 1.4rem;
+  height: 1.4rem;
+  background: currentColor;
+  mask: url('../assets/zerrro-mark.png') center / contain no-repeat;
+  -webkit-mask: url('../assets/zerrro-mark.png') center / contain no-repeat;
+}
+
 /* Same box as the marks, sized to its word instead of to a glyph. */
 .namedLink {
   width: auto;

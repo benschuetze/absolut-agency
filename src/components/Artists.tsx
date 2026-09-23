@@ -182,6 +182,10 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
 
 /* Brand marks, drawn rather than fetched — an icon font or an SVG sprite for
    two glyphs is a dependency and a network request for nothing. */
+/* Marks that exist as artwork rather than as a path we can draw. Keyed by the
+   link's own label, so a link without one falls back to showing that label. */
+const MASKS: Record<string, string> = { zerrro: styles.markZerrro };
+
 const ICONS: Record<string, JSX.Element> = {
   instagram: (
     <>
@@ -238,16 +242,27 @@ function Links({ artist }: { artist: Artist }) {
         </a>
       ))}
 
-      {/* No established glyph, so it wears its own name. */}
+      {/* A brand mark where we have one, its own name where we do not. */}
       {other ? (
-        <a
-          className={`u-mono ${styles.namedLink}`}
-          href={other.href}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {other.label}
-        </a>
+        MASKS[other.label] ? (
+          <a
+            href={other.href}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label={other.label}
+          >
+            <span className={MASKS[other.label]} aria-hidden="true" />
+          </a>
+        ) : (
+          <a
+            className={`u-mono ${styles.namedLink}`}
+            href={other.href}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            {other.label}
+          </a>
+        )
       ) : null}
     </p>
   );
