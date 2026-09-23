@@ -13,6 +13,13 @@ export type Destination = {
 };
 
 /**
+ * `useLayoutEffect`, except on the server, where there is no paint to be before
+ * and React says so on every prerendered page. Nothing this runs can happen
+ * server-side anyway — it measures a menu that only a click can open.
+ */
+const useBeforePaint = typeof document === 'undefined' ? useEffect : useLayoutEffect;
+
+/**
  * One trigger, several destinations.
  *
  * Anchored to what was clicked rather than centred on the screen: the panel
@@ -94,7 +101,7 @@ export function Choose({
 
   /* Nudge back inside the viewport before the first paint, so a menu opened
      near an edge never appears and then jumps. */
-  useLayoutEffect(() => {
+  useBeforePaint(() => {
     const menu = menuRef.current;
     if (!at || !menu) return;
     const r = menu.getBoundingClientRect();

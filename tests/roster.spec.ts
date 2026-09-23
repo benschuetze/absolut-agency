@@ -261,21 +261,94 @@ test.describe('sharing an artist', () => {
 
     await page.locator('[data-share]').click();
     const rows = page.locator('[role="menuitem"]');
-    await expect(rows).toHaveText(['instagram', 'soundcloud', 'this page']);
+    /* The handle, not the service: the row has to say which address is about
+       to be copied, or the copy reads as a share sheet that failed to open. */
+    await expect(rows).toHaveText(['@jona.junglekidz', '@girlsandbass', 'link']);
 
     // Every row hands out a link; none of them navigates.
-    await rows.filter({ hasText: 'this page' }).click();
-    expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
-      /\/artists\/jona\/$/
-    );
+    await rows.filter({ hasText: 'link' }).click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/\/artists\/jona\/$/);
     await expect(page).toHaveURL(/\/artists\/jona\/$/);
 
     // A button that appears to do nothing is worse than no button.
     await expect(page.locator('[data-share]')).toContainText('copied');
 
+    /* And it has to say *what* was copied, or the glyph on the row that was
+       just pressed keeps promising that Instagram is about to open. */
+    const receipt = page.getByRole('status');
+    await expect(receipt).toContainText('/artists/jona');
+    await expect(receipt).toContainText('copied to clipboard');
+    await expect(receipt).toBeHidden({ timeout: 6000 });
+
     await page.locator('[data-share]').click();
-    await rows.filter({ hasText: 'instagram' }).click();
+    await rows.filter({ hasText: '@jona.junglekidz' }).click();
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('instagram.com');
+    await expect(page.getByRole('status')).toContainText('instagram.com/jona.junglekidz');
+  });
+});
+
+/* A menu that opens past the edge of the screen is unusable and looks broken,
+   and it is invisible to every test that only asks whether the menu is there.
+   So: measure it. Narrow phones first, because that is where a row of three
+   runs out of room. */
+test.describe('a chooser stays on screen', () => {
+  const WIDTHS = [320, 375, 390, 560];
+
+  const fits = async (page: Page, what: string) => {
+    const menu = page.locator('[role="menu"]');
+    await expect(menu).toBeVisible();
+    const box = (await menu.boundingBox())!;
+    const width = page.viewportSize()!.width;
+    expect(box.x, `${what}: left edge`).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width, `${what}: right edge`).toBeLessThanOrEqual(width);
+  };
+
+  test('the share menu fits, however narrow the screen', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page
+      .locator('[data-artist-card]')
+      .filter({ hasText: 'Jona' })
+      .locator('[data-artist-open]')
+      .click();
+
+    for (const width of WIDTHS) {
+      // Resize first: a chooser already open closes on resize by design.
+      await page.setViewportSize({ width, height: 780 });
+      await page.locator('[data-share]').click();
+      await fits(page, `share menu at ${width}px`);
+
+      /* The rows stack rather than shedding their labels: a lone mark would
+         promise Instagram and then copy something instead. */
+      await expect(page.locator('[role="menuitem"]')).toHaveText([
+        '@jona.junglekidz',
+        '@girlsandbass',
+        'link',
+      ]);
+
+      await page.keyboard.press('Escape');
+    }
+  });
+
+  test('the two-destination mark fits too', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page
+      .locator('[data-artist-card]')
+      .filter({ hasText: 'Flo.Von' })
+      .locator('[data-artist-open]')
+      .click();
+
+    for (const width of WIDTHS) {
+      await page.setViewportSize({ width, height: 780 });
+      const mark = page
+        .locator('[data-artist-detail] [class*="panelLinks"] button[aria-label="zerrro"]')
+        .first();
+      await mark.scrollIntoViewIfNeeded();
+      await mark.click();
+      await fits(page, `zerrro menu at ${width}px`);
+      await page.keyboard.press('Escape');
+    }
   });
 });
 
@@ -294,7 +367,9 @@ test.describe('a link with two destinations', () => {
     await openFloVon(page);
 
     // The mark in the row of socials, not the name further down in the note.
-    await page.locator('[data-artist-detail] [class*="panelLinks"] button[aria-label="zerrro"]').click();
+    await page
+      .locator('[data-artist-detail] [class*="panelLinks"] button[aria-label="zerrro"]')
+      .click();
     const items = page.locator('[role="menuitem"]');
     await expect(items).toHaveCount(2);
     await expect(items.nth(0)).toHaveAttribute('href', /instagram\.com/);
@@ -308,7 +383,9 @@ test.describe('a link with two destinations', () => {
     /* Closing the chooser hands focus back to its trigger. Send the next key
        only once that has happened, or under load the two Escapes race and this
        test fails for a reason that has nothing to do with the behaviour. */
-    await expect(page.locator('[data-artist-detail] p button[aria-label="zerrro"]').first()).toBeFocused();
+    await expect(
+      page.locator('[data-artist-detail] p button[aria-label="zerrro"]').first()
+    ).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-artist-detail]')).toBeHidden();
   });
@@ -413,7 +490,10 @@ test.describe('navigation', () => {
     await page.getByRole('link', { name: /about/i }).click();
     await expect(page.locator('main')).toContainText(/about/i);
 
-    await page.getByRole('link', { name: /artists/i }).first().click();
+    await page
+      .getByRole('link', { name: /artists/i })
+      .first()
+      .click();
     await expect(page.locator('[data-artist-card]').first()).toBeVisible();
   });
 });

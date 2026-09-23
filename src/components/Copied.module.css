@@ -1,0 +1,66 @@
+/* --------------------------------------------------------------------------
+   The clipboard receipt.
+
+   Same hairline-on-paper as everything else, and low enough on the page to be
+   read without covering what was clicked.
+   -------------------------------------------------------------------------- */
+
+.strip {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  /* Clear of the home indicator on a phone, and of the footer rule elsewhere. */
+  bottom: calc(var(--footer-h) + 1rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.15rem 0.6rem;
+  max-width: min(calc(100vw - 2 * var(--gutter)), 34rem);
+  padding: 0.6rem 0.9rem;
+  background: var(--paper-hi);
+  border: 1px solid var(--rule-strong);
+  font-size: var(--t-micro);
+  animation: strip-in 200ms var(--ease) both;
+}
+
+.strip[data-leaving] {
+  animation: strip-out 240ms var(--ease) both;
+}
+
+@keyframes strip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+@keyframes strip-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip,
+  .strip[data-leaving] {
+    animation: none;
+  }
+}
+
+.address {
+  color: var(--ink);
+  letter-spacing: var(--track-mono);
+  /* The address as it is written, not shouted — and it breaks rather than
+     pushing the strip off a narrow screen. */
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+.what {
+  color: var(--ink-55);
+  letter-spacing: var(--track-wide);
+  white-space: nowrap;
+}

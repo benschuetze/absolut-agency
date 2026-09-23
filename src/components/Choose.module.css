@@ -39,17 +39,31 @@
   gap: 0.5rem;
   padding: 0.6rem 0.85rem;
   color: var(--ink-55);
-  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
 }
 
 .option + .option {
   border-left: 1px solid var(--rule);
 }
 
-.option:hover,
-.option:focus-visible {
-  color: var(--ink);
-  background: var(--paper-lo);
+/* A row of three handles is wider than a phone, and nudging a too-wide menu
+   back into the viewport only moves the overflow to the other edge — the row
+   has to stop being a row.
+
+   Stacking rather than dropping the labels: a mark on its own says Instagram,
+   which reads as an offer to open Instagram, and then something is copied
+   instead. The handle beside it says what actually lands on the clipboard. */
+@media (max-width: 560px) {
+  .menu {
+    flex-direction: column;
+  }
+
+  .option + .option {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
 }
 
 .optionMark {
@@ -60,4 +74,8 @@
 .optionLabel {
   letter-spacing: var(--track-mono);
   white-space: nowrap;
+  /* The mono labels elsewhere on the page are set in caps; a handle is not a
+     label but a name someone chose, and @ABSCUR.E is not what it says on their
+     profile. So these rows are quoted rather than styled. */
+  text-transform: none;
 }

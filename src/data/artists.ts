@@ -91,7 +91,7 @@ const roster: Artist[] = [
     tags: ['techno'],
     links: {
       instagram: 'https://www.instagram.com/abscur.e',
-      soundcloud: 'https://on.soundcloud.com/a1ZeuG7jtlg0UjE4n1',
+      soundcloud: 'https://soundcloud.com/abscure333',
     },
     profile: {
       since: 'Around 6 years',
@@ -114,7 +114,7 @@ const roster: Artist[] = [
     tags: ['cross-cultural'],
     links: {
       instagram: 'https://www.instagram.com/fatimahamido',
-      soundcloud: 'https://on.soundcloud.com/hjSUsqpwY4PvOPNE5y',
+      soundcloud: 'https://soundcloud.com/al-fatmalay-331523491',
     },
     profile: {
       since: '2024',
@@ -138,7 +138,7 @@ const roster: Artist[] = [
     tags: ['techno'],
     links: {
       instagram: 'https://www.instagram.com/bjoerndeltogno/',
-      soundcloud: 'https://on.soundcloud.com/PFTt6uhEzif6KvkcBo',
+      soundcloud: 'https://soundcloud.com/bj-rn_del_togno',
     },
     profile: {
       since: '2002',
@@ -164,7 +164,7 @@ const roster: Artist[] = [
     tags: ['techno', 'groove', 'breaks'],
     links: {
       instagram: 'https://www.instagram.com/_contrast_music',
-      soundcloud: 'https://on.soundcloud.com/buSfJgO9n96eyTqNCs',
+      soundcloud: 'https://soundcloud.com/contrastvirgae',
     },
     profile: {
       since: 'Professionally since 2021',
@@ -190,7 +190,7 @@ const roster: Artist[] = [
     tags: ['tech house'],
     links: {
       instagram: 'https://www.instagram.com/flo.von',
-      soundcloud: 'https://on.soundcloud.com/VriU9u1xNra8fzmcKC',
+      soundcloud: 'https://soundcloud.com/flovon',
       other: {
         label: 'zerrro',
         to: [
@@ -229,7 +229,7 @@ const roster: Artist[] = [
     tags: ['dnb', 'jungle', 'liquid'],
     links: {
       instagram: 'https://www.instagram.com/jona.junglekidz',
-      soundcloud: 'https://on.soundcloud.com/HgGBNWWM0QT8tS4O4s',
+      soundcloud: 'https://soundcloud.com/girlsandbass',
     },
     profile: {
       since: '2016',
@@ -256,7 +256,7 @@ const roster: Artist[] = [
     tags: ['techno', 'oldschool', 'electro'],
     links: {
       instagram: 'https://www.instagram.com/lealindnerdj',
-      soundcloud: 'https://on.soundcloud.com/qG4F9BFO8gDu3WMRqR',
+      soundcloud: 'https://soundcloud.com/lealindner',
     },
     profile: {
       since: '2018',
@@ -283,7 +283,7 @@ const roster: Artist[] = [
     tags: ['house'],
     links: {
       instagram: 'https://www.instagram.com/p.von.schwind',
-      soundcloud: 'https://on.soundcloud.com/wiJKzJRvNxmxR6p0t8',
+      soundcloud: 'https://soundcloud.com/von-schwind',
     },
     profile: {
       since: '4 years',
@@ -327,7 +327,7 @@ const roster: Artist[] = [
     tags: ['tech house', 'vocals', 'groove'],
     links: {
       instagram: 'https://www.instagram.com/tonymejeh',
-      soundcloud: 'https://on.soundcloud.com/MNTjUTVD9NfX2tS3Jt',
+      soundcloud: 'https://soundcloud.com/infernooff',
     },
     profile: {
       since: '2018',

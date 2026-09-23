@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
 import { Choose, type Destination } from './Choose';
+import { Copied } from './Copied';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
 import { locationToPath } from '../lib/router';
 import { site } from '../data/site';
@@ -76,7 +77,9 @@ export function Artists({
                 data-artist-open=""
                 href={locationToPath({ route: 'artists', artist: artist.id })}
                 onMouseEnter={() => setActiveId(artist.id)}
-                onMouseLeave={() => setActiveId((current) => (current === artist.id ? null : current))}
+                onMouseLeave={() =>
+                  setActiveId((current) => (current === artist.id ? null : current))
+                }
                 onFocus={() => setActiveId(artist.id)}
                 onBlur={() => setActiveId((current) => (current === artist.id ? null : current))}
                 onClick={(event) => {
@@ -162,9 +165,7 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           <div className={styles.panelIntro}>
             <h2 className={styles.panelName}>{artist.name}</h2>
 
-            {artist.format ? (
-              <p className={`u-mono ${styles.panelMeta}`}>{artist.format}</p>
-            ) : null}
+            {artist.format ? <p className={`u-mono ${styles.panelMeta}`}>{artist.format}</p> : null}
 
             {artist.tags?.length ? (
               <ul className={styles.panelTags}>
@@ -222,6 +223,22 @@ function glyph(name: keyof typeof ICONS) {
 }
 
 /**
+ * The profile name out of a profile address — the last thing in the path.
+ *
+ * Which is why the SoundCloud links in the roster are the canonical
+ * `soundcloud.com/<name>` form rather than the `on.soundcloud.com` links the
+ * app hands out when you tap share: those end in a random string that names
+ * nobody, and they carry a tracking id of whoever generated them.
+ */
+const handle = (url: string) => {
+  try {
+    return `@${new URL(url).pathname.split('/').filter(Boolean).pop() ?? ''}`;
+  } catch {
+    return url;
+  }
+};
+
+/**
  * Hands out a link to this artist: their Instagram, their SoundCloud, or the
  * page itself. Each row copies the address rather than opening it, because
  * that is what the button is for — going somewhere is what the marks under the
@@ -231,18 +248,20 @@ function glyph(name: keyof typeof ICONS) {
  * to make when the useful thing is already in hand.
  */
 function Share({ artist }: { artist: Artist }) {
-  const [copied, setCopied] = useState(false);
+  /* The address that was copied, which is both the fact that something was
+     and the thing the receipt reads back. */
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
     if (!copied) return;
-    const timer = window.setTimeout(() => setCopied(false), 2000);
+    const timer = window.setTimeout(() => setCopied(null), 3000);
     return () => window.clearTimeout(timer);
   }, [copied]);
 
   const copy = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
-      setCopied(true);
+      setCopied(url);
     } catch {
       /* No clipboard permission. Nothing useful left to try. */
     }
@@ -250,22 +269,28 @@ function Share({ artist }: { artist: Artist }) {
 
   /* Every row copies. This is the share button — the icons under the genre are
      already the way to go somewhere, and a menu where two rows open a tab and
-     the third quietly copies is three buttons wearing one coat. */
+     the third quietly copies is three buttons wearing one coat.
+
+     Each row is labelled with the handle it is about to hand over rather than
+     with the service it belongs to. `instagram` beside the Instagram mark
+     reads as an invitation to open Instagram, and the copy that follows comes
+     as a surprise; `@tonymejeh` reads as an address, so `copied` answers a
+     question that was actually asked. */
   const to: Destination[] = [];
   if (artist.links?.instagram)
     to.push({
-      label: 'instagram',
+      label: handle(artist.links.instagram),
       mark: glyph('instagram'),
       onSelect: () => copy(artist.links!.instagram!),
     });
   if (artist.links?.soundcloud)
     to.push({
-      label: 'soundcloud',
+      label: handle(artist.links.soundcloud),
       mark: glyph('soundcloud'),
       onSelect: () => copy(artist.links!.soundcloud!),
     });
   to.push({
-    label: 'this page',
+    label: 'link',
     mark: glyph('link'),
     /* `location.href` rather than a rebuilt URL: the panel being open *is*
        that address, so the browser already holds the right answer. */
@@ -273,23 +298,34 @@ function Share({ artist }: { artist: Artist }) {
   });
 
   return (
-    <Choose
-      to={to}
-      className={`u-mono ${styles.shareBtn}`}
-      ariaLabel={`Share ${artist.name}`}
-      data-share=""
-    >
-      {copied ? (
-        <span className={styles.shareDone}>copied</span>
-      ) : (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-          <circle cx="6" cy="12" r="2.6" />
-          <circle cx="17.5" cy="5.8" r="2.6" />
-          <circle cx="17.5" cy="18.2" r="2.6" />
-          <path d="M8.3 10.8 15.2 7.1M8.3 13.2 15.2 16.9" strokeLinecap="round" />
-        </svg>
-      )}
-    </Choose>
+    <>
+      <Choose
+        to={to}
+        className={`u-mono ${styles.shareBtn}`}
+        ariaLabel={`Share ${artist.name}`}
+        data-share=""
+      >
+        {copied ? (
+          <span className={styles.shareDone}>copied</span>
+        ) : (
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            aria-hidden="true"
+          >
+            <circle cx="6" cy="12" r="2.6" />
+            <circle cx="17.5" cy="5.8" r="2.6" />
+            <circle cx="17.5" cy="18.2" r="2.6" />
+            <path d="M8.3 10.8 15.2 7.1M8.3 13.2 15.2 16.9" strokeLinecap="round" />
+          </svg>
+        )}
+      </Choose>
+
+      {/* Outside the trigger: it belongs to the page, not to the button. */}
+      <Copied url={copied} />
+    </>
   );
 }
 
@@ -315,8 +351,14 @@ const ICONS: Record<string, JSX.Element> = {
   ),
   link: (
     <>
-      <path d="M10.2 13.8a3.4 3.4 0 0 0 5 .3l2.6-2.6a3.4 3.4 0 1 0-4.8-4.8l-1.5 1.5" strokeLinecap="round" />
-      <path d="M13.8 10.2a3.4 3.4 0 0 0-5-.3l-2.6 2.6a3.4 3.4 0 1 0 4.8 4.8l1.5-1.5" strokeLinecap="round" />
+      <path
+        d="M10.2 13.8a3.4 3.4 0 0 0 5 .3l2.6-2.6a3.4 3.4 0 1 0-4.8-4.8l-1.5 1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.8 10.2a3.4 3.4 0 0 0-5-.3l-2.6 2.6a3.4 3.4 0 1 0 4.8 4.8l1.5-1.5"
+        strokeLinecap="round"
+      />
     </>
   ),
 };
@@ -384,7 +426,13 @@ function Links({ artist }: { artist: Artist }) {
     <p className={styles.panelLinks}>
       {marks.map(([label, href]) => (
         <a key={label} href={href} target="_blank" rel="noreferrer noopener" aria-label={label}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            aria-hidden="true"
+          >
             {ICONS[label]}
           </svg>
         </a>
