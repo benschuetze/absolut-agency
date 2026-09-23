@@ -7,7 +7,7 @@
   justify-content: space-between;
   gap: var(--gutter);
   min-height: var(--header-h);
-  padding: 0 var(--gutter);
+  padding: 0 var(--pad-x);
   border-bottom: 1px solid var(--rule);
   background: color-mix(in srgb, var(--paper) 82%, transparent);
   backdrop-filter: blur(14px) saturate(120%);

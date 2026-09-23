@@ -1,6 +1,6 @@
 .layout {
   flex: 1;
-  padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem);
+  padding: 0 var(--pad-x) clamp(2rem, 5vw, 4rem);
 }
 
 /* --------------------------------------------------------------------------

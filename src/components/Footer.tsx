@@ -29,11 +29,6 @@ export function Footer() {
 
   return (
     <footer className={`u-mono ${styles.footer}`}>
-      <span className={styles.status}>
-        <span className={styles.pulse} aria-hidden="true" />
-        {site.status}
-      </span>
-
       <span className={styles.clock} aria-label={`Local time in ${site.city}`}>
         {site.city} {time || '--:--:--'}
       </span>

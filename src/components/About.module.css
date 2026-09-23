@@ -1,6 +1,6 @@
 .page {
   flex: 1;
-  padding: 0 var(--gutter) clamp(3rem, 7vw, 6rem);
+  padding: 0 var(--pad-x) clamp(3rem, 7vw, 6rem);
 }
 
 .page section + section {

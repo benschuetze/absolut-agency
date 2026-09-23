@@ -4,42 +4,10 @@
   justify-content: space-between;
   gap: 1rem;
   min-height: var(--footer-h);
-  padding: 0.75rem var(--gutter) calc(0.75rem + env(safe-area-inset-bottom));
+  padding: 0.75rem var(--pad-x) calc(0.75rem + env(safe-area-inset-bottom));
   border-top: 1px solid var(--rule);
   color: var(--ink-55);
   background: color-mix(in srgb, var(--paper) 70%, transparent);
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 0 var(--accent-soft);
-  animation: pulse 2.8s var(--ease-io) infinite;
-}
-
-@keyframes pulse {
-  0%,
-  70%,
-  100% {
-    box-shadow: 0 0 0 0 rgb(35 51 224 / 0.4);
-  }
-  35% {
-    box-shadow: 0 0 0 6px rgb(35 51 224 / 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pulse {
-    animation: none;
-  }
 }
 
 .clock {
