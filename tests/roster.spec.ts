@@ -13,7 +13,6 @@ const ROSTER = [
   'Contrast',
   'Flo.Von',
   'Jona',
-  'Kieran Landwehr',
   'Lea Lindner',
   'SDB',
   'Tony Mejeh',
@@ -28,7 +27,7 @@ async function settled(page: Page) {
 }
 
 test.describe('roster', () => {
-  test('renders every artist, Kieran Landwehr included', async ({ page }) => {
+  test('renders every artist', async ({ page }) => {
     await page.goto('/');
     await settled(page);
 
@@ -121,12 +120,12 @@ test.describe('detail access', () => {
     await page.goto('/');
     await settled(page);
 
-    const card = page.locator('[data-artist-card]').filter({ hasText: 'Kieran Landwehr' });
+    const card = page.locator('[data-artist-card]').filter({ hasText: 'Lea Lindner' });
     await card.locator('[data-artist-open]').first().click();
 
     const detail = page.locator('[data-artist-detail]');
     await expect(detail).toBeVisible();
-    await expect(detail).toContainText('Kieran Landwehr');
+    await expect(detail).toContainText('Lea Lindner');
   });
 
   /* This is the test that was missing. The old ones asked whether the panel was

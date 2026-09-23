@@ -222,10 +222,6 @@ const roster: Artist[] = [
     photo: jona,
   },
   {
-    id: 'kieran-landwehr',
-    name: 'Kieran Landwehr',
-  },
-  {
     id: 'lea-lindner',
     name: 'Lea Lindner',
     since: '2018',
