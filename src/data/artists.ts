@@ -111,6 +111,7 @@ const roster: Artist[] = [
     id: 'al-fatmalay',
     name: 'Al-Fatmalay',
     format: 'Digital',
+    tags: ['cross-cultural'],
     links: {
       instagram: 'https://www.instagram.com/fatimahamido',
       soundcloud: 'https://on.soundcloud.com/hjSUsqpwY4PvOPNE5y',
