@@ -7,6 +7,7 @@
   padding: 0.75rem var(--pad-x) calc(0.75rem + env(safe-area-inset-bottom));
   border-top: 1px solid var(--rule);
   color: var(--ink-55);
+  background: var(--paper); /* for iOS before 16.2, which has no color-mix */
   background: color-mix(in srgb, var(--paper) 70%, transparent);
 }
 

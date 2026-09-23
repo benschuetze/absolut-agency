@@ -7,8 +7,12 @@ import { Header } from './components/Header';
 import { artists } from './data/artists';
 import { site } from './data/site';
 import { useRoute } from './lib/router';
+import { useVisibleViewport } from './lib/visibleViewport';
 
 export default function App() {
+  /* iOS places pinned elements against a viewport you cannot fully see. */
+  useVisibleViewport();
+
   const [{ route, artist }, navigate] = useRoute();
 
   useEffect(() => {

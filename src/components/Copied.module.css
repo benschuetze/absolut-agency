@@ -10,7 +10,9 @@
   z-index: 60;
   left: 50%;
   /* Clear of the home indicator on a phone, and of the footer rule elsewhere. */
-  bottom: calc(var(--footer-h) + 1rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(
+    var(--footer-h) + 1rem + env(safe-area-inset-bottom, 0px) + var(--visible-bottom, 0px)
+  );
   transform: translateX(-50%);
   /* Two lines, not a wrapping row: a row that ran out of width broke the
      address itself, and `soundcloud.com/abscur e333` is not an address. */

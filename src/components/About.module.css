@@ -61,10 +61,6 @@
   padding: clamp(2rem, 4vw, 3.25rem) 0 0;
 }
 
-
-
-
-
 .cta {
   align-self: start;
 }
@@ -88,8 +84,3 @@
   color: var(--accent);
   background-size: 100% 2px;
 }
-
-
-
-
-

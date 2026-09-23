@@ -135,7 +135,10 @@
   z-index: 20;
   display: grid;
   place-items: center;
-  padding: var(--gutter);
+  /* The gutter, plus the bars the header dodges: a dialog that fills the
+     layout viewport hangs behind them at both ends on iOS. */
+  padding: calc(var(--gutter) + var(--visible-top, 0px)) var(--gutter)
+    calc(var(--gutter) + var(--visible-bottom, 0px));
 }
 
 .scrim {

@@ -297,6 +297,90 @@ test.describe('sharing an artist', () => {
    and the whole interview in with it, and pushed them back out two seconds
    later. Rather than testing that one button, this walks the panel and asks
    whether *anything* moved. */
+/* iOS hands pinned elements a viewport that is taller than what you can see:
+   while a toolbar collapses — in Safari and in Chrome for iOS alike, both
+   being WebKit — the layout viewport starts above the screen, and a header
+   pinned to `top: 0` is drawn behind the address bar with the top of its
+   lettering cut off. A phone screenshot measured 21px missing.
+
+   No desktop browser produces that gap, so the tests produce it themselves:
+   the offsets are published as custom properties, and these set them by hand
+   and check that what is pinned gets out of the way. */
+test.describe('pinned things keep clear of a phone’s toolbars', () => {
+  /* An address bar at the top, and something the size of Chrome for iOS's
+     toolbar at the bottom — enough that anything already sitting above the
+     footer has to move to clear it. */
+  const BAR = 24;
+  const FOOT = 96;
+
+  test('the header drops below the address bar', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    const header = page.locator('header');
+    expect((await header.boundingBox())!.y).toBe(0);
+
+    await page.evaluate(
+      (bar) => document.documentElement.style.setProperty('--visible-top', `${bar}px`),
+      BAR
+    );
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await page.waitForTimeout(200);
+
+    const box = (await header.boundingBox())!;
+    expect(box.y, 'header sits under the bar, not behind it').toBe(BAR);
+
+    /* And the wordmark comes with it — the point is the lettering, which is
+       what was cut off. */
+    const mark = (await page.locator('header a span').first().boundingBox())!;
+    expect(mark.y).toBeGreaterThanOrEqual(BAR);
+  });
+
+  test('the detail panel stays between the bars', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(
+      ({ bar, foot }) => {
+        document.documentElement.style.setProperty('--visible-top', `${bar}px`);
+        document.documentElement.style.setProperty('--visible-bottom', `${foot}px`);
+      },
+      { bar: BAR, foot: FOOT }
+    );
+
+    await page.locator('[data-artist-open]').first().click();
+    const panel = page.locator('[data-artist-detail] [role="dialog"]');
+    await expect(panel).toBeVisible();
+
+    const box = (await panel.boundingBox())!;
+    const height = page.viewportSize()!.height;
+    expect(box.y, 'panel starts below the address bar').toBeGreaterThanOrEqual(BAR);
+    expect(box.y + box.height, 'panel ends above the toolbar').toBeLessThanOrEqual(height - FOOT);
+  });
+
+  test('the receipt clears the bottom toolbar', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async () => {}, readText: async () => '' },
+      });
+    });
+    await page.goto('/artists/abscure/');
+    await settled(page);
+    await page.evaluate(
+      (foot) => document.documentElement.style.setProperty('--visible-bottom', `${foot}px`),
+      FOOT
+    );
+
+    await page.locator('[data-share]').click();
+    await page.locator('[role="menuitem"]').last().click();
+
+    const receipt = page.getByRole('status');
+    await expect(receipt).toBeVisible();
+    const box = (await receipt.boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height - FOOT);
+  });
+});
+
 test.describe('nothing moves under the pointer', () => {
   /** Every box in the panel, keyed by its place in the tree so a diff names
       what shifted. Keyed by path rather than by count, because a glyph that
