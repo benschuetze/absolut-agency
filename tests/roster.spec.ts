@@ -244,10 +244,9 @@ test.describe('an artist has an address', () => {
 
 test.describe('sharing an artist', () => {
   test('the button hands out that artist’s own address', async ({ page, context, browserName }) => {
-    /* On a phone the button opens the system share sheet, which is what
-       "share" means there and cannot be driven headlessly. What is testable is
-       the fallback every desktop takes — and the clipboard permission only
-       exists in Chromium. */
+    /* The behaviour is the same on every device now; only the way Playwright
+       grants clipboard access is not — the permission name exists in Chromium
+       alone. */
     test.skip(browserName !== 'chromium', 'no clipboard permission outside Chromium');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 

@@ -206,13 +206,13 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
 }
 
 /**
- * Hands out the address of the artist who is open.
+ * Copies the address of the artist who is open, and says so.
  *
- * On a phone that is the system share sheet, which is what "share" means there.
- * Everywhere else there is no such thing, so it copies the link and says so —
- * a button that appears to do nothing is worse than no button.
+ * Deliberately not the system share sheet, even on a phone where one exists:
+ * the sheet is a second decision to make when the useful thing — the link —
+ * is already in hand. Copying is one tap and the same everywhere.
  *
- * It shares `location.href` rather than rebuilding the URL: the panel being
+ * It copies `location.href` rather than rebuilding the URL: the panel being
  * open *is* that address, so the browser already holds the right answer.
  */
 function Share({ name }: { name: string }) {
@@ -225,17 +225,8 @@ function Share({ name }: { name: string }) {
   }, [copied]);
 
   const share = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `${name} — ${site.name}`, url });
-        return;
-      } catch {
-        /* Dismissed, or refused. Fall through and copy instead. */
-      }
-    }
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
     } catch {
       /* No clipboard permission. Nothing useful left to try. */

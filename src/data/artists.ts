@@ -252,7 +252,7 @@ const roster: Artist[] = [
   {
     id: 'lea-lindner',
     name: 'Lea Lindner',
-    format: 'Both, vinyl and digital',
+    format: 'Vinyl and digital',
     tags: ['techno', 'oldschool', 'electro'],
     links: {
       instagram: 'https://www.instagram.com/lealindnerdj',
