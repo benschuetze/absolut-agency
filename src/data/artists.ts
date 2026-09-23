@@ -19,6 +19,7 @@ import tonyMejeh from '../assets/artists/tony-mejeh.jpg';
  * than appearing empty.
  */
 export const PROFILE_QUESTIONS = {
+  since: 'How long have you been DJing?',
   sound: 'How would you describe your sound?',
   firstGig: 'Where was your first gig?',
   inspirations: 'Which artists inspire you?',
@@ -38,8 +39,6 @@ export type Artist = {
   name: string;
   /** What they play on — vinyl, digital, live — as they answered it. */
   format?: string;
-  /** When they started, as they put it. Not always a year. */
-  since?: string;
   /** The genre, as the agency labels it. First one is shown on the card. */
   tags?: string[];
   links?: {
@@ -88,7 +87,6 @@ const roster: Artist[] = [
   {
     id: 'abscure',
     name: 'Abscure',
-    since: 'Around 6 years',
     format: 'Digital in the club, vinyl at home',
     tags: ['techno'],
     links: {
@@ -96,6 +94,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/a1ZeuG7jtlg0UjE4n1',
     },
     profile: {
+      since: 'Around 6 years',
       sound: 'For me it’s important to keep things minimalistic — nothing too flashy. On the darker side, but with a guiding light. Without light, there can be no shadow.',
       firstGig: 'Silodom, Saarbrücken.',
       inspirations:
@@ -111,13 +110,13 @@ const roster: Artist[] = [
   {
     id: 'al-fatmalay',
     name: 'Al-Fatmalay',
-    since: '2024',
     format: 'Digital',
     links: {
       instagram: 'https://www.instagram.com/fatimahamido',
       soundcloud: 'https://on.soundcloud.com/hjSUsqpwY4PvOPNE5y',
     },
     profile: {
+      since: '2024',
       sound: 'An emotional world trip on a flying Arabic carpet — moving between cultures, memories, languages and moods.',
       firstGig: 'My first gig was at an Arabic drag show in Saarbrücken, Germany.',
       inspirations:
@@ -134,7 +133,6 @@ const roster: Artist[] = [
   {
     id: 'bjorn-del-togno',
     name: 'Björn Del Togno',
-    since: '2002',
     format: 'Vinyl, digital, hybrid',
     tags: ['techno'],
     links: {
@@ -142,6 +140,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/PFTt6uhEzif6KvkcBo',
     },
     profile: {
+      since: '2002',
       sound: 'Raw techno, plus minus, with surprises.',
       firstGig: 'Kufa Saarbrücken.',
       inspirations:
@@ -160,7 +159,6 @@ const roster: Artist[] = [
   {
     id: 'contrast',
     name: 'Contrast',
-    since: 'Professionally since 2021',
     format: 'Digital for now, and hopefully live soon',
     tags: ['techno', 'groove', 'breaks'],
     links: {
@@ -168,6 +166,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/buSfJgO9n96eyTqNCs',
     },
     profile: {
+      since: 'Professionally since 2021',
       sound: 'A subtle blend of techno, groove and breaks. I like to fuse my different inspirations during my sets and when I’m producing.',
       firstGig:
         'At a small rave party. I played the warm-up, and I was the only female DJ at the party. That was back in 2015.',
@@ -186,7 +185,6 @@ const roster: Artist[] = [
   {
     id: 'flo-von',
     name: 'Flo.Von',
-    since: 'Not long enough to get tired of it',
     format: 'Digital',
     tags: ['tech house'],
     links: {
@@ -201,6 +199,7 @@ const roster: Artist[] = [
       },
     },
     profile: {
+      since: 'Not long enough to get tired of it',
       sound: 'Techy, soulful, dubby house.',
       firstGig: 'I don’t really care about the first one. I’m more interested in the next one.',
       inspirations:
@@ -225,7 +224,6 @@ const roster: Artist[] = [
   {
     id: 'jona',
     name: 'Jona',
-    since: '2016',
     format: 'Digital',
     tags: ['dnb', 'jungle', 'liquid'],
     links: {
@@ -233,6 +231,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/HgGBNWWM0QT8tS4O4s',
     },
     profile: {
+      since: '2016',
       sound: 'Very energetic and bassheavy for the most part, but I love a good liquid or jungle set as well.',
       firstGig:
         'Osthafenfest 2016 at Silodom with the whole Junglekidz gang. My first big one on my own was at Cassiopeia Berlin a year later.',
@@ -252,7 +251,6 @@ const roster: Artist[] = [
   {
     id: 'lea-lindner',
     name: 'Lea Lindner',
-    since: '2018',
     format: 'Both, vinyl and digital',
     tags: ['techno', 'oldschool', 'electro'],
     links: {
@@ -260,6 +258,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/qG4F9BFO8gDu3WMRqR',
     },
     profile: {
+      since: '2018',
       sound: 'Techno, with a soft spot for oldschool sounds and the occasional touch of electro. I like to experiment and combine different influences, as long as it sounds good.',
       firstGig: 'Electro Magnetic Festival in Völklingen.',
       inspirations:
@@ -279,7 +278,6 @@ const roster: Artist[] = [
   {
     id: 'p-vonschwind',
     name: 'vonSchwind',
-    since: '4 years',
     format: 'Digital',
     tags: ['house'],
     links: {
@@ -287,6 +285,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/wiJKzJRvNxmxR6p0t8',
     },
     profile: {
+      since: '4 years',
       sound: 'A vibrant blend of progressive house, 90s underground dance bangers and influences drawn from every era of queer club culture.',
       firstGig: 'Hunter Thompson.',
       inspirations: 'Björk, Madonna, Deee-Lite, Todd Terry.',
@@ -301,7 +300,6 @@ const roster: Artist[] = [
   {
     id: 'sdb',
     name: 'SDB',
-    since: '8 years',
     format: 'Live',
     tags: ['techno'],
     links: {
@@ -309,6 +307,7 @@ const roster: Artist[] = [
       soundcloud: 'https://soundcloud.com/sdbsb',
     },
     profile: {
+      since: '8 years',
       sound: 'Dirty.',
       firstGig: 'At Mauerpfeiffer Saarbrücken.',
       inspirations: 'Regis, Mhonolink, Dave Clarke, Sedvs, Lorn, Meshuggah, Architects.',
@@ -323,7 +322,6 @@ const roster: Artist[] = [
   {
     id: 'tony-mejeh',
     name: 'Tony Mejeh',
-    since: '2018',
     format: 'Digital, but I can play vinyl as well',
     tags: ['tech house', 'vocals', 'groove'],
     links: {
@@ -331,6 +329,7 @@ const roster: Artist[] = [
       soundcloud: 'https://on.soundcloud.com/MNTjUTVD9NfX2tS3Jt',
     },
     profile: {
+      since: '2018',
       sound: 'Very versatile. Some sets are faster, some a bit slower, but in general you can expect something groovy, catchy and sexy — uplifting tech house, raw tech house, a lot of vocals and repetitive vocal chops.',
       firstGig: 'At the lovely Silodom in Saarbrücken.',
       inspirations:

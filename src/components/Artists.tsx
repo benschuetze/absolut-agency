@@ -143,12 +143,8 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           <div className={styles.panelIntro}>
             <h2 className={styles.panelName}>{artist.name}</h2>
 
-            {artist.since || artist.format ? (
-              <p className={`u-mono ${styles.panelMeta}`}>
-                {artist.since ? <span>{artist.since}</span> : null}
-                {artist.since && artist.format ? <span className={styles.sep}>/</span> : null}
-                {artist.format ? <span>{artist.format}</span> : null}
-              </p>
+            {artist.format ? (
+              <p className={`u-mono ${styles.panelMeta}`}>{artist.format}</p>
             ) : null}
 
             {artist.tags?.length ? (

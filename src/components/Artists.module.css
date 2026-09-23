@@ -237,9 +237,6 @@
   color: var(--ink-38);
 }
 
-.sep {
-  color: var(--ink-22);
-}
 
 .panelTags {
   display: flex;
