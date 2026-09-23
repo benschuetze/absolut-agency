@@ -176,6 +176,58 @@ test.describe('detail access', () => {
   });
 });
 
+test.describe('an artist has an address', () => {
+  test('opening one changes the URL, closing puts it back', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    await page
+      .locator('[data-artist-card]')
+      .filter({ hasText: 'Lea Lindner' })
+      .locator('[data-artist-open]')
+      .click();
+    await expect(page).toHaveURL(/\/artists\/lea-lindner$/);
+    await expect(page).toHaveTitle(/Lea Lindner/);
+
+    await page.keyboard.press('Escape');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('[data-artist-detail]')).toBeHidden();
+  });
+
+  test('the back button closes the panel rather than leaving the site', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    await page.locator('[data-artist-open]').first().click();
+    await expect(page.locator('[data-artist-detail]')).toBeVisible();
+
+    await page.goBack();
+    await expect(page.locator('[data-artist-detail]')).toBeHidden();
+    await expect(page.locator('[data-artist-card]').first()).toBeVisible();
+  });
+
+  test('the URL on its own opens that artist, with the roster behind it', async ({ page }) => {
+    await page.goto('/artists/bjorn-del-togno');
+    await page.waitForLoadState('networkidle');
+
+    const detail = page.locator('[data-artist-detail]');
+    await expect(detail).toBeVisible();
+    await expect(detail).toContainText('Björn Del Togno');
+    // His own words, which is the whole point of the page existing.
+    await expect(detail).toContainText('Kufa Saarbrücken');
+    await expect(page.locator('[data-artist-card]')).toHaveCount(10);
+  });
+
+  test('an id nobody has is the roster, not an error', async ({ page }) => {
+    await page.goto('/artists/does-not-exist');
+    await page.waitForLoadState('networkidle');
+    await settled(page);
+
+    await expect(page.locator('[data-artist-detail]')).toBeHidden();
+    await expect(page.locator('[data-artist-card]')).toHaveCount(10);
+  });
+});
+
 test.describe('a link with two destinations', () => {
   const openFloVon = async (page: Page) => {
     await page.goto('/');

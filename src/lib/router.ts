@@ -5,6 +5,14 @@ export const routes = ['artists', 'about', 'imprint', 'privacy'] as const;
 export type Route = (typeof routes)[number];
 
 /**
+ * Where we are. An artist is not a page of its own — it is the roster with that
+ * artist open, which is exactly what a click already produces. Giving that state
+ * an address is the whole change: the view does not move, but it can now be
+ * linked, shared, found, and rendered to HTML at build time.
+ */
+export type Location = { route: Route; artist?: string };
+
+/**
  * The ones the header offers. The legal pages are reachable and indexable, but
  * they are an obligation rather than a destination — the footer is where people
  * look for them, and putting them beside the roster would say otherwise.
@@ -24,62 +32,84 @@ const PATHS: Record<Exclude<Route, 'artists'>, string> = {
   privacy: '/datenschutz',
 };
 
-function pathToRoute(path: string): Route {
+const ARTIST_PREFIX = '/artists/';
+
+function pathToLocation(path: string): Location {
   const relative = (path.startsWith(BASE) ? path.slice(BASE.length) : path).replace(/\/+$/, '');
+
+  if (relative.startsWith(ARTIST_PREFIX)) {
+    const artist = relative.slice(ARTIST_PREFIX.length);
+    /* An id we do not know is not an error worth a page of its own — it is the
+       roster, which is what someone following a stale link wants to see. */
+    return artist ? { route: 'artists', artist } : { route: 'artists' };
+  }
+
   const hit = (Object.keys(PATHS) as Exclude<Route, 'artists'>[]).find(
     (route) => PATHS[route] === relative
   );
-  return hit ?? 'artists';
+  return { route: hit ?? 'artists' };
 }
 
-export const routeToPath = (route: Route): string =>
-  route === 'artists' ? `${BASE}/` : `${BASE}${PATHS[route]}`;
+export const locationToPath = ({ route, artist }: Location): string => {
+  if (route === 'artists') return artist ? `${BASE}${ARTIST_PREFIX}${artist}` : `${BASE}/`;
+  return `${BASE}${PATHS[route]}`;
+};
+
+/** Kept for the header and footer, which only ever link to whole pages. */
+export const routeToPath = (route: Route): string => locationToPath({ route });
+
+/**
+ * The location to start from when there is no browser — set by the prerender,
+ * which renders each page to HTML at build time so crawlers and link previews
+ * see the site rather than an empty <div id="root">.
+ */
+export let initialLocation: Location | null = null;
+export const setInitialLocation = (location: Location) => {
+  initialLocation = location;
+};
 
 /**
  * Two pages do not justify a routing library. This is the whole router:
  * History API + popstate, with the View Transitions API used for the swap
  * where the browser supports it.
  */
-/**
- * The route to start from when there is no browser — set by the prerender,
- * which renders each page to HTML at build time so crawlers and link previews
- * see the site rather than an empty <div id="root">.
- */
-export let initialRoute: Route | null = null;
-export const setInitialRoute = (route: Route) => {
-  initialRoute = route;
-};
-
-export function useRoute(): [Route, (next: Route) => void] {
-  const [route, setRoute] = useState<Route>(() =>
-    typeof window === 'undefined' ? (initialRoute ?? 'artists') : pathToRoute(window.location.pathname)
+export function useRoute(): [Location, (next: Location) => void] {
+  const [location, setLocation] = useState<Location>(() =>
+    typeof window === 'undefined'
+      ? (initialLocation ?? { route: 'artists' })
+      : pathToLocation(window.location.pathname)
   );
 
   useEffect(() => {
-    const onPop = () => setRoute(pathToRoute(window.location.pathname));
+    const onPop = () => setLocation(pathToLocation(window.location.pathname));
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
   const navigate = useCallback(
-    (next: Route) => {
-      if (next === route) return;
-      window.history.pushState({}, '', routeToPath(next));
+    (next: Location) => {
+      if (next.route === location.route && next.artist === location.artist) return;
+      window.history.pushState({}, '', locationToPath(next));
+
+      /* Opening or closing an artist is not a page change — the roster stays
+         put behind the panel, and animating it would be a flicker rather than
+         a transition. Scrolling would lose the card you clicked, too. */
+      const samePage = next.route === 'artists' && location.route === 'artists';
 
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const startViewTransition = document.startViewTransition?.bind(document);
 
-      if (startViewTransition && !reduced) {
+      if (startViewTransition && !reduced && !samePage) {
         // flushSync so the DOM is already updated when the browser snapshots.
-        startViewTransition(() => flushSync(() => setRoute(next)));
+        startViewTransition(() => flushSync(() => setLocation(next)));
       } else {
-        setRoute(next);
+        setLocation(next);
       }
 
-      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      if (!samePage) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     },
-    [route],
+    [location],
   );
 
-  return [route, navigate];
+  return [location, navigate];
 }

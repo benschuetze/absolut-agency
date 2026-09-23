@@ -16,10 +16,18 @@ import styles from './Artists.module.css';
  * name; everything else lives one click deeper, in a panel that opens for
  * pointer, touch and keyboard alike.
  */
-export function Artists() {
+export function Artists({
+  openId,
+  onOpen,
+  onClose,
+}: {
+  /** Which artist is open — an address now, not internal state. */
+  openId: string | null;
+  onOpen: (id: string) => void;
+  onClose: () => void;
+}) {
   /** Which card is under the pointer or holds focus — drives the dim-the-rest state. */
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [openId, setOpenId] = useState<string | null>(null);
 
   const open = artists.find((a) => a.id === openId) ?? null;
 
@@ -27,9 +35,9 @@ export function Artists() {
      closes — otherwise the tab order restarts at the top of the document. */
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const close = useCallback(() => {
-    setOpenId(null);
+    onClose();
     openerRef.current?.focus();
-  }, []);
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -68,7 +76,7 @@ export function Artists() {
                 onBlur={() => setActiveId((current) => (current === artist.id ? null : current))}
                 onClick={(event) => {
                   openerRef.current = event.currentTarget;
-                  setOpenId(artist.id);
+                  onOpen(artist.id);
                 }}
                 aria-haspopup="dialog"
               >
@@ -113,7 +121,7 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
    * never with the sticky header at z-index 50. On a tall window the panel
    * happened to sit below the header and looked fine; on a short one the header
    * cut the artist's name in half. */
-  return createPortal(
+  const panel = (
     <div className={styles.overlay} data-artist-detail="">
       <button
         type="button"
@@ -178,9 +186,12 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           </section>
         ) : null}
       </div>
-    </div>,
-    document.body
+    </div>
   );
+
+  /* No document at build time, so the prerender renders the panel where it
+     stands. The browser puts it back on the body on first render. */
+  return typeof document === 'undefined' ? panel : createPortal(panel, document.body);
 }
 
 /* Marks that exist as artwork rather than as a path we can draw. Keyed by the

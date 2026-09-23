@@ -1,9 +1,13 @@
 /**
- * Writes a real HTML file for every route.
+ * Writes a real HTML file for every address the site has.
  *
  * Runs after the client build: Vite compiles the app a second time for Node,
- * each route is rendered to a string, and the markup plus that page's own title
- * and description are baked into a copy of the built index.html.
+ * each location is rendered to a string, and the markup plus that page's own
+ * title, description and canonical are baked into a copy of the built shell.
+ *
+ * An artist is not a separate page — it is the roster with that artist's panel
+ * open, which is what a click already produces. Prerendering that state is how
+ * the interviews become findable without the design moving an inch.
  *
  * `dist/404.html` is deliberately left as the empty shell. GitHub Pages serves
  * it for anything unmatched, and an unknown URL should boot the app rather than
@@ -17,37 +21,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(root, 'dist');
 const ssrDir = resolve(root, '.ssr-build');
-
 const ORIGIN = 'https://silodom-agency.com';
-const PAGES = [
-  {
-    route: 'artists',
-    path: '/',
-    title: 'silodom agency — booking & artist management',
-    description:
-      'Booking and artist management from Saarbrücken, out of the Silodom. Ten artists, each with their own sound — techno, house, tech house, drum & bass. Different styles. One home.',
-  },
-  {
-    route: 'about',
-    path: '/about',
-    title: 'About — silodom agency',
-    description:
-      'For over 13 years Silodom has been a home for electronic music in Saarbrücken. The booking agency brings together a selected roster of artists. No hype, no formula.',
-  },
-  {
-    route: 'imprint',
-    path: '/impressum',
-    title: 'Impressum — silodom agency',
-    description: 'Angaben gemäß § 5 DDG für silodom agency, Silodom GbR, Saarbrücken.',
-  },
-  {
-    route: 'privacy',
-    path: '/datenschutz',
-    title: 'Datenschutz — silodom agency',
-    description:
-      'Diese Website setzt keine Cookies, speichert nichts auf Ihrem Gerät und bindet keine fremden Dienste ein.',
-  },
-];
 
 execFileSync(
   'npx',
@@ -56,10 +30,58 @@ execFileSync(
 );
 
 const { render, artists, site } = await import(resolve(ssrDir, 'entry-server.js'));
+const shell = readFileSync(resolve(dist, 'index.html'), 'utf8');
 
-/* Structured data: who the agency is, and who is on the roster. Built from the
-   same data the page renders, so the two cannot drift apart. */
-const structuredData = {
+const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+/** Trimmed to roughly what a search result will actually show. */
+const clamp = (s, max = 155) =>
+  s.length <= max ? s : `${s.slice(0, s.lastIndexOf(' ', max - 1))}…`;
+
+const pages = [
+  {
+    location: { route: 'artists' },
+    path: '/',
+    title: 'silodom agency — booking & artist management',
+    description:
+      'Booking and artist management from Saarbrücken, out of the Silodom. Ten artists, each with their own sound — techno, house, tech house, drum & bass.',
+  },
+  {
+    location: { route: 'about' },
+    path: '/about',
+    title: 'About — silodom agency',
+    description:
+      'For over 13 years Silodom has been a home for electronic music in Saarbrücken. The booking agency brings together a selected roster of artists. No hype, no formula.',
+  },
+  {
+    location: { route: 'imprint' },
+    path: '/impressum',
+    title: 'Impressum — silodom agency',
+    description: 'Angaben gemäß § 5 DDG für silodom agency, Silodom GbR, Saarbrücken.',
+  },
+  {
+    location: { route: 'privacy' },
+    path: '/datenschutz',
+    title: 'Datenschutz — silodom agency',
+    description:
+      'Diese Website setzt keine Cookies, speichert nichts auf Ihrem Gerät und bindet keine fremden Dienste ein.',
+  },
+  ...artists.map((artist) => ({
+    location: { route: 'artists', artist: artist.id },
+    path: `/artists/${artist.id}`,
+    title: `${artist.name} — silodom agency`,
+    /* The artist's own description of their sound, which is both the truest
+       summary of them and the thing a search result should show. */
+    description: clamp(
+      [artist.profile?.sound, artist.tags?.length ? `${artist.tags.join(', ')}.` : null]
+        .filter(Boolean)
+        .join(' ') || `${artist.name} — booking via silodom agency, Saarbrücken.`
+    ),
+    artist,
+  })),
+];
+
+const organisation = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: site.name,
@@ -77,13 +99,26 @@ const structuredData = {
   member: artists.map((artist) => ({
     '@type': 'MusicGroup',
     name: artist.name,
+    url: `${ORIGIN}/artists/${artist.id}`,
     ...(artist.tags?.length ? { genre: artist.tags } : {}),
     ...(artist.links?.instagram || artist.links?.soundcloud
       ? { sameAs: [artist.links.instagram, artist.links.soundcloud].filter(Boolean) }
       : {}),
   })),
 };
-const shell = readFileSync(resolve(dist, 'index.html'), 'utf8');
+
+const musicGroup = (artist) => ({
+  '@context': 'https://schema.org',
+  '@type': 'MusicGroup',
+  name: artist.name,
+  url: `${ORIGIN}/artists/${artist.id}`,
+  ...(artist.profile?.sound ? { description: artist.profile.sound } : {}),
+  ...(artist.tags?.length ? { genre: artist.tags } : {}),
+  ...(artist.links?.instagram || artist.links?.soundcloud
+    ? { sameAs: [artist.links.instagram, artist.links.soundcloud].filter(Boolean) }
+    : {}),
+  memberOf: { '@type': 'Organization', name: site.name, url: `${ORIGIN}/` },
+});
 
 /** Swap a tag's content without disturbing the rest of the head. */
 const swap = (html, pattern, replacement) => {
@@ -91,48 +126,60 @@ const swap = (html, pattern, replacement) => {
   return html.replace(pattern, replacement);
 };
 
-for (const page of PAGES) {
-  const url = `${ORIGIN}${page.path === '/' ? '/' : page.path}`;
+for (const page of pages) {
+  const url = `${ORIGIN}${page.path}`;
+  const title = escape(page.title);
+  const description = escape(page.description);
   let html = shell;
 
-  html = swap(html, /<title>[^<]*<\/title>/, `<title>${page.title}</title>`);
+  html = swap(html, /<title>[^<]*<\/title>/, `<title>${title}</title>`);
   html = swap(
     html,
     /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
-    `<meta name="description" content="${page.description}" />`
+    `<meta name="description" content="${description}" />`
+  );
+  html = swap(html, /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/, `<link rel="canonical" href="${url}" />`);
+  html = swap(
+    html,
+    /<meta\s+property="og:title"\s+content="[^"]*"\s*\/>/,
+    `<meta property="og:title" content="${title}" />`
   );
   html = swap(
     html,
-    /<link rel="canonical" href="[^"]*" \/>/,
-    `<link rel="canonical" href="${url}" />`
+    /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
+    `<meta property="og:description" content="${description}" />`
   );
-  html = swap(
-    html,
-    /<meta property="og:title" content="[^"]*" \/>/,
-    `<meta property="og:title" content="${page.title}" />`
-  );
-  html = swap(
-    html,
-    /<meta property="og:url" content="[^"]*" \/>/,
-    `<meta property="og:url" content="${url}" />`
-  );
-  html = swap(
-    html,
-    /<div id="root"><\/div>/,
-    `<div id="root">${render(page.route)}</div>`
+  html = swap(html, /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/, `<meta property="og:url" content="${url}" />`);
+
+  const data = page.artist ? musicGroup(page.artist) : organisation;
+  html = html.replace(
+    '</head>',
+    `  <script type="application/ld+json">${JSON.stringify(data)}</script>\n  </head>`
   );
 
-  if (page.route === 'artists') {
-    html = html.replace(
-      '</head>',
-      `  <script type="application/ld+json">${JSON.stringify(structuredData)}</script>\n  </head>`
-    );
-  }
+  html = swap(html, /<div id="root"><\/div>/, `<div id="root">${render(page.location)}</div>`);
 
-  const target = page.path === '/' ? resolve(dist, 'index.html') : resolve(dist, page.path.slice(1), 'index.html');
+  const target = page.path === '/' ? resolve(dist, 'index.html') : resolve(dist, `${page.path.slice(1)}/index.html`);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, html);
-  console.log(`prerendered ${page.path.padEnd(14)} ${html.length} bytes`);
+  console.log(`prerendered ${page.path.padEnd(28)} ${String(html.length).padStart(6)} bytes`);
 }
+
+/* The sitemap is generated rather than kept by hand, so adding an artist to the
+   roster adds them to it. */
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages
+  .map(
+    (page) =>
+      `  <url><loc>${ORIGIN}${page.path}</loc><priority>${
+        page.path === '/' ? '1.0' : page.artist ? '0.7' : page.path === '/about' ? '0.8' : '0.1'
+      }</priority></url>`
+  )
+  .join('\n')}
+</urlset>
+`;
+writeFileSync(resolve(dist, 'sitemap.xml'), sitemap);
+console.log(`sitemap.xml  ${pages.length} URLs`);
 
 rmSync(ssrDir, { recursive: true, force: true });

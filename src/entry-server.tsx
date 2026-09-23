@@ -1,6 +1,6 @@
 import { renderToString } from 'react-dom/server';
 import App from './App';
-import { setInitialRoute, type Route } from './lib/router';
+import { setInitialLocation, type Location } from './lib/router';
 
 /**
  * Renders a route to HTML at build time.
@@ -9,8 +9,8 @@ import { setInitialRoute, type Route } from './lib/router';
  * that whoever asks for the URL without running JavaScript — a crawler, a link
  * preview in WhatsApp or Slack — gets the page rather than an empty div.
  */
-export function render(route: Route): string {
-  setInitialRoute(route);
+export function render(location: Location): string {
+  setInitialLocation(location);
   return renderToString(<App />);
 }
 
