@@ -14,10 +14,14 @@
 
   /* Ink — near-black with a cold cast so it sits under the accent. */
   --ink: #111216;
+  /* The two quiet tiers are set by contrast rather than by eye. On this paper
+     0.38 measured 2.4:1 and 0.55 measured 3.9:1 — below the 4.5:1 that text
+     has to clear to be readable in sunlight or with a slight sight
+     impairment. These are the lowest values that clear it, so the hierarchy
+     stays as quiet as it is allowed to be. */
   --ink-80: rgb(17 18 22 / 0.8);
-  --ink-55: rgb(17 18 22 / 0.55);
-  --ink-38: rgb(17 18 22 / 0.38);
-  --ink-22: rgb(17 18 22 / 0.22);
+  --ink-55: rgb(17 18 22 / 0.68); /* 6.2:1 */
+  --ink-38: rgb(17 18 22 / 0.6); /* 4.6:1 */
 
   /* Hairlines. The whole layout is held together by these. */
   --rule: rgb(17 18 22 / 0.15);
@@ -38,7 +42,7 @@
     Menlo, Consolas, monospace;
 
   /* Fluid scale — 360px → 1600px viewport */
-  --t-micro: 0.6875rem; /* 11px, mono labels */
+  --t-micro: 0.75rem; /* 12px, mono labels — 11px counts as illegibly small */
   --t-small: 0.8125rem;
   --t-body: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
   --t-row: clamp(1.5rem, 0.9rem + 2.4vw, 2.75rem);
