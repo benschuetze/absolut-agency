@@ -21,39 +21,6 @@
   min-width: 0;
 }
 
-/* Three stacked bars — a wordmark device rather than a logo we don't have. */
-.mark {
-  display: grid;
-  gap: 2.5px;
-  width: 17px;
-  align-self: center;
-  transform: translateY(-1px);
-}
-
-.mark span {
-  display: block;
-  height: 3px;
-  background: var(--ink);
-  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
-  transform-origin: left;
-}
-
-.mark span:nth-child(2) {
-  background: var(--accent);
-}
-
-.brand:hover .mark span:nth-child(1) {
-  transform: scaleX(0.62);
-}
-
-.brand:hover .mark span:nth-child(2) {
-  transform: scaleX(1);
-}
-
-.brand:hover .mark span:nth-child(3) {
-  transform: scaleX(0.8);
-}
-
 /* Set lowercase, as the agency writes it — and it reads against the all-caps
    roster underneath rather than blending into it. */
 .wordmark {

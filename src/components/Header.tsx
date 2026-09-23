@@ -18,11 +18,6 @@ export function Header({ route, onNavigate }: Props) {
           onNavigate('artists');
         }}
       >
-        <span className={styles.mark} aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </span>
         <span className={styles.wordmark}>{site.name}</span>
         <span className={`u-mono ${styles.descriptor}`}>{site.descriptor}</span>
       </a>

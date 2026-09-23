@@ -5,10 +5,12 @@
    -------------------------------------------------------------------------- */
 
 :root {
-  /* Surface — a warm limestone/bone paper rather than pure white. */
-  --paper: #e8e5de;
-  --paper-hi: #f0eee9;
-  --paper-lo: #ddd9d0;
+  /* Surface — a powdered rose paper. Barely a tint: enough to warm the page
+     and pick up the skin tones in the photography, not enough to name without
+     something to compare it against. */
+  --paper: #f4e9e7;
+  --paper-hi: #faf2f1;
+  --paper-lo: #e7d8d5;
 
   /* Ink — near-black with a cold cast so it sits under the accent. */
   --ink: #111216;
