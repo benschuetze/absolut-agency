@@ -50,9 +50,17 @@ function pathToLocation(path: string): Location {
   return { route: hit ?? 'artists' };
 }
 
+/**
+ * Always with a trailing slash.
+ *
+ * GitHub Pages serves each of these from its own directory and 301s the
+ * slashless form to it. Linking the form it redirects to means no visitor and
+ * no crawler ever takes the detour, and the canonical we publish is the URL
+ * that actually answers.
+ */
 export const locationToPath = ({ route, artist }: Location): string => {
-  if (route === 'artists') return artist ? `${BASE}${ARTIST_PREFIX}${artist}` : `${BASE}/`;
-  return `${BASE}${PATHS[route]}`;
+  if (route === 'artists') return artist ? `${BASE}${ARTIST_PREFIX}${artist}/` : `${BASE}/`;
+  return `${BASE}${PATHS[route]}/`;
 };
 
 /** Kept for the header and footer, which only ever link to whole pages. */

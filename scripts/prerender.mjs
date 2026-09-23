@@ -127,7 +127,8 @@ const swap = (html, pattern, replacement) => {
 };
 
 for (const page of pages) {
-  const url = `${ORIGIN}${page.path}`;
+  /* The URL GitHub Pages actually answers on — it 301s the slashless form. */
+  const url = `${ORIGIN}${page.path === '/' ? '/' : `${page.path}/`}`;
   const title = escape(page.title);
   const description = escape(page.description);
   let html = shell;
@@ -172,7 +173,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 ${pages
   .map(
     (page) =>
-      `  <url><loc>${ORIGIN}${page.path}</loc><priority>${
+      `  <url><loc>${ORIGIN}${page.path === '/' ? '/' : `${page.path}/`}</loc><priority>${
         page.path === '/' ? '1.0' : page.artist ? '0.7' : page.path === '/about' ? '0.8' : '0.1'
       }</priority></url>`
   )

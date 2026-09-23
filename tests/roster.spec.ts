@@ -186,7 +186,7 @@ test.describe('an artist has an address', () => {
       .filter({ hasText: 'Lea Lindner' })
       .locator('[data-artist-open]')
       .click();
-    await expect(page).toHaveURL(/\/artists\/lea-lindner$/);
+    await expect(page).toHaveURL(/\/artists\/lea-lindner\/$/);
     await expect(page).toHaveTitle(/Lea Lindner/);
 
     await page.keyboard.press('Escape');
@@ -326,7 +326,8 @@ test.describe('the legal pages', () => {
       await settled(page);
 
       await page.locator('footer').getByRole('link', { name: label }).click();
-      await expect(page).toHaveURL(new RegExp(`${path}$`));
+      // Trailing slash: the form GitHub Pages serves, so nothing redirects.
+      await expect(page).toHaveURL(new RegExp(`${path}/$`));
       await expect(page.locator('main')).toContainText(marker);
 
       await page.goto(path);
