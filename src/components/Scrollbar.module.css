@@ -37,17 +37,19 @@
     background-color 140ms var(--ease);
 }
 
-/* The panel's rail: a child of the panel, not of the page.
+/* The panel's rail: pinned to the dialog, which does not scroll.
  *
- * Absolute inside the scroller, so it scrolls with the content — and then
- * pushed back down by exactly the amount scrolled, which parks it over the
- * visible part. Where the panel is on the screen never comes into it, which
- * is the point: the panel slides as it opens and the toolbars on a phone
- * move what `fixed` means, and this survives both by never asking. */
+ * Not to the page, so nothing about where the panel sits on screen comes into
+ * it — the panel slides as it opens and a phone's toolbars move what `fixed`
+ * means, and neither can put the two out of step. And not inside the scroller
+ * either: a bar in there has to be pushed back by script on every scroll
+ * event, which on a phone is always a frame behind the compositor, and which
+ * grows the scrollable area as it moves. Here it simply never moves. */
 .rail {
   position: absolute;
   z-index: 5;
   top: 3px;
+  bottom: 3px;
   right: 3px;
   width: 12px;
   pointer-events: none;

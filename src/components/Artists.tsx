@@ -151,13 +151,23 @@ function useStillBehind() {
 }
 
 function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
+  /* The dialog and the thing that scrolls inside it are two elements, not one.
+   *
+   * Which lets the scrollbar hang off the dialog — the part that never moves —
+   * instead of living inside the scroller and being pushed back up by script
+   * on every scroll event. On a phone that script is always a frame behind
+   * what the compositor already painted, which is a bar that shivers as you
+   * scroll; and a bar sitting inside the scroller adds to the scrollable area
+   * as it moves, which iOS rubber-banding turns into a page that never ends. */
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   useStillBehind();
 
   /* Move focus into the panel on open, so the next Tab continues inside it and
-     the close button is one key away. */
+     the close button is one key away — and onto the part that scrolls, so the
+     arrow keys and Page Down reach it. */
   useEffect(() => {
-    panelRef.current?.focus({ preventScroll: true });
+    scrollRef.current?.focus({ preventScroll: true });
   }, [artist.id]);
 
   /* Rendered on the body rather than inside <main>.
@@ -183,59 +193,63 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-label={artist.name}
-        tabIndex={-1}
       >
-        <div className={styles.panelActions}>
-          <Share artist={artist} />
-          <button type="button" className={`u-mono ${styles.closeBtn}`} onClick={onClose}>
-            close
-          </button>
-        </div>
-
-        <div className={styles.panelHead}>
-          <div className={styles.panelArt}>
-            <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
+        <div ref={scrollRef} className={styles.panelScroll} data-artist-scroll="" tabIndex={-1}>
+          <div className={styles.panelActions}>
+            <Share artist={artist} />
+            <button type="button" className={`u-mono ${styles.closeBtn}`} onClick={onClose}>
+              close
+            </button>
           </div>
 
-          <div className={styles.panelIntro}>
-            <h2 className={styles.panelName}>{artist.name}</h2>
+          <div className={styles.panelHead}>
+            <div className={styles.panelArt}>
+              <Artwork id={artist.id} name={artist.name} photo={artist.photo} />
+            </div>
 
-            {artist.format ? <p className={`u-mono ${styles.panelMeta}`}>{artist.format}</p> : null}
+            <div className={styles.panelIntro}>
+              <h2 className={styles.panelName}>{artist.name}</h2>
 
-            {artist.tags?.length ? (
-              <ul className={styles.panelTags}>
-                {artist.tags.map((tag) => (
-                  <li key={tag} className="u-mono">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+              {artist.format ? (
+                <p className={`u-mono ${styles.panelMeta}`}>{artist.format}</p>
+              ) : null}
 
-            <Links artist={artist} />
+              {artist.tags?.length ? (
+                <ul className={styles.panelTags}>
+                  {artist.tags.map((tag) => (
+                    <li key={tag} className="u-mono">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              <Links artist={artist} />
+            </div>
           </div>
+
+          <ProfileList artist={artist} />
+
+          {artist.note ? (
+            <section className={styles.note}>
+              <h3 className={`u-mono ${styles.noteTitle}`}>{artist.note.title}</h3>
+              <p className={styles.answer}>
+                <NoteBody
+                  body={artist.note.body}
+                  mentions={[
+                    ...(artist.links?.other ? [artist.links.other] : []),
+                    ...(artist.note.mentions ?? []),
+                  ]}
+                />
+              </p>
+            </section>
+          ) : null}
         </div>
 
-        <ProfileList artist={artist} />
-
-        {artist.note ? (
-          <section className={styles.note}>
-            <h3 className={`u-mono ${styles.noteTitle}`}>{artist.note.title}</h3>
-            <p className={styles.answer}>
-              <NoteBody
-                body={artist.note.body}
-                mentions={[
-                  ...(artist.links?.other ? [artist.links.other] : []),
-                  ...(artist.note.mentions ?? []),
-                ]}
-              />
-            </p>
-          </section>
-        ) : null}
+        {/* The panel scrolls on its own, so it gets its own — hung on the
+            dialog around it rather than on the scroller itself. */}
+        <Scrollbar within={scrollRef} />
       </div>
-
-      {/* The panel scrolls on its own, so it gets its own. */}
-      <Scrollbar within={panelRef} />
     </div>
   );
 

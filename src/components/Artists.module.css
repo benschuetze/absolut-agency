@@ -149,10 +149,26 @@
   cursor: default;
 }
 
+/* The dialog: a box that holds still. Nothing inside it scrolls this element,
+   which is what lets the scrollbar hang off it and stay put. */
 .panel {
   position: relative;
+  display: flex;
   width: min(760px, 100%);
   max-height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  animation: panel-in var(--dur) var(--ease) both;
+}
+
+/* And the part that moves. */
+.panelScroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Or a flex item refuses to shrink below its content and the panel grows
+     past the screen instead of scrolling. */
+  min-height: 0;
   overflow: auto;
   /* A flick that runs out of panel must not be handed on to the page behind
      it. Without this the page scrolls underneath the dialog, and its own
@@ -160,9 +176,10 @@
      the panel's edge to the edge of the display. */
   overscroll-behavior: contain;
   padding: clamp(1.25rem, 2.5vw, 2.25rem);
-  background: var(--paper);
-  border: 1px solid var(--rule-strong);
-  animation: panel-in var(--dur) var(--ease) both;
+}
+
+.panelScroll:focus-visible {
+  outline: none;
 }
 
 @keyframes fade-in {

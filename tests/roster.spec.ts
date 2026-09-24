@@ -329,7 +329,9 @@ test.describe('an open panel holds the page still', () => {
     await settled(page);
     await open(page);
 
-    await expect(page.locator('[data-artist-detail] [role="dialog"]')).toHaveCSS(
+    /* On the scroller inside the dialog: the dialog itself does not scroll,
+       which is what keeps its scrollbar still. */
+    await expect(page.locator('[data-artist-scroll]')).toHaveCSS(
       'overscroll-behavior-y',
       'contain'
     );
@@ -384,6 +386,50 @@ test.describe('an open panel holds the page still', () => {
      corrected itself and sat a few pixels proud of the panel for as long as
      it stayed open. Sampled from the first frame, because the wrong moment
      to measure is the whole point. */
+  /* Reported from a phone: the panel could be scrolled down forever.
+   *
+   * The bar used to sit inside the scroller and be pushed down by the amount
+   * scrolled, and a box that moves past the end of a scroller's content adds
+   * to what there is to scroll. Getting past the end needs a rubber band, so
+   * this only ever happened on iOS — but the growth itself reproduces in both
+   * engines the moment the push overshoots: 800px of content became 847, then
+   * 894, then 941, once per round, forever.
+   *
+   * No desktop browser will hand a test a position past the end, so what is
+   * asserted here is the arrangement that made it possible: the bar is not
+   * inside the thing that scrolls, and the thing that scrolls does not grow
+   * from being scrolled. */
+  test('the panel has a bottom', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await open(page);
+
+    expect(
+      await page.locator('[data-artist-scroll] [data-scrollbar]').count(),
+      'the bar is not inside the scroller'
+    ).toBe(0);
+    expect(
+      await page.locator('[data-artist-detail] [role="dialog"] > [data-scrollbar]').count(),
+      'it hangs off the dialog, which does not scroll'
+    ).toBe(1);
+
+    const scroller = page.locator('[data-artist-scroll]');
+    const before = await scroller.evaluate((el) => el.scrollHeight);
+
+    for (let i = 0; i < 12; i += 1) {
+      await scroller.evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+        el.dispatchEvent(new Event('scroll'));
+      });
+      await page.waitForTimeout(40);
+    }
+
+    expect(
+      await scroller.evaluate((el) => el.scrollHeight),
+      'and is no taller for having been scrolled to its end'
+    ).toBe(before);
+  });
+
   test('the panel’s scrollbar never hangs over its edge', async ({ page }) => {
     await page.goto('/');
     await settled(page);
@@ -668,7 +714,7 @@ test.describe('the scrollbar', () => {
     await expect(panelBar).toHaveCount(1);
 
     const before = (await panelBar.locator('div').boundingBox())!;
-    await page.locator('[data-artist-detail] [role="dialog"]').evaluate((el) => {
+    await page.locator('[data-artist-scroll]').evaluate((el) => {
       el.scrollTop = el.scrollHeight;
     });
     await page.waitForTimeout(150);

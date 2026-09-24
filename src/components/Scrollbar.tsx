@@ -24,8 +24,6 @@ type Geometry = {
   /** Only for the page's bar, which is placed against the visual viewport. */
   top?: number;
   right?: number;
-  /** Inside a panel: how far the rail is pushed down to cover what is visible. */
-  scrolled?: number;
   height: number;
   thumb: number;
   offset: number;
@@ -98,9 +96,12 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
      * screen. Nothing here can drift, because nothing here is a measurement
      * of where something appeared. */
     if (within) {
+      /* Only two numbers, and both are lengths rather than positions: how long
+         the thumb is, and how far down its own rail it sits. Where that rail
+         is on the screen is the stylesheet's business. */
       const height = el.clientHeight - INSET * 2;
       const thumb = Math.max(MIN_THUMB, (el.clientHeight / el.scrollHeight) * height);
-      return { scrolled: el.scrollTop, height, thumb, offset: progress * (height - thumb) };
+      return { height, thumb, offset: progress * (height - thumb) };
     }
 
     /* The page's bar has no such parent, so it is placed against the visual
@@ -378,7 +379,9 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
   const height = geometry.thumb * (1 - SQUASH * stretch);
   const offset = !live ? geometry.offset : over > 0 ? geometry.height - height : 0;
 
-  const inside = within?.current ?? null;
+  /* Hung on whatever holds the scroller — the dialog, which does not move —
+     rather than inside the scroller itself. */
+  const inside = within?.current?.parentElement ?? null;
 
   return createPortal(
     <div
@@ -386,7 +389,7 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
       className={inside ? styles.rail : styles.bar}
       style={
         inside
-          ? { height: geometry.height, transform: `translateY(${geometry.scrolled}px)` }
+          ? undefined // the stylesheet places it; there is nothing to compute
           : { top: geometry.top, right: geometry.right, height: geometry.height }
       }
       data-visible={visible || dragging ? '' : undefined}
