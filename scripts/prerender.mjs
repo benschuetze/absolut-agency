@@ -14,7 +14,7 @@
  * claim to be the roster.
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -165,13 +165,25 @@ const organisation = {
   })),
 };
 
+/**
+ * The artist's own share image, where there is one.
+ *
+ * An artist without a photograph has no preview cut from it either, and a
+ * link that promises an image the server does not have previews as a broken
+ * one — worse than previewing as the roster, which is what happens instead.
+ */
+const shareImage = (artist) =>
+  existsSync(resolve(root, 'public/share', `${artist.id}.jpg`))
+    ? `${ORIGIN}/share/${artist.id}.jpg`
+    : null;
+
 const musicGroup = (artist) => ({
   '@context': 'https://schema.org',
   '@type': 'MusicGroup',
   name: artist.name,
   url: `${ORIGIN}/artists/${artist.id}`,
   ...(artist.profile?.sound ? { description: artist.profile.sound } : {}),
-  image: `${ORIGIN}/share/${artist.id}.jpg`,
+  ...(shareImage(artist) ? { image: shareImage(artist) } : {}),
   ...(artist.tags?.length ? { genre: artist.tags } : {}),
   ...(artist.links?.instagram || artist.links?.soundcloud
     ? { sameAs: [artist.links.instagram, artist.links.soundcloud].filter(Boolean) }
@@ -238,9 +250,11 @@ for (const page of pages) {
     `<meta property="og:url" content="${url}" />`
   );
 
-  /* An artist's link previews as that artist, not as the roster. */
-  if (page.artist) {
-    const image = `${ORIGIN}/share/${page.artist.id}.jpg`;
+  /* An artist's link previews as that artist, not as the roster — unless
+     there is no picture of them, in which case the roster is the honest
+     answer. */
+  const image = page.artist ? shareImage(page.artist) : null;
+  if (page.artist && image) {
     html = swap(
       html,
       /<meta\s+property="og:image"\s+content="[^"]*"\s*\/>/,
