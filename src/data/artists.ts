@@ -2,6 +2,7 @@ import abscure from '../assets/artists/abscure.webp';
 import alFatmalay from '../assets/artists/al-fatmalay.webp';
 import bjornDelTogno from '../assets/artists/bjorn-del-togno.webp';
 import contrast from '../assets/artists/contrast.webp';
+import floVon from '../assets/artists/flo-von.webp';
 import jona from '../assets/artists/jona.webp';
 import leaLindner from '../assets/artists/lea-lindner.webp';
 import vonSchwind from '../assets/artists/vonschwind.webp';
@@ -219,6 +220,7 @@ const roster: Artist[] = [
       ],
       body: 'Besides my own productions and DJ gigs, I started zerrro in 2023 with my friends Tim Klein & Max Metzinger. It’s our little independent label and music project, combining our own releases with curated playlists, sample packs, plugins, mastering services, and a new AI-powered browser version. What’s important to us is not just promoting ourselves or established artists, but supporting smaller artists and giving something back to the scene we’re part of. We work with partners like MuseHub, SubmitHub, Groover and PlaylistPush, and are basically trying to build something useful for artists and producers along the way.',
     },
+    photo: floVon,
   },
   {
     id: 'jona',
