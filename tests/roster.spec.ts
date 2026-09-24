@@ -377,6 +377,31 @@ test.describe('an open panel holds the page still', () => {
     expect(await page.evaluate(() => window.scrollY), 'and comes back on close').toBe(before);
   });
 
+  /* Reported twice from a phone, in Safari and in Chrome: the panel's own
+     scrollbar hangs over the edge of the panel. The panel slides up as it
+     opens, and the bar was measured once on the way — a resize observer
+     reports a box that changes size, not one that moves, so it never
+     corrected itself and sat a few pixels proud of the panel for as long as
+     it stayed open. Sampled from the first frame, because the wrong moment
+     to measure is the whole point. */
+  test('the panel’s scrollbar never hangs over its edge', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await open(page);
+
+    const panel = page.locator('[data-artist-detail] [role="dialog"]');
+    const bar = page.locator('[data-scrollbar="panel"]');
+
+    for (const wait of [60, 140, 140, 200, 400, 700]) {
+      await page.waitForTimeout(wait);
+      const p = (await panel.boundingBox())!;
+      const b = (await bar.boundingBox())!;
+      expect(b.y, 'top edge').toBeGreaterThanOrEqual(p.y - 0.5);
+      expect(b.y + b.height, 'bottom edge').toBeLessThanOrEqual(p.y + p.height + 0.5);
+      expect(b.x + b.width, 'right edge').toBeLessThanOrEqual(p.x + p.width + 0.5);
+    }
+  });
+
   test('the page’s own scrollbar steps aside for the panel’s', async ({ page }) => {
     await page.goto('/');
     await settled(page);

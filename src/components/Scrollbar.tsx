@@ -132,6 +132,29 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     observer.observe(within?.current ?? document.documentElement);
     if (!within) observer.observe(document.body);
 
+    /* A target that is still arriving.
+     *
+     * The panel slides up as it opens, and a resize observer reports a box
+     * that changes size, not one that moves — so measuring once at mount
+     * froze the bar a few pixels above where the panel came to rest, and it
+     * hung over the edge for as long as the panel stayed open. So: follow it
+     * for as long as it is animating, then stop. Nothing animates on the
+     * page itself, where this ends after one frame. */
+    let following = 0;
+    const follow = () => {
+      update();
+      const el = within?.current;
+      const moving = el && typeof el.getAnimations === 'function' && el.getAnimations().length > 0;
+      if (moving) following = requestAnimationFrame(follow);
+    };
+    following = requestAnimationFrame(follow);
+
+    /* And in case the animation is one this cannot see — a transition on an
+       ancestor, a font arriving and changing the height. */
+    const settled = within?.current;
+    settled?.addEventListener('animationend', update);
+    settled?.addEventListener('transitionend', update);
+
     /* And when something takes the scrolling away outright — a panel pinning
        the page behind it — it says so. A resize observer does not fire for a
        body that keeps its size and loses its overflow, so without this the
@@ -142,6 +165,9 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     return () => {
       window.clearTimeout(idleTimer.current);
       target.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(following);
+      settled?.removeEventListener('animationend', update);
+      settled?.removeEventListener('transitionend', update);
       window.removeEventListener('resize', update);
       window.removeEventListener(REMEASURE, update);
       window.visualViewport?.removeEventListener('resize', update);
