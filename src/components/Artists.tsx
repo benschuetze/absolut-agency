@@ -39,7 +39,10 @@ export function Artists({
   const openerRef = useRef<HTMLElement | null>(null);
   const close = useCallback(() => {
     onClose();
-    openerRef.current?.focus();
+    /* Without preventScroll the browser nudges the card into view as it takes
+       focus, which lands a few pixels off the position the panel gave back —
+       the card you clicked moves out from under you on the way out. */
+    openerRef.current?.focus({ preventScroll: true });
   }, [onClose]);
 
   useEffect(() => {
@@ -117,13 +120,42 @@ export function Artists({
   );
 }
 
+/**
+ * Holds the page still while a panel is open.
+ *
+ * `overflow: hidden` is not enough on a phone, where a touch keeps scrolling
+ * whatever is underneath regardless — so the body is fixed at the offset it
+ * had, which leaves it looking untouched while giving it nothing to scroll,
+ * and put back on the way out. Restoring that offset is also what keeps the
+ * card you clicked under your thumb when the panel closes.
+ */
+function useStillBehind() {
+  useEffect(() => {
+    const body = document.body;
+    const y = window.scrollY;
+    const had = { position: body.style.position, top: body.style.top, width: body.style.width };
+
+    body.style.position = 'fixed';
+    body.style.top = `-${y}px`;
+    body.style.width = '100%';
+
+    return () => {
+      body.style.position = had.position;
+      body.style.top = had.top;
+      body.style.width = had.width;
+      window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+    };
+  }, []);
+}
+
 function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
   const panelRef = useRef<HTMLDivElement | null>(null);
+  useStillBehind();
 
   /* Move focus into the panel on open, so the next Tab continues inside it and
      the close button is one key away. */
   useEffect(() => {
-    panelRef.current?.focus();
+    panelRef.current?.focus({ preventScroll: true });
   }, [artist.id]);
 
   /* Rendered on the body rather than inside <main>.

@@ -68,14 +68,21 @@
   transition: transform var(--dur) var(--ease);
 }
 
-.tab:hover {
-  color: var(--ink);
-}
+/* Hover, only where there is something to hover with.
+ *
+ * A touch screen hands :hover to whatever was tapped last and keeps it there
+ * until something else is tapped — so switching tabs left the tab you came
+ * from drawing its underline, which is what it looked like on a phone. */
+@media (hover: hover) and (pointer: fine) {
+  .tab:hover {
+    color: var(--ink);
+  }
 
-.tab:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-  background: var(--ink-38);
+  .tab:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+    background: var(--ink-38);
+  }
 }
 
 .tab[data-active] {

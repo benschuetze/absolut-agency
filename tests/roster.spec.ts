@@ -311,6 +311,109 @@ test.describe('sharing an artist', () => {
    Which means all of it has to be tested: that the platform's is gone, that
    ours tracks the content, that it can be dragged, that it gets out of the
    way, and that it never swallows a click meant for the page. */
+/* Reported from a phone: flick the detail panel to its end and the page
+   behind it takes over the flick — you can watch the roster move under the
+   dialog, and the page's own scrollbar, a whole screen tall, appears to be
+   the panel's running past its edge. One cause, two symptoms. */
+test.describe('an open panel holds the page still', () => {
+  /* Dispatched rather than clicked: Playwright scrolls an element into view
+     before clicking it, and the first card sits at the top — which would put
+     the page back at zero and quietly test nothing. */
+  const open = async (page: Page) => {
+    await page.locator('[data-artist-open]').first().dispatchEvent('click');
+    await expect(page.locator('[data-artist-detail]')).toBeVisible();
+  };
+
+  test('the flick stops at the panel, it is not handed on', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await open(page);
+
+    await expect(page.locator('[data-artist-detail] [role="dialog"]')).toHaveCSS(
+      'overscroll-behavior-y',
+      'contain'
+    );
+  });
+
+  test('nothing scrolls the page while a panel is open', async ({ page, isMobile }) => {
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, 700));
+    await page.waitForTimeout(150);
+    const before = await page.evaluate(() => window.scrollY);
+
+    await open(page);
+
+    // Everything that could move it: the wheel, a programmatic scroll, keys.
+    if (!isMobile) {
+      await page.mouse.move(40, 400);
+      await page.mouse.wheel(0, 900);
+      await page.keyboard.press('End');
+    }
+    await page.evaluate(() => window.scrollTo(0, 4000));
+    /* And a finger on the scrim, which is the phone's way of doing it — the
+       one the report was about. */
+    await page.locator('[class*="scrim"]').dispatchEvent('touchstart');
+    await page.evaluate(() => window.scrollBy(0, 900));
+
+    /* Long enough for Chrome to finish with the wheel. It animates a wheel
+       scroll, and a turn delivered while the page is pinned is still its to
+       finish — it lands the moment the page can move again, which is after
+       the close and has nothing to do with what is being asserted here. */
+    await page.waitForTimeout(600);
+
+    const during = await page.evaluate(() => window.scrollY);
+    expect(during, 'the page behind the dialog stays put').toBe(0);
+
+    /* 0 because the page is pinned, not because it jumped to the top: the
+       offset is held on the body and handed back on close, which is what
+       keeps the card you clicked under your thumb. */
+    const held = await page.evaluate(() => document.body.style.top);
+    expect(held).toBe(`-${before}px`);
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-artist-detail]')).toBeHidden();
+    await page.waitForTimeout(200);
+    expect(await page.evaluate(() => window.scrollY), 'and comes back on close').toBe(before);
+  });
+
+  test('the page’s own scrollbar steps aside for the panel’s', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await open(page);
+
+    /* With nothing left to scroll behind it, the page has no bar to draw —
+       so the only one on screen is the panel's, which is the one that
+       belongs to what is moving. */
+    await expect(page.locator('[data-scrollbar="page"]')).toHaveCount(0);
+    await expect(page.locator('[data-scrollbar="panel"]')).toHaveCount(1);
+  });
+});
+
+/* Reported from Chrome on iOS: switch tabs and the tab you came from replays
+   its underline. Nothing is animating it — a touch screen hands :hover to
+   whatever was tapped last and keeps it there, so the old tab was simply
+   still being hovered. */
+test.describe('touch leaves no hover behind', () => {
+  test('a tab keeps its underline to itself', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'about what a touch screen does');
+
+    await page.goto('/');
+    await settled(page);
+
+    const inactive = page.locator('header a[href="/about/"]');
+    await inactive.hover();
+    await page.waitForTimeout(600); // longer than the underline takes to draw
+
+    const drawn = await inactive.evaluate((el) => {
+      const t = getComputedStyle(el, '::after').transform;
+      // matrix(a, b, c, d, e, f) — `a` is the horizontal scale.
+      return t === 'none' ? 0 : Number(t.slice(t.indexOf('(') + 1).split(',')[0]);
+    });
+    expect(drawn, 'the underline of a tab that is not the page you are on').toBe(0);
+  });
+});
+
 test.describe('the scrollbar', () => {
   const bar = (page: Page) => page.locator('[data-scrollbar="page"]');
   const thumb = (page: Page) => bar(page).locator('div');

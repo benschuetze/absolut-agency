@@ -80,7 +80,9 @@
     color var(--dur) var(--ease);
 }
 
-.email:hover {
-  color: var(--accent);
-  background-size: 100% 2px;
+@media (hover: hover) and (pointer: fine) {
+  .email:hover {
+    color: var(--accent);
+    background-size: 100% 2px;
+  }
 }

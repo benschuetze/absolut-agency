@@ -154,6 +154,11 @@
   width: min(760px, 100%);
   max-height: 100%;
   overflow: auto;
+  /* A flick that runs out of panel must not be handed on to the page behind
+     it. Without this the page scrolls underneath the dialog, and its own
+     scrollbar — a full screen tall — appears to be this panel's, running past
+     the panel's edge to the edge of the display. */
+  overscroll-behavior: contain;
   padding: clamp(1.25rem, 2.5vw, 2.25rem);
   background: var(--paper);
   border: 1px solid var(--rule-strong);
@@ -209,12 +214,21 @@
     border-color var(--dur-fast) var(--ease);
 }
 
-.closeBtn:hover,
+/* Focus stays unconditional — a keyboard exists on touch devices too — while
+   hover is only for pointers, which cannot leave it stuck on a tapped
+   button. */
 .closeBtn:focus-visible,
-.shareBtn:hover,
 .shareBtn:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .closeBtn:hover,
+  .shareBtn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
 }
 
 .shareBtn {
@@ -324,12 +338,18 @@
   height: 1.05rem;
 }
 
-.panelLinks a:hover,
 .panelLinks a:focus-visible,
-.panelLinks button:hover,
 .panelLinks button:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panelLinks a:hover,
+  .panelLinks button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
 }
 
 /* The sphere is a raster, not a path, so it is worn as a mask and takes its

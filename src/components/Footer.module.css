@@ -39,13 +39,16 @@
   transition: transform var(--dur) var(--ease);
 }
 
-.links a:hover {
-  color: var(--accent);
-}
+/* See the header: a tapped link keeps :hover on a touch screen. */
+@media (hover: hover) and (pointer: fine) {
+  .links a:hover {
+    color: var(--accent);
+  }
 
-.links a:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
+  .links a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 @media (max-width: 860px) {
