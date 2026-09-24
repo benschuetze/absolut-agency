@@ -34,6 +34,16 @@ export default defineConfig({
       name: 'mobile',
       use: { ...devices['iPhone 13'] },
     },
+    {
+      /* The third engine, for the one thing on this site that replaces what
+         the engine itself would draw. Gecko suppresses its scrollbars through
+         a different declaration than Blink and WebKit do, so "it works in
+         Chrome" says nothing about it. Only those tests: the rest of the site
+         is the same HTML everywhere. */
+      name: 'firefox-scrollbar',
+      use: { ...devices['Desktop Firefox'], viewport: { width: 1280, height: 860 } },
+      grep: /the scrollbar/,
+    },
   ],
 
   webServer: {

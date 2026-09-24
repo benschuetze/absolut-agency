@@ -1,0 +1,52 @@
+/* --------------------------------------------------------------------------
+   The scrollbar.
+
+   Drawn rather than inherited, so a phone, a Mac and a Windows machine all
+   show the same thing. The strip itself never takes a click — only the thumb
+   does, and only while it is on screen.
+   -------------------------------------------------------------------------- */
+
+.bar {
+  position: fixed;
+  z-index: 9500;
+  width: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 280ms var(--ease);
+}
+
+.bar[data-visible] {
+  opacity: 1;
+}
+
+.thumb {
+  width: 6px;
+  margin-left: 3px;
+  border-radius: 999px;
+  background: rgb(17 18 22 / 0.3);
+  pointer-events: auto;
+  transition:
+    width 140ms var(--ease),
+    margin-left 140ms var(--ease),
+    background-color 140ms var(--ease);
+}
+
+/* Invisible means untouchable, or the right-hand edge of every page would
+   swallow clicks meant for what is underneath. */
+.bar:not([data-visible]) .thumb {
+  pointer-events: none;
+}
+
+.thumb:hover,
+.thumb[data-dragging] {
+  width: 10px;
+  margin-left: 1px;
+  background: rgb(17 18 22 / 0.48);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .thumb {
+    transition: none;
+  }
+}

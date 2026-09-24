@@ -4,6 +4,7 @@ import { Artists } from './components/Artists';
 import { Footer } from './components/Footer';
 import { Imprint, Privacy } from './components/Legal';
 import { Header } from './components/Header';
+import { Scrollbar } from './components/Scrollbar';
 import { artists } from './data/artists';
 import { site } from './data/site';
 import { useRoute } from './lib/router';
@@ -46,6 +47,9 @@ export default function App() {
         )}
       </main>
       <Footer onNavigate={(next) => navigate({ route: next })} />
+
+      {/* Ours rather than the platform's, so every machine shows the same one. */}
+      <Scrollbar />
     </>
   );
 }

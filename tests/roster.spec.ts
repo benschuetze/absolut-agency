@@ -306,6 +306,205 @@ test.describe('sharing an artist', () => {
    No desktop browser produces that gap, so the tests produce it themselves:
    the offsets are published as custom properties, and these set them by hand
    and check that what is pinned gets out of the way. */
+/* The scrollbar is ours on every platform, because Windows and Linux draw a
+   wide grey trough with arrow buttons and that does not belong on this page.
+   Which means all of it has to be tested: that the platform's is gone, that
+   ours tracks the content, that it can be dragged, that it gets out of the
+   way, and that it never swallows a click meant for the page. */
+test.describe('the scrollbar', () => {
+  const bar = (page: Page) => page.locator('[data-scrollbar="page"]');
+  const thumb = (page: Page) => bar(page).locator('div');
+
+  const box = async (page: Page) => (await thumb(page).boundingBox())!;
+
+  test('the platform draws none of its own', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    await expect(page.locator('html')).toHaveAttribute('data-scrollbars', 'custom');
+
+    /* Not measured as reserved width: every browser a test can drive here
+       already uses overlay scrollbars, so that measurement reads 0 whether
+       the suppression works or not — it would have passed on the very page
+       whose screenshot showed a Windows trough. What is asserted instead is
+       the two declarations that remove that trough, on the page and on the
+       artist panel, each read back from what the browser computed. */
+    await page.locator('[data-artist-open]').first().click();
+    await expect(page.locator('[data-artist-detail]')).toBeVisible();
+
+    const suppressed = await page.evaluate(() => {
+      /* Gecko has no `::-webkit-scrollbar`, and asking it for one back gets
+         the element's own width — which is why that half is only read where
+         the selector exists. Each engine is checked on the declaration that
+         actually silences it. */
+      const hasWebkitPseudo = CSS.supports('selector(::-webkit-scrollbar)');
+      const read = (el: Element) => ({
+        standard: getComputedStyle(el).scrollbarWidth,
+        webkit: hasWebkitPseudo ? getComputedStyle(el, '::-webkit-scrollbar').width : null,
+      });
+      return {
+        hasWebkitPseudo,
+        page: read(document.documentElement),
+        panel: read(document.querySelector('[data-artist-detail] [role=dialog]')!),
+      };
+    });
+
+    expect(suppressed.page.standard, 'page: the standard property').toBe('none');
+    expect(suppressed.panel.standard, 'panel: the standard property').toBe('none');
+
+    if (suppressed.hasWebkitPseudo) {
+      expect(suppressed.page.webkit, 'page: Chrome and Safari').toBe('0px');
+      expect(suppressed.panel.webkit, 'panel: Chrome and Safari').toBe('0px');
+    }
+  });
+
+  test('it tracks the page, and lets go again', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(1200); // past the flash on arrival
+    await expect(bar(page)).toHaveCSS('opacity', '0');
+
+    await page.evaluate(() => window.scrollTo(0, 800));
+    await page.waitForTimeout(120);
+    await expect(bar(page)).toHaveAttribute('data-visible', '');
+    const moved = await box(page);
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(120);
+    const home = await box(page);
+    expect(moved.y, 'the thumb follows the page down').toBeGreaterThan(home.y);
+
+    // And it fades once the page is still.
+    await page.waitForTimeout(1300);
+    await expect(bar(page)).toHaveCSS('opacity', '0');
+  });
+
+  test('its length says how much page there is', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, 400));
+    await page.waitForTimeout(120);
+
+    const { height } = await box(page);
+    const expected = await page.evaluate(() => {
+      const el = document.scrollingElement!;
+      const track = (window.visualViewport?.height ?? window.innerHeight) - 6;
+      return Math.max(28, (el.clientHeight / el.scrollHeight) * track);
+    });
+    expect(Math.abs(height - expected), 'thumb length matches the viewport share').toBeLessThan(2);
+  });
+
+  test('it can be dragged', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, 'a finger drags the page, not the bar');
+
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, 200));
+    await page.waitForTimeout(120);
+
+    const start = await box(page);
+    await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2 + 120, {
+      steps: 8,
+    });
+    await page.mouse.up();
+
+    const after = await page.evaluate(() => window.scrollY);
+    expect(after, 'dragging the thumb down scrolls the page down').toBeGreaterThan(200);
+  });
+
+  test('it squashes against the end of the page', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, 'no wheel on a touch device');
+
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(150);
+    const resting = await box(page);
+
+    /* Kept pushed for the length of the check rather than shoved once and
+       measured after a fixed pause: the squash lets go a beat after the last
+       turn of the wheel, so a single shove means the assertion races the
+       spring — and loses on a loaded machine. A trackpad held down delivers
+       these about every 16ms, which is what this is. */
+    await page.evaluate(() => {
+      (window as unknown as { pushing: number }).pushing = window.setInterval(
+        () => window.dispatchEvent(new WheelEvent('wheel', { deltaY: 120 })),
+        16
+      );
+    });
+
+    await expect
+      .poll(async () => (await box(page)).height, { timeout: 2000 })
+      .toBeLessThan(resting.height - 4);
+
+    const squashed = await box(page);
+    expect(
+      Math.round(squashed.y + squashed.height),
+      'and stays against the end it ran into'
+    ).toBeCloseTo(Math.round(resting.y + resting.height), -1);
+
+    // Let go, and it springs back.
+    await page.evaluate(() =>
+      window.clearInterval((window as unknown as { pushing: number }).pushing)
+    );
+    await expect
+      .poll(async () => Math.abs((await box(page)).height - resting.height), { timeout: 2000 })
+      .toBeLessThan(2);
+  });
+
+  test('an invisible bar swallows no clicks', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page.waitForTimeout(1300); // let it fade
+
+    const hit = await page.evaluate(() => {
+      const x = (window.visualViewport?.width ?? window.innerWidth) - 8;
+      const el = document.elementFromPoint(x, window.innerHeight / 2);
+      return el?.closest('[data-scrollbar]') ? 'the scrollbar' : 'the page';
+    });
+    expect(hit).toBe('the page');
+  });
+
+  test('the artist panel gets one of its own', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page.locator('[data-artist-open]').first().click();
+    await expect(page.locator('[data-artist-detail]')).toBeVisible();
+
+    const panelBar = page.locator('[data-scrollbar="panel"]');
+    await expect(panelBar).toHaveCount(1);
+
+    const before = (await panelBar.locator('div').boundingBox())!;
+    await page.locator('[data-artist-detail] [role="dialog"]').evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    await page.waitForTimeout(150);
+    const after = (await panelBar.locator('div').boundingBox())!;
+    expect(after.y, 'the panel’s own thumb follows the panel').toBeGreaterThan(before.y);
+
+    // It sits inside the panel, not at the edge of the window.
+    const panel = (await page.locator('[data-artist-detail] [role="dialog"]').boundingBox())!;
+    expect(after.x).toBeLessThan(panel.x + panel.width);
+    expect(after.x).toBeGreaterThan(panel.x);
+  });
+
+  test('the keyboard still scrolls', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, 'no hardware keyboard');
+
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.locator('body').click({ position: { x: 5, y: 5 } });
+    await page.keyboard.press('End');
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
+  });
+});
+
 test.describe('pinned things keep clear of a phone’s toolbars', () => {
   /* An address bar at the top, and something the size of Chrome for iOS's
      toolbar at the bottom — enough that anything already sitting above the

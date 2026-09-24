@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
 import { Choose, type Destination } from './Choose';
+import { Scrollbar } from './Scrollbar';
 import { Copied } from './Copied';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
 import { locationToPath } from '../lib/router';
@@ -198,6 +199,9 @@ function Detail({ artist, onClose }: { artist: Artist; onClose: () => void }) {
           </section>
         ) : null}
       </div>
+
+      {/* The panel scrolls on its own, so it gets its own. */}
+      <Scrollbar within={panelRef} />
     </div>
   );
 

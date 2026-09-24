@@ -10,6 +10,21 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* The platform's own scrollbars, gone — but only once ours is mounted and
+   measuring, so a page whose script never arrives keeps something to drag.
+   Windows and Linux draw a wide grey trough with arrows at the ends; this is
+   the only way all three platforms show the same thin overlay bar. */
+html[data-scrollbars='custom'],
+html[data-scrollbars='custom'] * {
+  scrollbar-width: none;
+}
+
+html[data-scrollbars='custom']::-webkit-scrollbar,
+html[data-scrollbars='custom'] *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 body,
 h1,
 h2,
