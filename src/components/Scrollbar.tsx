@@ -20,7 +20,16 @@ const MAX_OVER = 110;
 /** How much of the thumb the squash eats at full stretch. */
 const SQUASH = 0.6;
 
-type Geometry = { top: number; right: number; height: number; thumb: number; offset: number };
+type Geometry = {
+  /** Only for the page's bar, which is placed against the visual viewport. */
+  top?: number;
+  right?: number;
+  /** Inside a panel: how far the rail is pushed down to cover what is visible. */
+  scrolled?: number;
+  height: number;
+  thumb: number;
+  offset: number;
+};
 
 /** Whether this reader asked the system for less movement. */
 function usePrefersCalm() {
@@ -76,26 +85,32 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     const range = el.scrollHeight - el.clientHeight;
     if (range <= 1) return null;
 
-    /* Hung on the right edge rather than placed at a computed x, so how wide
-       it is stays a question for the stylesheet — which is where the phone and
-       the desktop answer it differently. */
-    let top: number, right: number, height: number;
-    if (within && within.current) {
-      const r = within.current.getBoundingClientRect();
-      top = r.top + INSET;
-      right = window.innerWidth - r.right;
-      height = r.height - INSET * 2;
-    } else {
-      /* The visual viewport rather than the window: on iOS part of the window
-         is behind the toolbars, and a bar drawn there is a bar nobody sees. */
-      const v = window.visualViewport;
-      top = (v?.offsetTop ?? 0) + INSET;
-      right = window.innerWidth - ((v?.offsetLeft ?? 0) + (v?.width ?? window.innerWidth));
-      height = (v?.height ?? window.innerHeight) - INSET * 2;
+    const progress = el.scrollTop / range;
+
+    /* A panel's bar lives inside the panel, and the browser places it.
+     *
+     * Measuring where a panel is on the screen and drawing a fixed bar there
+     * means the two can disagree — and they did: the panel slides as it
+     * opens, the toolbars on a phone move what `fixed` even means, and every
+     * correction is a frame late. So the bar is a child of the scroller
+     * instead, pushed down by exactly as far as the scroller is scrolled,
+     * which puts it over the visible part without asking anything about the
+     * screen. Nothing here can drift, because nothing here is a measurement
+     * of where something appeared. */
+    if (within) {
+      const height = el.clientHeight - INSET * 2;
+      const thumb = Math.max(MIN_THUMB, (el.clientHeight / el.scrollHeight) * height);
+      return { scrolled: el.scrollTop, height, thumb, offset: progress * (height - thumb) };
     }
 
+    /* The page's bar has no such parent, so it is placed against the visual
+       viewport — on iOS part of the window is behind the toolbars, and a bar
+       drawn there is a bar nobody sees. */
+    const v = window.visualViewport;
+    const top = (v?.offsetTop ?? 0) + INSET;
+    const right = window.innerWidth - ((v?.offsetLeft ?? 0) + (v?.width ?? window.innerWidth));
+    const height = (v?.height ?? window.innerHeight) - INSET * 2;
     const thumb = Math.max(MIN_THUMB, (el.clientHeight / el.scrollHeight) * height);
-    const progress = el.scrollTop / range;
     return { top, right, height, thumb, offset: progress * (height - thumb) };
   }, [scroller, within]);
 
@@ -363,11 +378,17 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
   const height = geometry.thumb * (1 - SQUASH * stretch);
   const offset = !live ? geometry.offset : over > 0 ? geometry.height - height : 0;
 
+  const inside = within?.current ?? null;
+
   return createPortal(
     <div
       ref={barRef}
-      className={styles.bar}
-      style={{ top: geometry.top, right: geometry.right, height: geometry.height }}
+      className={inside ? styles.rail : styles.bar}
+      style={
+        inside
+          ? { height: geometry.height, transform: `translateY(${geometry.scrolled}px)` }
+          : { top: geometry.top, right: geometry.right, height: geometry.height }
+      }
       data-visible={visible || dragging ? '' : undefined}
       data-scrollbar={within ? 'panel' : 'page'}
       aria-hidden="true"
@@ -382,6 +403,6 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
         onPointerCancel={endDrag}
       />
     </div>,
-    document.body
+    inside ?? document.body
   );
 }

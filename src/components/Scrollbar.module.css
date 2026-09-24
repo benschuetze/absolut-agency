@@ -37,6 +37,38 @@
     background-color 140ms var(--ease);
 }
 
+/* The panel's rail: a child of the panel, not of the page.
+ *
+ * Absolute inside the scroller, so it scrolls with the content — and then
+ * pushed back down by exactly the amount scrolled, which parks it over the
+ * visible part. Where the panel is on the screen never comes into it, which
+ * is the point: the panel slides as it opens and the toolbars on a phone
+ * move what `fixed` means, and this survives both by never asking. */
+.rail {
+  position: absolute;
+  z-index: 5;
+  top: 3px;
+  right: 3px;
+  width: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 280ms var(--ease);
+}
+
+.rail[data-visible] {
+  opacity: 1;
+}
+
+.rail:not([data-visible]) .thumb {
+  pointer-events: none;
+}
+
+@media (pointer: coarse) {
+  .rail {
+    width: 7px;
+  }
+}
+
 /* Invisible means untouchable, or the right-hand edge of every page would
    swallow clicks meant for what is underneath. */
 .bar:not([data-visible]) .thumb {

@@ -55,6 +55,12 @@
   transition: color var(--dur-fast) var(--ease);
 }
 
+/* Drawn in, never drawn out.
+ *
+ * The transition lives on the active state rather than on the tab, so it
+ * plays when a tab becomes the page you are on and not when it stops being
+ * one: switching tabs used to leave the old underline retracting for half a
+ * second, which on a phone reads as the tab you just left flickering. */
 .tab::after {
   content: '';
   position: absolute;
@@ -65,7 +71,6 @@
   background: var(--ink);
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform var(--dur) var(--ease);
 }
 
 /* Hover, only where there is something to hover with.
@@ -82,6 +87,7 @@
     transform: scaleX(1);
     transform-origin: left;
     background: var(--ink-38);
+    transition: transform var(--dur-fast) var(--ease);
   }
 }
 
@@ -93,4 +99,5 @@
   transform: scaleX(1);
   transform-origin: left;
   background: var(--ink);
+  transition: transform var(--dur) var(--ease);
 }
