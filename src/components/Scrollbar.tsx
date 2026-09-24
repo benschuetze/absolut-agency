@@ -13,7 +13,7 @@ const MAX_OVER = 110;
 /** How much of the thumb the squash eats at full stretch. */
 const SQUASH = 0.6;
 
-type Geometry = { top: number; left: number; height: number; thumb: number; offset: number };
+type Geometry = { top: number; right: number; height: number; thumb: number; offset: number };
 
 /** Whether this reader asked the system for less movement. */
 function usePrefersCalm() {
@@ -69,24 +69,27 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     const range = el.scrollHeight - el.clientHeight;
     if (range <= 1) return null;
 
-    let top: number, left: number, height: number;
+    /* Hung on the right edge rather than placed at a computed x, so how wide
+       it is stays a question for the stylesheet — which is where the phone and
+       the desktop answer it differently. */
+    let top: number, right: number, height: number;
     if (within && within.current) {
       const r = within.current.getBoundingClientRect();
       top = r.top + INSET;
-      left = r.right - INSET - 12;
+      right = window.innerWidth - r.right;
       height = r.height - INSET * 2;
     } else {
       /* The visual viewport rather than the window: on iOS part of the window
          is behind the toolbars, and a bar drawn there is a bar nobody sees. */
       const v = window.visualViewport;
       top = (v?.offsetTop ?? 0) + INSET;
-      left = (v?.offsetLeft ?? 0) + (v?.width ?? window.innerWidth) - INSET - 12;
+      right = window.innerWidth - ((v?.offsetLeft ?? 0) + (v?.width ?? window.innerWidth));
       height = (v?.height ?? window.innerHeight) - INSET * 2;
     }
 
     const thumb = Math.max(MIN_THUMB, (el.clientHeight / el.scrollHeight) * height);
     const progress = el.scrollTop / range;
-    return { top, left, height, thumb, offset: progress * (height - thumb) };
+    return { top, right, height, thumb, offset: progress * (height - thumb) };
   }, [scroller, within]);
 
   const show = useCallback(() => {
@@ -150,16 +153,19 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
 
     /* Decay by elapsed time, not by frame count.
      *
-     * `requestAnimationFrame` stops in a hidden tab and is throttled on a busy
-     * machine, and a spring that counts frames simply stops with it — come
-     * back to the tab and the thumb is still squashed against the end. Against
-     * the clock, a frame that took ten times as long decays ten times as far,
-     * so a late frame lands where an unthrottled one would have. */
+     * `requestAnimationFrame` is throttled on a busy machine and suspended
+     * outright in a tab nobody is looking at — Gecko especially — so a spring
+     * that counts frames stops with it, and the thumb is still squashed when
+     * you come back. Two changes: the decay is measured against the clock, so
+     * a tick that took ten times as long decays ten times as far; and it is
+     * driven by a timer rather than by frames, because a throttled timer still
+     * fires while a suspended frame callback never does. */
     const PER_FRAME = 0.82;
     const spring = () => {
-      cancelAnimationFrame(springing.current);
+      window.clearTimeout(springing.current);
       let last = performance.now();
-      const step = (now: number) => {
+      const step = () => {
+        const now = performance.now();
         const frames = Math.max(0, (now - last) / 16.7);
         last = now;
         pushed.current *= Math.pow(PER_FRAME, frames);
@@ -169,16 +175,16 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
           return;
         }
         setOver(damped());
-        springing.current = requestAnimationFrame(step);
+        springing.current = window.setTimeout(step, 16);
       };
-      springing.current = requestAnimationFrame(step);
+      springing.current = window.setTimeout(step, 16);
     };
 
     /* And if the page goes away mid-bounce there is nothing to animate: let
        go outright, so it is at rest when the reader comes back. */
     const onHidden = () => {
       if (document.visibilityState !== 'hidden') return;
-      cancelAnimationFrame(springing.current);
+      window.clearTimeout(springing.current);
       pushed.current = 0;
       setOver(0);
     };
@@ -198,7 +204,7 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
       const past = (delta > 0 && el.scrollTop >= end - 1) || (delta < 0 && el.scrollTop <= 0);
       if (!past) return;
 
-      cancelAnimationFrame(springing.current);
+      window.clearTimeout(springing.current);
       pushed.current += delta;
       paint();
       show();
@@ -228,7 +234,7 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     target.addEventListener('touchmove', onTouchMove, { passive: true });
 
     return () => {
-      cancelAnimationFrame(springing.current);
+      window.clearTimeout(springing.current);
       cancelAnimationFrame(queued);
       window.clearTimeout(settle.current);
       target.removeEventListener('wheel', onWheel);
@@ -304,7 +310,7 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     <div
       ref={barRef}
       className={styles.bar}
-      style={{ top: geometry.top, left: geometry.left, height: geometry.height }}
+      style={{ top: geometry.top, right: geometry.right, height: geometry.height }}
       data-visible={visible || dragging ? '' : undefined}
       data-scrollbar={within ? 'panel' : 'page'}
       aria-hidden="true"

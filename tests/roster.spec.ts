@@ -358,6 +358,20 @@ test.describe('the scrollbar', () => {
     }
   });
 
+  test('it is drawn in the page’s own language', async ({ page }) => {
+    await page.goto('/');
+    await settled(page);
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await page.waitForTimeout(120);
+
+    /* Thin, square and solid ink — the page is built out of hairlines, and a
+       rounded translucent capsule would be the one thing on it borrowed from
+       an operating system. */
+    await expect(thumb(page)).toHaveCSS('border-radius', '0px');
+    await expect(thumb(page)).toHaveCSS('background-color', 'rgb(17, 18, 22)');
+    expect((await box(page)).width, 'thin').toBeLessThanOrEqual(4);
+  });
+
   test('it tracks the page, and lets go again', async ({ page }) => {
     await page.goto('/');
     await settled(page);

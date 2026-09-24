@@ -6,6 +6,9 @@
    does, and only while it is on screen.
    -------------------------------------------------------------------------- */
 
+/* Width holds the thumb plus the gap to the edge on either side, and the
+   thumb is centred in it — so these two numbers are the whole geometry, and
+   the component only has to know which edge to hang it on. */
 .bar {
   position: fixed;
   z-index: 9500;
@@ -20,14 +23,17 @@
 }
 
 .thumb {
-  width: 6px;
-  margin-left: 3px;
-  border-radius: 999px;
-  background: rgb(17 18 22 / 0.3);
+  width: 3px;
+  margin: 0 auto;
+  /* Square and solid, like every other mark on this page: the rules under the
+     rows, the boxes around the genre, the frames around the photographs. A
+     rounded translucent capsule is what an operating system draws — this is
+     a hairline that happens to move. */
+  border-radius: 0;
+  background: var(--ink);
   pointer-events: auto;
   transition:
     width 140ms var(--ease),
-    margin-left 140ms var(--ease),
     background-color 140ms var(--ease);
 }
 
@@ -37,11 +43,20 @@
   pointer-events: none;
 }
 
-.thumb:hover,
-.thumb[data-dragging] {
-  width: 10px;
-  margin-left: 1px;
-  background: rgb(17 18 22 / 0.48);
+/* Wider under the pointer, because it is a thing to be grabbed — but only
+   where there is a pointer to grab it with. A finger has nothing to hover,
+   and on a phone the bar is only ever something to read. */
+@media (hover: hover) and (pointer: fine) {
+  .thumb:hover,
+  .thumb[data-dragging] {
+    width: 6px;
+  }
+}
+
+@media (pointer: coarse) {
+  .bar {
+    width: 7px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
