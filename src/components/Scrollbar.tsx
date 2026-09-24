@@ -201,6 +201,11 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
 
     const push = (delta: number) => {
       const end = el.scrollHeight - el.clientHeight;
+      /* A page with nothing to scroll is not a page being pushed past its
+         end — without this, every turn of the wheel on a short page reads as
+         overscroll, in both directions at once. */
+      if (end <= 1) return;
+
       const past = (delta > 0 && el.scrollTop >= end - 1) || (delta < 0 && el.scrollTop <= 0);
       if (!past) return;
 
@@ -301,10 +306,21 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
 
   /* Past the end the thumb shortens and stays pinned to the end it ran into,
      which is what reads as the page pushing back. Not for anyone who asked
-     for less movement: that is the one piece of this that moves on its own. */
-  const stretch = calm ? 0 : Math.min(1, Math.abs(over) / MAX_OVER);
+     for less movement: that is the one piece of this that moves on its own.
+   *
+   * Pinned only where the page is genuinely at that end. A rubber band exists
+   * at the stop and nowhere else, so any overscroll left over while the page
+   * is mid-way through counts for nothing — otherwise a stray value parks the
+   * thumb at an edge and it stops following the page altogether, which is
+   * what it does not do any more. */
+  const travel = geometry.height - geometry.thumb;
+  const atTop = geometry.offset <= 1;
+  const atBottom = geometry.offset >= travel - 1;
+  const live = over > 0 ? atBottom : over < 0 ? atTop : false;
+
+  const stretch = calm || !live ? 0 : Math.min(1, Math.abs(over) / MAX_OVER);
   const height = geometry.thumb * (1 - SQUASH * stretch);
-  const offset = over > 0 ? geometry.height - height : over < 0 ? 0 : geometry.offset;
+  const offset = !live ? geometry.offset : over > 0 ? geometry.height - height : 0;
 
   return createPortal(
     <div

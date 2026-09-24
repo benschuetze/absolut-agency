@@ -470,6 +470,53 @@ test.describe('the scrollbar', () => {
       .toBeLessThan(2);
   });
 
+  /* Reported from Chrome on Windows: after the first trip to the bottom the
+     thumb stopped following the page and only jumped between top and bottom.
+     The cause was the squash — it pinned the thumb to an end whenever any
+     overscroll was left over, without asking whether the page was at that
+     end at all. This holds the invariant it was missing: a rubber band exists
+     at the stop and nowhere else, so anything left over while the page is
+     mid-way counts for nothing.
+
+     A second test that pushed the wheel mid-page and checked that nothing
+     moved was written and thrown away: it passed with the defect in place
+     and with the guard removed, so it distinguished nothing. */
+  test('it keeps following the page after it has been to the end', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, 'no wheel on a touch device');
+
+    await page.goto('/');
+    await settled(page);
+    await page.mouse.move(200, 400);
+
+    const where = async () => {
+      const t = await box(page);
+      const p = await page.evaluate(() => ({
+        y: window.scrollY,
+        max: document.documentElement.scrollHeight - window.innerHeight,
+      }));
+      const height = page.viewportSize()!.height;
+      return {
+        page: p.max > 0 ? p.y / p.max : 0,
+        thumb: (t.y - 3) / (height - 6 - t.height),
+      };
+    };
+
+    // To the bottom, hard enough to push past it.
+    for (let i = 0; i < 40; i += 1) await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(600);
+
+    // And back up in stages: the thumb has to be where the page is, each time.
+    for (let i = 0; i < 6; i += 1) {
+      await page.mouse.wheel(0, -500);
+      await page.waitForTimeout(150);
+      const at = await where();
+      expect(
+        Math.abs(at.page - at.thumb),
+        `page at ${at.page.toFixed(2)}, thumb at ${at.thumb.toFixed(2)}`
+      ).toBeLessThan(0.08);
+    }
+  });
+
   test('an invisible bar swallows no clicks', async ({ page }) => {
     await page.goto('/');
     await settled(page);
