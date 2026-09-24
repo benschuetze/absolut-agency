@@ -25,7 +25,16 @@ const ORIGIN = 'https://silodom-agency.com';
 
 execFileSync(
   'npx',
-  ['vite', 'build', '--ssr', 'src/entry-server.tsx', '--outDir', '.ssr-build', '--logLevel', 'warn'],
+  [
+    'vite',
+    'build',
+    '--ssr',
+    'src/entry-server.tsx',
+    '--outDir',
+    '.ssr-build',
+    '--logLevel',
+    'warn',
+  ],
   { cwd: root, stdio: 'inherit' }
 );
 
@@ -33,6 +42,24 @@ const { render, artists, site } = await import(resolve(ssrDir, 'entry-server.js'
 const shell = readFileSync(resolve(dist, 'index.html'), 'utf8');
 
 const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+/**
+ * JSON that is safe to sit inside a <script> element.
+ *
+ * The roster is prose people paste in — interview answers, note text, link
+ * labels. An answer containing `</script>` would close the block early and
+ * everything after it would be parsed as markup, which is a cross-site
+ * scripting hole opened by an artist writing about HTML. The two line
+ * separators are escaped for the same reason: they are whitespace to JSON and
+ * line breaks to a JavaScript parser.
+ */
+const jsonInHtml = (data) =>
+  JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
 
 /** Trimmed to roughly what a search result will actually show. */
 const clamp = (s, max = 155) =>
@@ -152,10 +179,17 @@ const musicGroup = (artist) => ({
   memberOf: { '@type': 'Organization', name: site.name, url: `${ORIGIN}/` },
 });
 
-/** Swap a tag's content without disturbing the rest of the head. */
+/**
+ * Swap a tag's content without disturbing the rest of the head.
+ *
+ * The replacement goes in through a function, so the `$&`, `$1` and `` $` ``
+ * that `String.replace` would otherwise expand stay the characters they are.
+ * An artist whose name or answer contains a dollar sign is not a special case
+ * worth having.
+ */
 const swap = (html, pattern, replacement) => {
   if (!pattern.test(html)) throw new Error(`prerender: nothing matched ${pattern}`);
-  return html.replace(pattern, replacement);
+  return html.replace(pattern, () => replacement);
 };
 
 for (const page of pages) {
@@ -183,7 +217,11 @@ for (const page of pages) {
     /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
     `<meta name="description" content="${description}" />`
   );
-  html = swap(html, /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/, `<link rel="canonical" href="${url}" />`);
+  html = swap(
+    html,
+    /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/,
+    `<link rel="canonical" href="${url}" />`
+  );
   html = swap(
     html,
     /<meta\s+property="og:title"\s+content="[^"]*"\s*\/>/,
@@ -194,7 +232,11 @@ for (const page of pages) {
     /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
     `<meta property="og:description" content="${description}" />`
   );
-  html = swap(html, /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/, `<meta property="og:url" content="${url}" />`);
+  html = swap(
+    html,
+    /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/,
+    `<meta property="og:url" content="${url}" />`
+  );
 
   /* An artist's link previews as that artist, not as the roster. */
   if (page.artist) {
@@ -214,12 +256,25 @@ for (const page of pages) {
   const data = page.artist ? musicGroup(page.artist) : organisation;
   html = html.replace(
     '</head>',
-    `  <script type="application/ld+json">${JSON.stringify(data)}</script>\n  </head>`
+    () => `  <script type="application/ld+json">${jsonInHtml(data)}</script>\n  </head>`
   );
 
   html = swap(html, /<div id="root"><\/div>/, `<div id="root">${render(page.location)}</div>`);
 
-  const target = page.path === '/' ? resolve(dist, 'index.html') : resolve(dist, `${page.path.slice(1)}/index.html`);
+  /* Checked on every build rather than trusted: if a roster entry ever gets
+     into that block as raw markup, the build stops here instead of shipping a
+     page that executes it. */
+  for (const [, block] of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) {
+    if (/[<>]/.test(block)) {
+      throw new Error(`prerender: raw markup inside the structured data of ${page.path}`);
+    }
+    JSON.parse(block); // and it has to still be readable as JSON
+  }
+
+  const target =
+    page.path === '/'
+      ? resolve(dist, 'index.html')
+      : resolve(dist, `${page.path.slice(1)}/index.html`);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, html);
   console.log(`prerendered ${page.path.padEnd(28)} ${String(html.length).padStart(6)} bytes`);

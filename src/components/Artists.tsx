@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { Artwork } from './Artwork';
 import { Choose, type Destination } from './Choose';
-import { Scrollbar } from './Scrollbar';
+import { REMEASURE, Scrollbar } from './Scrollbar';
 import { Copied } from './Copied';
 import { PROFILE_QUESTIONS, artists, type Artist, type ProfileKey } from '../data/artists';
 import { locationToPath } from '../lib/router';
@@ -138,12 +138,14 @@ function useStillBehind() {
     body.style.position = 'fixed';
     body.style.top = `-${y}px`;
     body.style.width = '100%';
+    window.dispatchEvent(new Event(REMEASURE));
 
     return () => {
       body.style.position = had.position;
       body.style.top = had.top;
       body.style.width = had.width;
       window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+      window.dispatchEvent(new Event(REMEASURE));
     };
   }, []);
 }

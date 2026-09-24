@@ -6,6 +6,13 @@ import styles from './Scrollbar.module.css';
 const MIN_THUMB = 28;
 /** How long it stays after the scrolling stops. */
 const IDLE = 900;
+/**
+ * Told, rather than noticed: what a scrollbar cannot observe is a scroller
+ * that keeps its size and loses its overflow. Anything that does that to a
+ * page fires this.
+ */
+export const REMEASURE = 'scrollbar:remeasure';
+
 /** Clear of the corner, the way an overlay scrollbar sits inside the frame. */
 const INSET = 3;
 /** Where the squash at the end of the page saturates. */
@@ -125,10 +132,18 @@ export function Scrollbar({ within }: { within?: RefObject<HTMLElement | null> }
     observer.observe(within?.current ?? document.documentElement);
     if (!within) observer.observe(document.body);
 
+    /* And when something takes the scrolling away outright — a panel pinning
+       the page behind it — it says so. A resize observer does not fire for a
+       body that keeps its size and loses its overflow, so without this the
+       page's bar stays on screen next to the panel's until the next scroll
+       happens to re-measure it. */
+    window.addEventListener(REMEASURE, update);
+
     return () => {
       window.clearTimeout(idleTimer.current);
       target.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', update);
+      window.removeEventListener(REMEASURE, update);
       window.visualViewport?.removeEventListener('resize', update);
       window.visualViewport?.removeEventListener('scroll', update);
       observer.disconnect();

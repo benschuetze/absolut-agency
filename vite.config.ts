@@ -27,15 +27,55 @@ function spaFallback(): Plugin {
     name: 'spa-404-fallback',
     apply: 'build',
     closeBundle() {
-      const dist = resolve(__dirname, 'dist');
+      const dist = resolve(import.meta.dirname, 'dist');
       copyFileSync(resolve(dist, 'index.html'), resolve(dist, '404.html'));
     },
   };
 }
 
+/**
+ * The security policy, on the built pages only.
+ *
+ * GitHub Pages sends no headers of its own, so this is the one place it can
+ * be stated. It is left out of the dev server deliberately: `upgrade-
+ * insecure-requests` applies to `http://localhost` in WebKit, which turns
+ * every local asset into a failed HTTPS request, and Vite's own live-reload
+ * client is not what this policy is written for.
+ */
+const POLICY = [
+  "default-src 'self'",
+  // Nothing else may run. The page ships its own script and needs no other.
+  "script-src 'self'",
+  /* Inline styles stay allowed because React writes the moving parts as style
+     attributes — where the scrollbar sits, where the chooser is anchored.
+     Inline scripts stay forbidden, which is the half that matters. */
+  "style-src 'self' 'unsafe-inline'",
+  // data: for the font subsets, which are built into the stylesheet.
+  "font-src 'self' data:",
+  "img-src 'self' data:",
+  "connect-src 'self'",
+  "base-uri 'none'",
+  "form-action 'none'",
+  "object-src 'none'",
+  "frame-src 'none'",
+  'upgrade-insecure-requests',
+].join('; ');
+
+const securityPolicy = (): Plugin => ({
+  name: 'security-policy',
+  apply: 'build',
+  transformIndexHtml: (html) =>
+    html.replace(
+      '</head>',
+      `  <meta http-equiv="Content-Security-Policy" content="${POLICY}" />\n` +
+        // Other sites learn that someone came from here, never from where.
+        `    <meta name="referrer" content="strict-origin-when-cross-origin" />\n  </head>`
+    ),
+});
+
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? BASE_PATH : '/',
-  plugins: [react(), spaFallback()],
+  plugins: [react(), spaFallback(), securityPolicy()],
   server: {
     port: 5173,
     open: false,

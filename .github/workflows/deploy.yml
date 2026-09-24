@@ -6,6 +6,12 @@ on:
   workflow_dispatch:
 
 # Least privilege: read the repo, mint an OIDC token, publish to Pages.
+#
+# Every action is pinned to the commit it was reviewed at rather than to a tag.
+# A tag is a label its owner can move, and these run with write access to what
+# this site publishes — the version in the comment says what the pin
+# corresponds to, and moving it is a deliberate edit rather than something that
+# happens overnight.
 permissions:
   contents: read
   pages: write
@@ -20,22 +26,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
           cache: npm
 
-      - run: npm ci
+      # No install scripts: a package anywhere in the tree can otherwise run
+      # code on this runner the moment it is installed, and nothing here needs
+      # to. Checked — the site builds byte for byte the same without them.
+      - run: npm ci --ignore-scripts
       - run: npm run build
 
       # Pages itself was enabled once via the REST API (build_type: workflow).
       # `enablement: true` cannot do it — GITHUB_TOKEN is not allowed to create a
       # Pages site, it fails with "Resource not accessible by integration".
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: dist
 
@@ -47,4 +56,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
