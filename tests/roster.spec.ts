@@ -10,7 +10,7 @@ const ROSTER = [
   'Abscure',
   'Al-Fatmalay',
   'Björn Del Togno',
-  'Contrast',
+  'Cøntrast',
   'Flo.Von',
   'Jona',
   'Lea Lindner',

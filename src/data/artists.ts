@@ -94,7 +94,7 @@ const roster: Artist[] = [
       soundcloud: 'https://soundcloud.com/abscure333',
     },
     profile: {
-      since: 'Around 6 years',
+      since: '2020',
       sound: 'For me it’s important to keep things minimalistic — nothing too flashy. On the darker side, but with a guiding light. Without light, there can be no shadow.',
       firstGig: 'Silodom, Saarbrücken.',
       inspirations:
@@ -159,7 +159,7 @@ const roster: Artist[] = [
   },
   {
     id: 'contrast',
-    name: 'Contrast',
+    name: 'Cøntrast',
     format: 'Digital for now, and hopefully live soon',
     tags: ['techno', 'groove', 'breaks'],
     links: {
@@ -308,7 +308,7 @@ const roster: Artist[] = [
       soundcloud: 'https://soundcloud.com/sdbsb',
     },
     profile: {
-      since: '8 years',
+      since: '2018',
       sound: 'Dirty.',
       firstGig: 'At Mauerpfeiffer Saarbrücken.',
       inspirations: 'Regis, Mhonolink, Dave Clarke, Sedvs, Lorn, Meshuggah, Architects.',
