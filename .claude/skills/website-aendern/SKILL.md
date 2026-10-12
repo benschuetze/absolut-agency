@@ -1,6 +1,6 @@
 ---
 name: website-aendern
-description: Use for ANY request to change the absolut agency website — colours, colour scheme, text, wording, bios, artist names, layout, spacing, fonts, "make it darker/warmer/bigger", "change X to Y", "wie auf diesem Bild", "Farbe ändern", "Text ändern", "sieht komisch aus". Also use when someone reports something looks broken. Covers the whole job end to end: making the change, checking it builds, publishing it, and confirming it is live.
+description: Use for ANY request to change the silodom agency website — colours, colour scheme, text, wording, bios, artist names, layout, spacing, fonts, "make it darker/warmer/bigger", "change X to Y", "wie auf diesem Bild", "Farbe ändern", "Text ändern", "sieht komisch aus". Also use when someone reports something looks broken. Covers the whole job end to end: making the change, checking it builds, publishing it, and confirming it is live.
 ---
 
 # Changing the website

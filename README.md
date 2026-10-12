@@ -1,113 +1,92 @@
-# silodom agency — agency landing page
+# silodom agency
 
-A two-page landing page for an electronic music booking agency. No backend, no CMS:
-everything is a typed constant in `src/data/`, and the whole thing builds to static files.
+Website for **silodom agency**, booking and artist management for electronic music in
+Saarbrücken. Live at **[silodom-agency.com](https://silodom-agency.com)**.
 
-**Stack:** Vite + React 18 + TypeScript, CSS Modules, zero UI dependencies.
+| Desktop | Phone |
+| --- | --- |
+| ![Roster on a 1440px screen](docs/screenshot-desktop.webp) | ![Roster on an iPhone](docs/screenshot-mobile.webp) |
+
+No backend, no CMS: the roster and the agency details are typed constants in `src/data/`,
+and the site builds to static files on GitHub Pages. Every artist has an address of their own
+(`/artists/<id>/`), prerendered at build time together with the sitemap.
+
+**Stack:** Vite + React 18 + TypeScript, CSS Modules, no UI dependencies.
 
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm run build      # → dist/
-npm run preview    # serve the production build
-npm run typecheck
+npm run check      # typecheck, data tests, build, browser tests
+npm run build      # → dist/, with every route prerendered
 ```
+
+**Lighthouse** on the live site (12.10.2026, Lighthouse 12.8):
+
+| | Performance | Accessibility | Best practices | SEO |
+| --- | --- | --- | --- | --- |
+| Phone | 98 | 100 | 100 | 100 |
+| Desktop | 100 | 100 | 100 | 100 |
+
+Largest contentful paint 2.3 s on the throttled phone profile, 0.6 s on desktop; no layout
+shift (CLS 0), because every photo is WebP in a fixed 4:5 frame.
+
+**For the agency:** content changes do not need a developer. [`ANLEITUNG.md`](ANLEITUNG.md)
+explains, in German, how to change text, photos or colours by telling Claude what you want;
+the two skills in `.claude/skills/` carry out the request end to end.
 
 ---
 
-## The two tabs
+## The pages
 
-| Route     | View                    | Behaviour                                                                                                                                                             |
-| --------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`       | `components/Artists.tsx` | Roster as a hairline row list. **≥900px:** hovering a name dims the rest of the list and cross-fades that artist's image + bio into the sticky panel on the right. **<900px:** tapping a row expands it inline. |
-| `/about`  | `components/About.tsx`   | Editorial: lead statement, two-column copy, services, facts and contact.                                                                                               |
+| Route | What is there |
+| --- | --- |
+| `/` | The roster as a grid of portraits, at most three per row, one on a phone. Every face is visible without hovering. Hovering or focusing a card draws a line under its image and nothing else; nothing is dimmed. Opening a card shows the artist's interview, genre and links in a panel. |
+| `/artists/<id>/` | The same grid with that artist's panel open. Back closes the panel instead of leaving the site; an unknown id shows the roster. |
+| `/about` | The agency: statement, services, contact. |
+| `/impressum/`, `/datenschutz/` | Imprint and privacy notice, linked from the footer. |
 
-Routing is 40 lines in `src/lib/router.ts` — History API plus the View Transitions API for
-the tab swap where the browser supports it. Two pages did not justify a router dependency.
+Routing is a few lines in `src/lib/router.ts`: History API plus the View Transitions API
+where the browser supports it. Two tabs did not justify a router dependency.
 
 ---
 
 ## Editing content
 
-Everything a non-developer would want to change lives in two files.
+**`src/data/site.ts`**: agency name, descriptor, tagline, city, email, socials. The name feeds
+the wordmark, `<title>`, footer and about copy.
 
-**`src/data/site.ts`** — agency name, descriptor, tagline, city, email, socials. The name is
-used in the wordmark, `<title>`, footer and about copy, so renaming the agency is a one-line
-change.
+**`src/data/artists.ts`**: the roster. Each artist answered the same interview; the questions
+live once in `PROFILE_QUESTIONS`, the answers stay word for word. Photos go in
+`src/assets/artists/` (4:5, about 1000 × 1250, WebP) and are imported there.
 
-**`src/data/artists.ts`** — the roster. Only `id` and `name` are required; everything else
-is optional and degrades cleanly, so entries can be filled in as the information arrives.
-
-```ts
-{
-  id: 'lea-lindner',     // stable slug, also the artwork seed
-  name: 'Lea Lindner',
-  city: 'Berlin',        // optional — omitted leaves the meta column empty
-  format: 'live',        // optional — 'live' | 'dj' | 'live / dj'
-  bio: 'Two or three sentences, no more.',   // optional — falls back to "Bio to follow."
-  tags: ['hypnotic', 'modular'],             // optional — three works best
-  photo: undefined,      // see below
-}
-```
-
-The layout adapts to any number of artists — add or remove entries freely. Row numbering,
-the roster count and the about-page index all derive from the array.
-
-> **Current state:** the eight names are final. `city`, `format`, `bio` and `tags` are
-> deliberately left undefined rather than guessed — these are real people, and invented
-> credits would go live looking like facts.
-
-Everything in `site.ts` except the agency name is still placeholder: descriptor, tagline,
-city, founding year, email and the social links.
+`npm test` checks the data on every run: unique URL-safe ids, a photo, a genre and at least
+one answer per artist, https links only.
 
 ---
 
-## Photos
+## Design
 
-There are no photos yet, so `components/Artwork.tsx` draws a **seeded duotone halftone** at
-the exact final proportions (4:5) instead of a grey box. Each artist's `id` seeds a
-deterministic field, so every artist has their own composition and it never changes between
-reloads. Panels carry a small `IMAGE PENDING` label at large sizes.
+All of it is in `src/styles/tokens.css`.
 
-To drop real photos in:
+- **Paper** `#f4e9e7`, a soft rosé, not white. **Ink** `#111216` at four opacities, each
+  checked against the paper for contrast. The accent is the ink itself, kept as its own
+  token in case a colour arrives later.
+- **Photos** in colour and unedited.
+- **Type:** Archivo Variable for display, JetBrains Mono Variable for labels; both
+  self-hosted, so there is no external font request.
+- **Motion:** one easing, three durations, all off under `prefers-reduced-motion`.
 
-1. Put the files in `src/assets/artists/` (4:5 crop, ~1000×1250, JPG or WebP).
-2. Import and assign in `src/data/artists.ts`:
+## Tests and CI
 
-```ts
-import leaLindner from '../assets/artists/lea-lindner.jpg';
+`tests/roster.spec.ts` and `tests/a11y.spec.ts` run in Playwright on a 1440px desktop, a
+1024px laptop and an iPhone 13 (WebKit), plus Firefox for the custom scrollbar. They encode
+the brief rather than the markup: every image painted on load, every fact reachable without
+hover, keyboard operation, the panel's own address and back button, nothing moving under the
+pointer, and axe without serious findings on every kind of page.
 
-{ id: 'lea-lindner', /* … */ photo: leaLindner }
-```
-
-`Artwork` renders the photo instead and the generative fallback disappears. Nothing else
-moves — the placeholder already reserves the final box.
-
----
-
-## Design system
-
-All of it is in `src/styles/tokens.css`. Change the six colour variables and the site
-changes mood without touching a component.
-
-- **Surface** — warm limestone `#e8e5de`, not white. Two soft airbrush washes drift behind
-  the content and a fine SVG grain sits on top, so the paper never reads as an empty div.
-- **Ink** `#111216`, used at four opacities. Structure comes from hairlines, not boxes.
-- **Accent** `#2333e0`, deliberately rationed: row indices, hover states, links, and a thin
-  band inside the placeholder artwork.
-- **Type** — Archivo Variable for display, JetBrains Mono Variable for every label, index,
-  meta line and the footer clock. Both self-hosted via `@fontsource-variable`, so there is
-  no external font request. Sizes are fluid `clamp()`; the stage headline uses container
-  query units so it fits its column rather than the viewport.
-- **Motion** — one shared easing (`--ease`) and three durations. Every animation is disabled
-  under `prefers-reduced-motion`.
-
-## Accessibility notes
-
-Rows are real `<button>`s, so the hover preview also fires on keyboard focus and the dimming
-respects `:focus-within`. On mobile they carry `aria-expanded` / `aria-controls`. The sticky
-preview panel is `aria-hidden` because it duplicates content already in the list. Focus rings
-are visible and the accent passes contrast on the paper background.
+`.github/workflows/ci.yml` runs typecheck, data tests, build and the browser tests on every
+pull request and push, with read-only permissions; `deploy.yml` publishes `main`. Both pin
+every action to a reviewed commit.
 
 ## Deploying
 

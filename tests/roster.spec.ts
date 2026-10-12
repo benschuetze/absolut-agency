@@ -554,15 +554,17 @@ test.describe('the scrollbar', () => {
     await page.waitForTimeout(1200); // past the flash on arrival
     await expect(bar(page)).toHaveCSS('opacity', '0');
 
+    const home = await box(page);
     await page.evaluate(() => window.scrollTo(0, 800));
-    await page.waitForTimeout(120);
     await expect(bar(page)).toHaveAttribute('data-visible', '');
-    const moved = await box(page);
+    /* Polled, not timed: on a slow runner the thumb lands a few frames later,
+       and a fixed wait measured it before it had moved. */
+    await expect
+      .poll(async () => (await box(page)).y, { message: 'the thumb follows the page down' })
+      .toBeGreaterThan(home.y);
 
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(120);
-    const home = await box(page);
-    expect(moved.y, 'the thumb follows the page down').toBeGreaterThan(home.y);
+    await expect.poll(async () => (await box(page)).y, { message: 'and back up' }).toBeLessThanOrEqual(home.y + 1);
 
     // And it fades once the page is still.
     await page.waitForTimeout(1300);

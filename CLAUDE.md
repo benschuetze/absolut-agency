@@ -1,6 +1,6 @@
 # Working on this repo
 
-Landing page for **absolut**, a booking and artist management agency. Vite + React +
+Landing page for **silodom agency**, a booking and artist management agency. Vite + React +
 TypeScript, CSS Modules, no UI dependencies. It builds to static files and deploys to GitHub
 Pages automatically on every push to `main`.
 
@@ -59,8 +59,8 @@ that artist's `photo` field.
 
 ## Copy
 
-**All prose on the site is currently lorem ipsum, on purpose.** Real artist names, invented
-everything else. Replace it when real copy arrives.
+**The copy is real.** Interview answers come from the artists and are reproduced exactly as
+given, emoji and asides included; genres come from the agency.
 
 Never write bios, credits, cities or booking formats for an artist from imagination. These
 are real people and invented details render as facts. If copy is missing, leave the field
