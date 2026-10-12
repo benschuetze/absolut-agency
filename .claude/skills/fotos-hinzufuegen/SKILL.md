@@ -1,6 +1,6 @@
 ---
 name: fotos-hinzufuegen
-description: Use when adding, replacing or removing artist photos on the absolut website — "hier sind die Fotos", "Bild von SDB einfügen", "das Foto austauschen", "Foto ist falsch rum", an image attached with an artist's name, or any request involving artist photography. Handles the 4:5 crop requirement, file placement, wiring the photo to the right artist, and publishing.
+description: Use when adding, replacing or removing artist photos on the silodom agency website — "hier sind die Fotos", "Bild von SDB einfügen", "das Foto austauschen", "Foto ist falsch rum", an image attached with an artist's name, or any request involving artist photography. Handles the 4:5 crop requirement, file placement, wiring the photo to the right artist, and publishing.
 ---
 
 # Adding artist photos

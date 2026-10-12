@@ -29,7 +29,7 @@ export function Artists({
   onOpen: (id: string) => void;
   onClose: () => void;
 }) {
-  /** Which card is under the pointer or holds focus — drives the dim-the-rest state. */
+  /** Which card is under the pointer or holds focus — draws the line under its image. */
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const open = artists.find((a) => a.id === openId) ?? null;
